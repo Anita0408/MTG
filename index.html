@@ -26,7 +26,6 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            /* 優化 1：使用提供的卡背圖片作為首頁背景 */
             background: #000 url('https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering-card_back.jpg') no-repeat center center fixed;
             background-size: contain;
             color: #e0e0e0;
@@ -167,7 +166,6 @@
             margin-bottom: 20px;
         }
 
-        /* 優化 2：針對 6 張卡片進行縮小與 2 欄排列（左右左右），免滾動即可瀏覽 */
         #game-view {
             padding: 5px;
             width: 100%;
@@ -185,7 +183,8 @@
 
         .player-card-wrapper {
             perspective: 1000px;
-            height: 240px; /* 縮小高度以在一般螢幕呈現 6 張卡 */
+            height: 240px;
+            cursor: pointer;
         }
 
         .player-card {
@@ -204,7 +203,7 @@
             background: var(--card-bg);
             border: var(--border-style);
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -259,7 +258,7 @@
         }
 
         .life-display {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 900;
             text-align: center;
             font-family: 'Cinzel', serif;
@@ -282,7 +281,7 @@
 
         .btn-life {
             flex: 1;
-            padding: 4px 0;
+            padding: 6px 0;
             font-size: 1.1rem;
             font-weight: bold;
             background: rgba(212,175,55,0.15);
@@ -297,26 +296,16 @@
             color: #000;
         }
 
-        .flip-btn {
-            align-self: center;
-            background: none;
-            border: none;
-            color: var(--gold-primary);
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-decoration: underline;
-            margin-top: 2px;
-        }
-
         .status-badges {
             display: flex;
             gap: 4px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            justify-content: center;
         }
 
         .badge {
             background: #2a1f3d;
-            padding: 1px 4px;
+            padding: 2px 6px;
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
@@ -556,7 +545,7 @@
         </table>
 
         <div class="stats-summary">
-            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">總勝負統計</h3>
+            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計</h3>
             <div id="statsSummaryContent"></div>
         </div>
     </div>
@@ -568,9 +557,9 @@
         <div class="form-group">
             <label>模式 (必填)</label>
             <select id="modeSelect" onchange="updateSetupForm()">
-                <option value="Commander">指揮官 (預設40血)</option>
-                <option value="TwoHeadedGiant">雙頭巨人 (預設50血)</option>
-                <option value="Kingdoms">三國殺 (預設40/50血)</option>
+                <option value="Commander">指揮官</option>
+                <option value="TwoHeadedGiant">雙頭巨人</option>
+                <option value="Kingdoms">三國殺</option>
             </select>
         </div>
         <div class="form-group">
@@ -598,7 +587,6 @@
     </div>
 </div>
 
-<!-- 優化 6：彈窗按鈕文字修正為「目前模式」 -->
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
         <div class="modal-title">重置對戰與勝負結算</div>
@@ -614,7 +602,6 @@
     </div>
 </div>
 
-<!-- 優化 4：擲骰彈窗新增右上方 X 關閉按鈕，並顯示獲勝者 -->
 <div class="modal-mask" id="diceModal">
     <div class="modal-content" style="text-align: center;">
         <button class="modal-close-x" onclick="closeModal('diceModal')">✕</button>
@@ -624,23 +611,18 @@
 </div>
 
 <script>
-    // 優化 5：更新並補齊 15 個 Scryfall 穩定卡牌頭像網址
+    // 替換為上傳的 10 張新頭像
     const PLANESWALKERS = [
-        { name: "Jace", url: "https://cards.scryfall.io/art_crop/front/0/e/0e52778c-55d0-40e8-a83d-3965b262d12e.jpg" },
-        { name: "Liliana", url: "https://cards.scryfall.io/art_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg" },
         { name: "Chandra", url: "https://cards.scryfall.io/art_crop/front/0/1/012e161f-1328-48d3-a9d1-36b13e9a4f48.jpg" },
-        { name: "Ajani", url: "https://cards.scryfall.io/art_crop/front/f/2/f25232a3-2218-498c-9b62-11119b4ef547.jpg" },
-        { name: "Nissa", url: "https://cards.scryfall.io/art_crop/front/2/9/29283d01-a89f-431d-b0ed-28821950e303.jpg" },
-        { name: "Teferi", url: "https://cards.scryfall.io/art_crop/front/5/d/5d10b752-d9cb-419d-a5c4-d4060667b676.jpg" },
+        { name: "Liliana 1", url: "https://cards.scryfall.io/art_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg" },
+        { name: "Liliana 2", url: "https://cards.scryfall.io/art_crop/front/9/e/9e7030f4-c2e2-43ce-ac5c-56e7989b559a.jpg" },
+        { name: "Kiora", url: "https://cards.scryfall.io/art_crop/front/0/5/0510343d-010f-4886-bb21-e37453d6eb61.jpg" },
+        { name: "Jace", url: "https://cards.scryfall.io/art_crop/front/0/e/0e52778c-55d0-40e8-a83d-3965b262d12e.jpg" },
         { name: "Gideon", url: "https://cards.scryfall.io/art_crop/front/9/b/9b5eced6-733f-41c5-849d-64e52f5344c2.jpg" },
-        { name: "Karn", url: "https://cards.scryfall.io/art_crop/front/0/7/070f3f61-2947-4144-b0a0-388915b22108.jpg" },
-        { name: "Sorin", url: "https://cards.scryfall.io/art_crop/front/a/1/a1387a20-0083-4a11-893c-a9df4952084f.jpg" },
-        { name: "Nicol Bolas", url: "https://cards.scryfall.io/art_crop/front/7/b/7b215968-93a6-4278-ac61-4e3e8c3c3943.jpg" },
-        { name: "Vraska", url: "https://cards.scryfall.io/art_crop/front/a/0/a0209e7a-c322-4217-a006-bb5efb266bf2.jpg" },
+        { name: "Nissa", url: "https://cards.scryfall.io/art_crop/front/2/9/29283d01-a89f-431d-b0ed-28821950e303.jpg" },
+        { name: "Oko", url: "https://cards.scryfall.io/art_crop/front/3/4/3462a3d0-5552-49fa-9eb7-100960c55f91.jpg" },
         { name: "Vivien", url: "https://cards.scryfall.io/art_crop/front/2/2/2275f0a0-880d-4ef1-8a9b-7e61ef022131.jpg" },
-        { name: "Kaito", url: "https://cards.scryfall.io/art_crop/front/e/7/e7751c6e-c689-4b6e-b3d5-223402778736.jpg" },
-        { name: "Elspeth", url: "https://cards.scryfall.io/art_crop/front/3/b/3b09ed3d-61a7-49d7-84ee-8a39c947d0c3.jpg" },
-        { name: "Nahiri", url: "https://cards.scryfall.io/art_crop/front/5/0/5033c945-8167-4d7a-a638-301297e682e0.jpg" }
+        { name: "Teferi", url: "https://cards.scryfall.io/art_crop/front/5/d/5d10b752-d9cb-419d-a5c4-d4060667b676.jpg" }
     ];
 
     let state = {
@@ -658,7 +640,6 @@
         }
         updateRecordsTable();
 
-        // 優化 3：全域點擊監聽，點擊卡片外部區域時自動將翻轉的卡片翻回正面
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.player-card-wrapper')) {
                 document.querySelectorAll('.player-card.flipped').forEach(card => {
@@ -694,6 +675,7 @@
     function updateSetupForm() {
         const mode = document.getElementById('modeSelect').value;
         const countSelect = document.getElementById('playerCountSelect');
+        const currentCount = countSelect.value;
         countSelect.innerHTML = '';
 
         if (mode === 'TwoHeadedGiant') {
@@ -701,6 +683,11 @@
         } else {
             for(let i=2; i<=8; i++) countSelect.add(new Option(`${i} 人`, i));
         }
+
+        if (Array.from(countSelect.options).some(opt => opt.value === currentCount)) {
+            countSelect.value = currentCount;
+        }
+
         updatePlayerRows();
     }
 
@@ -708,26 +695,31 @@
         const mode = document.getElementById('modeSelect').value;
         const count = parseInt(document.getElementById('playerCountSelect').value);
         const container = document.getElementById('playerSetupList');
-        container.innerHTML = '';
 
+        const oldInputs = Array.from(container.querySelectorAll('.p-name')).map(i => i.value);
+        const oldAvatars = Array.from(container.querySelectorAll('.avatar-preview')).map(img => img.src);
+
+        container.innerHTML = '';
         let rowCount = mode === 'TwoHeadedGiant' ? count / 2 : count;
 
         for (let i = 0; i < rowCount; i++) {
             const row = document.createElement('div');
             row.className = 'player-setup-row';
-
-            let defaultAvatar = PLANESWALKERS[i % PLANESWALKERS.length].url;
+            let defaultAvatar = oldAvatars[i] || PLANESWALKERS[i % PLANESWALKERS.length].url;
 
             if (mode === 'TwoHeadedGiant') {
+                let name1 = oldInputs[i * 2] || '';
+                let name2 = oldInputs[i * 2 + 1] || '';
                 row.innerHTML = `
                     <span style="color:var(--gold-primary); font-size:0.85rem;">隊${i+1}:</span>
-                    <input type="text" placeholder="隊友1" class="p-name" oninput="validateSetupForm()">
-                    <input type="text" placeholder="隊友2" class="p-name" oninput="validateSetupForm()">
+                    <input type="text" placeholder="隊友1" class="p-name" value="${name1}" oninput="validateSetupForm()">
+                    <input type="text" placeholder="隊友2" class="p-name" value="${name2}" oninput="validateSetupForm()">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
                 `;
             } else {
+                let name = oldInputs[i] || '';
                 row.innerHTML = `
-                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
+                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
                 `;
             }
@@ -769,7 +761,6 @@
         const mode = document.getElementById('modeSelect').value;
         const rows = document.querySelectorAll('.player-setup-row');
         let players = [];
-
         let defaultLife = mode === 'TwoHeadedGiant' ? 50 : 40;
 
         rows.forEach((row, idx) => {
@@ -802,11 +793,7 @@
         });
 
         localStorage.setItem('mtg_historyNames', JSON.stringify(state.historyNames));
-
-        state.currentGame = {
-            mode: mode,
-            players: players
-        };
+        state.currentGame = { mode: mode, players: players };
 
         saveCurrentGame();
         closeModal('newGameModal');
@@ -821,12 +808,16 @@
     function renderGameGrid() {
         const grid = document.getElementById('gameGrid');
         grid.innerHTML = '';
-
         if (!state.currentGame) return;
 
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
+
+            cardWrapper.onclick = function(e) {
+                if (e.target.closest('button') || e.target.closest('.monarch-crown')) return;
+                document.getElementById(`card-${index}`).classList.toggle('flipped');
+            };
 
             cardWrapper.innerHTML = `
                 <div class="player-card" id="card-${index}">
@@ -850,7 +841,6 @@
                             <button class="btn-life" onclick="changeLife(${index}, 1)">+1</button>
                             <button class="btn-life" onclick="changeLife(${index}, 5)">+5</button>
                         </div>
-                        <button class="flip-btn" onclick="flipCard(${index}, event)">🔄 翻轉 (毒/指揮官)</button>
                     </div>
 
                     <div class="card-back">
@@ -873,17 +863,11 @@
                                 <button class="btn-life" onclick="changeStatus(${index}, 'cmdDamage', 1)">+1</button>
                             </div>
                         </div>
-                        <button class="flip-btn" onclick="flipCard(${index}, event)">🔄 翻回正面</button>
                     </div>
                 </div>
             `;
             grid.appendChild(cardWrapper);
         });
-    }
-
-    function flipCard(index, event) {
-        if(event) event.stopPropagation(); // 阻止冒泡，避免引發全域點擊還原
-        document.getElementById(`card-${index}`).classList.toggle('flipped');
     }
 
     function changeLife(index, delta) {
@@ -913,7 +897,6 @@
         renderGameGrid();
     }
 
-    // 優化 4：擲骰計算最高者，調整彈窗顯示與手動關閉
     function rollD20All() {
         const results = document.getElementById('diceResults');
         const titleElem = document.getElementById('diceWinnerTitle');
@@ -1016,14 +999,17 @@
 
         const stats = {};
         state.records.forEach(r => {
-            if (!stats[r.name]) stats[r.name] = { win: 0, lose: 0 };
-            if (r.result === 'WIN') stats[r.name].win++;
-            else stats[r.name].lose++;
+            const individualNames = r.name.split('&').map(s => s.trim());
+            individualNames.forEach(name => {
+                if (!stats[name]) stats[name] = { win: 0, lose: 0 };
+                if (r.result === 'WIN') stats[name].win++;
+                else stats[name].lose++;
+            });
         });
 
         const summaryElem = document.getElementById('statsSummaryContent');
         summaryElem.innerHTML = Object.keys(stats).map(name => `
-            <div style="display:inline-block; margin-right: 15px; margin-bottom: 5px;">
+            <div style="display:inline-block; margin-right: 15px; margin-bottom: 8px;">
                 <strong>${name}:</strong> ${stats[name].win}勝 / ${stats[name].lose}敗 (勝率: ${Math.round(stats[name].win/(stats[name].win+stats[name].lose)*100 || 0)}%)
             </div>
         `).join('');
