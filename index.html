@@ -494,7 +494,7 @@
 
         .avatar-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             margin-top: 10px;
         }
@@ -726,16 +726,14 @@
 
 <script>
     const PLANESWALKERS = [
-        { name: "Chandra", url: "https://i.imgur.com/8QzXkQp.jpg" },
-        { name: "Liliana 1", url: "https://cards.scryfall.io/art_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg" },
-        { name: "Liliana 2", url: "https://i.imgur.com/zN4p123.jpg" },
-        { name: "Kiora", url: "https://i.imgur.com/v82K39X.jpg" },
-        { name: "Jace", url: "https://i.imgur.com/4J9zL1W.jpg" },
-        { name: "Gideon", url: "https://i.imgur.com/t3Z8B5K.jpg" },
-        { name: "Nissa", url: "https://i.imgur.com/pY93T0R.jpg" },
-        { name: "Oko", url: "https://i.imgur.com/R3O20qK.jpg" },
-        { name: "Vivien", url: "https://i.imgur.com/W5X9T8L.jpg" },
-        { name: "Teferi", url: "https://i.imgur.com/2Y19M3B.jpg" }
+        { name: "Rowan Kenrith", url: "https://images.ctfassets.net/s5n2t79q9icq/1sqcHwy3RJKGZ2BT5B8xsi/27e26027ca67551f68860f89051c7cdc/rowan-kenrith-300.jpg" },
+        { name: "The Wanderer", url: "https://images.ctfassets.net/s5n2t79q9icq/3xwuZfGjME99g4m8UV8Tkx/673c5305e0216b992ad020cd7bf85b47/the-wanderer-300.jpg" },
+        { name: "Basri Khet", url: "https://images.ctfassets.net/s5n2t79q9icq/1q2WnoQyMIPY5JeS47evum/a107915c16efa6ebf586047cc1c409c8/basri-khet-300.jpg" },
+        { name: "Elspeth Tirel", url: "https://images.ctfassets.net/s5n2t79q9icq/c0HWQ5xD293WdkqUd3vUN/abe4d649a0ca25a7a260c32377df7094/elspeth-tirel-300.jpg" },
+        { name: "Nissa Revane", url: "https://images.ctfassets.net/s5n2t79q9icq/4QQyvTFy433ucZsAukFCy/74498ba02a7ed94bce4a290506253552/nissa-revane-300.jpg" },
+        { name: "Ajani", url: "https://images.ctfassets.net/s5n2t79q9icq/6aF1l2DFY0oRxa4Zsmm7PR/87b8393aae247b2d2d9c4274b370a9b4/ajani-300.jpg" },
+        { name: "Oko", url: "https://images.ctfassets.net/s5n2t79q9icq/OuYONzWUywVZy13ScRKXO/5a5b83df87b60b4f8d13988db5ed5788/oko-300.jpg" },
+        { name: "Serra", url: "https://images.ctfassets.net/s5n2t79q9icq/78Bo4S43kxvjlaGYbcK8JU/070181e909364fe85c9b5d58e8778bfd/serra-300.jpg" }
     ];
 
     let state = {
@@ -963,13 +961,11 @@
         const controls = document.getElementById('floatingControls');
         grid.innerHTML = '';
 
-        // 判斷若無遊戲資料或玩家陣列為空，隱藏浮動按鈕並返回
         if (!state.currentGame || !state.currentGame.players || state.currentGame.players.length === 0) {
             if (controls) controls.style.display = 'none';
             return;
         }
 
-        // 有資料時顯示控制按鈕
         if (controls) controls.style.display = 'flex';
 
         const count = state.currentGame.players.length;
@@ -1112,7 +1108,6 @@
         let startTime = Date.now();
         let animInterval = setInterval(() => {
             let elapsedTime = Date.now() - startTime;
-            // 動畫縮短為 2 秒 (2000ms)
             if (elapsedTime < 2000) {
                 let randomRolls = state.currentGame.players.map(p => 
                     `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
