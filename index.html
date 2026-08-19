@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-overlay: rgba(15, 12, 25, 0.85);
+            --bg-overlay: rgba(15, 12, 25, 0.82);
             --gold-primary: #d4af37;
             --gold-light: #f3e5ab;
             --gold-dark: #8a6d1b;
@@ -26,8 +26,8 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            background: #000 url('https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering-card_back.jpg') no-repeat center center fixed;
-            background-size: contain;
+            background: #000 url('https://i.imgur.com/8QzXkQp.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: #e0e0e0;
             min-height: 100vh;
             display: flex;
@@ -191,10 +191,15 @@
             width: 100%; height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1), filter 0.3s;
         }
 
         .player-card.flipped { transform: rotateY(180deg); }
+
+        .player-card.dead {
+            filter: grayscale(0.9) brightness(0.35);
+            opacity: 0.7;
+        }
 
         .card-front, .card-back {
             position: absolute;
@@ -276,7 +281,7 @@
         .life-controls {
             display: flex;
             justify-content: space-around;
-            gap: 4px;
+            gap: 8px;
         }
 
         .btn-life {
@@ -289,6 +294,12 @@
             color: var(--gold-light);
             border-radius: 4px;
             cursor: pointer;
+        }
+
+        /* 正面 -1 / +1 按鈕放大樣式 */
+        .btn-life-large {
+            padding: 12px 0;
+            font-size: 1.8rem;
         }
 
         .btn-life:active {
@@ -309,6 +320,20 @@
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
+            transition: all 0.2s;
+        }
+
+        .badge.warning-glow {
+            background: #5a0000;
+            border-color: #ff4d4d;
+            color: #ff9999;
+            box-shadow: 0 0 8px #ff0000;
+            animation: pulse-red 1.2s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            from { box-shadow: 0 0 4px #ff0000; }
+            to { box-shadow: 0 0 12px #ff4d4d; }
         }
 
         .floating-controls {
@@ -346,8 +371,8 @@
             border: var(--border-style);
             border-radius: 8px;
             padding: 20px;
-            width: 90%;
-            max-width: 500px;
+            width: 95%;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
@@ -395,7 +420,7 @@
         .player-setup-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             margin-top: 10px;
         }
 
@@ -404,17 +429,27 @@
             align-items: center;
             gap: 8px;
             background: rgba(255,255,255,0.05);
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 6px;
             border: 1px solid #332a45;
+            width: 100%;
+        }
+
+        .team-label {
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+            font-weight: bold;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .avatar-preview {
-            width: 38px; height: 38px;
+            width: 40px; height: 40px;
             border-radius: 50%;
-            border: 1px solid var(--gold-primary);
+            border: 1.5px solid var(--gold-primary);
             object-fit: cover;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .avatar-grid {
@@ -605,24 +640,23 @@
 <div class="modal-mask" id="diceModal">
     <div class="modal-content" style="text-align: center;">
         <button class="modal-close-x" onclick="closeModal('diceModal')">✕</button>
-        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰結果：計算中...</div>
-        <div id="diceResults" style="font-size: 1.1rem; line-height: 1.8; text-align: left; margin-top: 10px;"></div>
+        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰結果</div>
+        <div id="diceResults" style="font-size: 1.05rem; line-height: 1.8; text-align: left; margin-top: 10px;"></div>
     </div>
 </div>
 
 <script>
-    // 替換為上傳的 10 張新頭像
     const PLANESWALKERS = [
-        { name: "Chandra", url: "https://cards.scryfall.io/art_crop/front/0/1/012e161f-1328-48d3-a9d1-36b13e9a4f48.jpg" },
+        { name: "Chandra", url: "https://i.imgur.com/8QzXkQp.jpg" },
         { name: "Liliana 1", url: "https://cards.scryfall.io/art_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg" },
-        { name: "Liliana 2", url: "https://cards.scryfall.io/art_crop/front/9/e/9e7030f4-c2e2-43ce-ac5c-56e7989b559a.jpg" },
-        { name: "Kiora", url: "https://cards.scryfall.io/art_crop/front/0/5/0510343d-010f-4886-bb21-e37453d6eb61.jpg" },
-        { name: "Jace", url: "https://cards.scryfall.io/art_crop/front/0/e/0e52778c-55d0-40e8-a83d-3965b262d12e.jpg" },
-        { name: "Gideon", url: "https://cards.scryfall.io/art_crop/front/9/b/9b5eced6-733f-41c5-849d-64e52f5344c2.jpg" },
-        { name: "Nissa", url: "https://cards.scryfall.io/art_crop/front/2/9/29283d01-a89f-431d-b0ed-28821950e303.jpg" },
-        { name: "Oko", url: "https://cards.scryfall.io/art_crop/front/3/4/3462a3d0-5552-49fa-9eb7-100960c55f91.jpg" },
-        { name: "Vivien", url: "https://cards.scryfall.io/art_crop/front/2/2/2275f0a0-880d-4ef1-8a9b-7e61ef022131.jpg" },
-        { name: "Teferi", url: "https://cards.scryfall.io/art_crop/front/5/d/5d10b752-d9cb-419d-a5c4-d4060667b676.jpg" }
+        { name: "Liliana 2", url: "https://i.imgur.com/zN4p123.jpg" },
+        { name: "Kiora", url: "https://i.imgur.com/v82K39X.jpg" },
+        { name: "Jace", url: "https://i.imgur.com/4J9zL1W.jpg" },
+        { name: "Gideon", url: "https://i.imgur.com/t3Z8B5K.jpg" },
+        { name: "Nissa", url: "https://i.imgur.com/pY93T0R.jpg" },
+        { name: "Oko", url: "https://i.imgur.com/R3O20qK.jpg" },
+        { name: "Vivien", url: "https://i.imgur.com/W5X9T8L.jpg" },
+        { name: "Teferi", url: "https://i.imgur.com/2Y19M3B.jpg" }
     ];
 
     let state = {
@@ -679,7 +713,7 @@
         countSelect.innerHTML = '';
 
         if (mode === 'TwoHeadedGiant') {
-            [2, 4, 6, 8].forEach(n => countSelect.add(new Option(`${n} 人 (${n/2} 隊)`, n)));
+            [4, 6, 8].forEach(n => countSelect.add(new Option(`${n} 人 (${n/2} 隊)`, n)));
         } else {
             for(let i=2; i<=8; i++) countSelect.add(new Option(`${i} 人`, i));
         }
@@ -711,16 +745,16 @@
                 let name1 = oldInputs[i * 2] || '';
                 let name2 = oldInputs[i * 2 + 1] || '';
                 row.innerHTML = `
-                    <span style="color:var(--gold-primary); font-size:0.85rem;">隊${i+1}:</span>
-                    <input type="text" placeholder="隊友1" class="p-name" value="${name1}" oninput="validateSetupForm()">
-                    <input type="text" placeholder="隊友2" class="p-name" value="${name2}" oninput="validateSetupForm()">
-                    <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
+                    <span class="team-label">隊 ${i+1}:</span>
+                    <input type="text" placeholder="隊友 1" class="p-name" value="${name1}" oninput="validateSetupForm()">
+                    <input type="text" placeholder="隊友 2" class="p-name" value="${name2}" oninput="validateSetupForm()">
+                    <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
                 `;
             } else {
                 let name = oldInputs[i] || '';
                 row.innerHTML = `
                     <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
-                    <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
+                    <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
                 `;
             }
             container.appendChild(row);
@@ -746,7 +780,7 @@
         activeSelectingPlayerIndex = playerIndex;
         const grid = document.getElementById('avatarGrid');
         grid.innerHTML = PLANESWALKERS.map(p => `
-            <img src="${p.url}" title="${p.name}" class="avatar-option" onclick="selectAvatar('${p.url}')">
+            <img src="${p.url}" title="${p.name}" class="avatar-option" referrerpolicy="no-referrer" onclick="selectAvatar('${p.url}')">
         `).join('');
         document.getElementById('avatarModal').classList.add('active');
     }
@@ -814,32 +848,32 @@
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
 
+            const isDead = (p.life <= 0) || (p.poison >= 10) || (p.cmdDamage >= 10);
+
             cardWrapper.onclick = function(e) {
                 if (e.target.closest('button') || e.target.closest('.monarch-crown')) return;
                 document.getElementById(`card-${index}`).classList.toggle('flipped');
             };
 
             cardWrapper.innerHTML = `
-                <div class="player-card" id="card-${index}">
+                <div class="player-card ${isDead ? 'dead' : ''}" id="card-${index}">
                     <div class="card-front">
                         <div class="card-header">
                             <div class="player-info">
-                                <img src="${p.avatar}" class="card-avatar">
+                                <img src="${p.avatar}" class="card-avatar" referrerpolicy="no-referrer">
                                 <div class="card-name">${p.name}</div>
                             </div>
                             ${state.currentGame.mode === 'Kingdoms' ? 
                                 `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
                         </div>
-                        <div class="life-display ${p.life < 10 ? 'danger' : ''}">${p.life}</div>
+                        <div class="life-display ${p.life > 0 && p.life <= 10 ? 'danger' : ''}">${p.life}</div>
                         <div class="status-badges">
-                            ${p.poison > 0 ? `<span class="badge">🤢 毒:${p.poison}</span>` : ''}
-                            ${p.cmdDamage > 0 ? `<span class="badge">⚔️ 傷:${p.cmdDamage}</span>` : ''}
+                            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 && p.poison <= 9 ? 'warning-glow' : ''}">🤢 毒:${p.poison}</span>` : ''}
+                            ${p.cmdDamage > 0 ? `<span class="badge ${p.cmdDamage >= 8 && p.cmdDamage <= 9 ? 'warning-glow' : ''}">⚔️ 傷:${p.cmdDamage}</span>` : ''}
                         </div>
                         <div class="life-controls">
-                            <button class="btn-life" onclick="changeLife(${index}, -5)">-5</button>
-                            <button class="btn-life" onclick="changeLife(${index}, -1)">-1</button>
-                            <button class="btn-life" onclick="changeLife(${index}, 1)">+1</button>
-                            <button class="btn-life" onclick="changeLife(${index}, 5)">+5</button>
+                            <button class="btn-life btn-life-large" onclick="changeLife(${index}, -1)">-1</button>
+                            <button class="btn-life btn-life-large" onclick="changeLife(${index}, 1)">+1</button>
                         </div>
                     </div>
 
@@ -848,19 +882,19 @@
                             <div class="card-name" style="color:var(--gold-primary)">${p.name}</div>
                         </div>
                         <div style="margin: 2px 0;">
-                            <label style="font-size:0.75rem;">🤢 中毒標記</label>
+                            <label style="font-size:0.75rem;">🤢 中毒標記 (達到10淘汰)</label>
                             <div class="life-controls">
-                                <button class="btn-life" onclick="changeStatus(${index}, 'poison', -1)">-1</button>
+                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'poison', -1)">-1</button>
                                 <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
-                                <button class="btn-life" onclick="changeStatus(${index}, 'poison', 1)">+1</button>
+                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'poison', 1)">+1</button>
                             </div>
                         </div>
                         <div style="margin: 2px 0;">
-                            <label style="font-size:0.75rem;">⚔️ 指揮官傷害</label>
+                            <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (達到10淘汰)</label>
                             <div class="life-controls">
-                                <button class="btn-life" onclick="changeStatus(${index}, 'cmdDamage', -1)">-1</button>
+                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'cmdDamage', -1)">-1</button>
                                 <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
-                                <button class="btn-life" onclick="changeStatus(${index}, 'cmdDamage', 1)">+1</button>
+                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'cmdDamage', 1)">+1</button>
                             </div>
                         </div>
                     </div>
@@ -902,21 +936,39 @@
         const titleElem = document.getElementById('diceWinnerTitle');
         results.innerHTML = '';
 
-        let maxRoll = -1;
-        let winners = [];
+        let contenders = state.currentGame.players.map(p => ({ name: p.name }));
+        let round = 1;
+        let finalWinner = "";
 
-        state.currentGame.players.forEach(p => {
-            const roll = Math.floor(Math.random() * 20) + 1;
-            if (roll > maxRoll) {
-                maxRoll = roll;
-                winners = [p.name];
-            } else if (roll === maxRoll) {
-                winners.push(p.name);
+        while (contenders.length > 1) {
+            if (round > 1) {
+                results.innerHTML += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${round} 輪同分重擲：</div>`;
             }
-            results.innerHTML += `<div><strong>${p.name}</strong> 擲出了 🎲 <span style="color:var(--gold-primary); font-size:1.3rem;">${roll}</span> 點</div>`;
-        });
 
-        titleElem.innerHTML = `🎲 擲骰結果：<span style="color:#ffd700">${winners.join(' & ')}</span> 獲勝！`;
+            let maxRoll = -1;
+            let currentWinners = [];
+
+            contenders.forEach(c => {
+                const roll = Math.floor(Math.random() * 20) + 1;
+                if (roll > maxRoll) {
+                    maxRoll = roll;
+                    currentWinners = [{ name: c.name, roll: roll }];
+                } else if (roll === maxRoll) {
+                    currentWinners.push({ name: c.name, roll: roll });
+                }
+                results.innerHTML += `<div><strong>${c.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem;">${roll}</span> 點</div>`;
+            });
+
+            if (currentWinners.length === 1) {
+                finalWinner = currentWinners[0].name;
+                break;
+            } else {
+                contenders = currentWinners;
+                round++;
+            }
+        }
+
+        titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
         document.getElementById('diceModal').classList.add('active');
     }
 
