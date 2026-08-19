@@ -26,7 +26,8 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            background: #000 url('https://i.imgur.com/8QzXkQp.jpg') no-repeat center center fixed;
+            /* 替換為使用者指定的背景圖 */
+            background: #000 url('https://i.imgur.com/xQ3z7yG.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #e0e0e0;
             min-height: 100vh;
@@ -173,6 +174,7 @@
             margin: 0 auto;
         }
 
+        /* 預設卡片網格 (雙欄, 5~8張卡片用) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -181,10 +183,19 @@
             margin-bottom: 60px;
         }
 
+        /* 2~4張卡片時，採用橫長單欄排版 */
+        .game-grid.layout-large {
+            grid-template-columns: 1fr;
+        }
+
         .player-card-wrapper {
             perspective: 1000px;
-            height: 240px;
+            height: 220px;
             cursor: pointer;
+        }
+
+        .game-grid.layout-large .player-card-wrapper {
+            height: 190px;
         }
 
         .player-card {
@@ -246,7 +257,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 110px;
+            max-width: 160px;
         }
 
         .monarch-crown {
@@ -296,7 +307,6 @@
             cursor: pointer;
         }
 
-        /* 正面 -1 / +1 按鈕放大樣式 */
         .btn-life-large {
             padding: 12px 0;
             font-size: 1.8rem;
@@ -473,13 +483,19 @@
             border-color: var(--gold-primary);
         }
 
+        /* 歷史對戰表格：設定最大高度與滾動條 (超過10筆時滑動) */
+        .records-table-container {
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid #2a2038;
+            border-radius: 8px;
+            margin-top: 15px;
+            background: rgba(10, 8, 15, 0.8);
+        }
+
         .records-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            background: rgba(10, 8, 15, 0.8);
-            border-radius: 8px;
-            overflow: hidden;
             font-size: 0.9rem;
         }
 
@@ -490,8 +506,12 @@
         }
 
         .records-table th {
-            background: rgba(212, 175, 55, 0.2);
-            color: var(--gold-primary);
+            position: sticky;
+            top: 0;
+            background: rgba(212, 175, 55, 0.9);
+            color: #000;
+            font-weight: bold;
+            z-index: 10;
         }
 
         .win-tag { color: #ffd700; font-weight: bold; }
@@ -503,6 +523,22 @@
             border-radius: 8px;
             width: 100%;
             font-size: 0.9rem;
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: rgba(10, 8, 15, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
         }
 
         .winner-checkbox-group {
@@ -567,21 +603,23 @@
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
         </div>
 
-        <table class="records-table">
-            <thead>
-                <tr>
-                    <th>日期</th>
-                    <th>局數</th>
-                    <th>姓名/隊伍</th>
-                    <th>戰績</th>
-                </tr>
-            </thead>
-            <tbody id="recordsTableBody"></tbody>
-        </table>
+        <div class="records-table-container">
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>局數</th>
+                        <th>姓名/隊伍</th>
+                        <th>戰績</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTableBody"></tbody>
+            </table>
+        </div>
 
         <div class="stats-summary">
-            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計</h3>
-            <div id="statsSummaryContent"></div>
+            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計 (依勝率排序)</h3>
+            <div id="statsSummaryContent" class="stats-list"></div>
         </div>
     </div>
 </div>
@@ -667,21 +705,60 @@
     };
 
     let activeSelectingPlayerIndex = null;
+    let holdTimer = null;
+    let holdInterval = null;
 
     window.onload = function() {
         if (state.currentGame) {
             document.getElementById('btn-continue').style.display = 'block';
         }
         updateRecordsTable();
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.player-card-wrapper')) {
-                document.querySelectorAll('.player-card.flipped').forEach(card => {
-                    card.classList.remove('flipped');
-                });
-            }
-        });
     };
+
+    // 全域點擊管理：處理背面點擊空白處翻回正面
+    function handleCardClick(event, index) {
+        const target = event.target;
+        
+        // 若點擊按鈕或皇冠，不處理翻頁
+        if (target.closest('button') || target.closest('.monarch-crown')) {
+            return;
+        }
+
+        const cardElem = document.getElementById(`card-${index}`);
+        if (cardElem) {
+            cardElem.classList.toggle('flipped');
+        }
+    }
+
+    // 長按連發（Hold to repeat）機制
+    function startHold(actionFn) {
+        stopHold();
+        actionFn(); // 點擊時立即執行一次
+        holdTimer = setTimeout(() => {
+            holdInterval = setInterval(() => {
+                actionFn();
+            }, 100); // 長按每 100ms 連發一次
+        }, 400); // 長按 400ms 後啟動連發
+    }
+
+    function stopHold() {
+        if (holdTimer) clearTimeout(holdTimer);
+        if (holdInterval) clearInterval(holdInterval);
+        holdTimer = null;
+        holdInterval = null;
+    }
+
+    // 綁定按鈕長按事件屬性
+    function getHoldEvents(actionFnStr) {
+        return `
+            onmousedown="startHold(() => ${actionFnStr})" 
+            onmouseup="stopHold()" 
+            onmouseleave="stopHold()"
+            ontouchstart="startHold(() => ${actionFnStr})" 
+            ontouchend="stopHold()" 
+            ontouchcancel="stopHold()"
+        `;
+    }
 
     function toggleMenu() {
         document.getElementById('menuDrawer').classList.toggle('active');
@@ -844,19 +921,34 @@
         grid.innerHTML = '';
         if (!state.currentGame) return;
 
+        const count = state.currentGame.players.length;
+        // 2~4張卡片：套用 layout-large（橫長卡片）；5~8張卡片：保留兩欄排版
+        if (count >= 2 && count <= 4) {
+            grid.classList.add('layout-large');
+        } else {
+            grid.classList.remove('layout-large');
+        }
+
+        // 保存目前已被翻牌的卡片索引，防止重新渲染時狀態丟失
+        const flippedIndices = new Set();
+        document.querySelectorAll('.player-card.flipped').forEach(card => {
+            const idx = card.id.replace('card-', '');
+            flippedIndices.add(parseInt(idx));
+        });
+
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
 
             const isDead = (p.life <= 0) || (p.poison >= 10) || (p.cmdDamage >= 10);
+            const isFlipped = flippedIndices.has(index);
 
             cardWrapper.onclick = function(e) {
-                if (e.target.closest('button') || e.target.closest('.monarch-crown')) return;
-                document.getElementById(`card-${index}`).classList.toggle('flipped');
+                handleCardClick(e, index);
             };
 
             cardWrapper.innerHTML = `
-                <div class="player-card ${isDead ? 'dead' : ''}" id="card-${index}">
+                <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
                     <div class="card-front">
                         <div class="card-header">
                             <div class="player-info">
@@ -872,8 +964,8 @@
                             ${p.cmdDamage > 0 ? `<span class="badge ${p.cmdDamage >= 8 && p.cmdDamage <= 9 ? 'warning-glow' : ''}">⚔️ 傷:${p.cmdDamage}</span>` : ''}
                         </div>
                         <div class="life-controls">
-                            <button class="btn-life btn-life-large" onclick="changeLife(${index}, -1)">-1</button>
-                            <button class="btn-life btn-life-large" onclick="changeLife(${index}, 1)">+1</button>
+                            <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, -1)`)}>-1</button>
+                            <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, 1)`)}>+1</button>
                         </div>
                     </div>
 
@@ -884,17 +976,17 @@
                         <div style="margin: 2px 0;">
                             <label style="font-size:0.75rem;">🤢 中毒標記 (達到10淘汰)</label>
                             <div class="life-controls">
-                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'poison', -1)">-1</button>
+                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
                                 <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
-                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'poison', 1)">+1</button>
+                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
                             </div>
                         </div>
                         <div style="margin: 2px 0;">
                             <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (達到10淘汰)</label>
                             <div class="life-controls">
-                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'cmdDamage', -1)">-1</button>
+                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
                                 <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
-                                <button class="btn-life" onclick="event.stopPropagation(); changeStatus(${index}, 'cmdDamage', 1)">+1</button>
+                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
                             </div>
                         </div>
                     </div>
@@ -1038,6 +1130,7 @@
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
+        // 渲染全部對戰歷史紀錄
         state.records.slice().reverse().forEach(r => {
             tbody.innerHTML += `
                 <tr>
@@ -1049,22 +1142,37 @@
             `;
         });
 
-        const stats = {};
+        // 計算個人勝負統計
+        const statsMap = {};
         state.records.forEach(r => {
             const individualNames = r.name.split('&').map(s => s.trim());
             individualNames.forEach(name => {
-                if (!stats[name]) stats[name] = { win: 0, lose: 0 };
-                if (r.result === 'WIN') stats[name].win++;
-                else stats[name].lose++;
+                if (!statsMap[name]) statsMap[name] = { name: name, win: 0, lose: 0 };
+                if (r.result === 'WIN') statsMap[name].win++;
+                else statsMap[name].lose++;
             });
         });
 
+        // 轉換為陣列並依勝率從高到低排序
+        const statsArray = Object.values(statsMap).map(s => {
+            const total = s.win + s.lose;
+            const rate = total > 0 ? (s.win / total) : 0;
+            return { ...s, total, rate };
+        });
+
+        statsArray.sort((a, b) => b.rate - a.rate || b.win - a.win);
+
         const summaryElem = document.getElementById('statsSummaryContent');
-        summaryElem.innerHTML = Object.keys(stats).map(name => `
-            <div style="display:inline-block; margin-right: 15px; margin-bottom: 8px;">
-                <strong>${name}:</strong> ${stats[name].win}勝 / ${stats[name].lose}敗 (勝率: ${Math.round(stats[name].win/(stats[name].win+stats[name].lose)*100 || 0)}%)
-            </div>
-        `).join('');
+        if (statsArray.length === 0) {
+            summaryElem.innerHTML = `<div style="color:#aaa;">尚無統計數據</div>`;
+        } else {
+            summaryElem.innerHTML = statsArray.map(s => `
+                <div class="stats-item">
+                    <span><strong>${s.name}</strong></span>
+                    <span>${s.win}勝 / ${s.lose}敗 <span style="color:var(--gold-primary); margin-left:8px;">(勝率: ${Math.round(s.rate * 100)}%)</span></span>
+                </div>
+            `).join('');
+        }
     }
 
     function exportRecords() {
