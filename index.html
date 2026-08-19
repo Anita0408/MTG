@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-overlay: rgba(15, 12, 25, 0.82);
+            --bg-overlay: rgba(15, 12, 25, 0.95);
             --gold-primary: #d4af37;
             --gold-light: #f3e5ab;
             --gold-dark: #8a6d1b;
@@ -26,9 +26,8 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            /* 替換為使用者指定的背景圖 */
-            background: #000 url('https://i.imgur.com/xQ3z7yG.jpg') no-repeat center center fixed;
-            background-size: cover;
+            /* 拿掉背景圖片，改用深色質感背景 */
+            background: #0d0b14;
             color: #e0e0e0;
             min-height: 100vh;
             display: flex;
@@ -174,7 +173,7 @@
             margin: 0 auto;
         }
 
-        /* 預設卡片網格 (雙欄, 5~8張卡片用) */
+        /* 預設雙欄卡片網格 (5~8張卡片) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -183,7 +182,7 @@
             margin-bottom: 60px;
         }
 
-        /* 2~4張卡片時，採用橫長單欄排版 */
+        /* 2~4張卡片：單欄橫長版面 */
         .game-grid.layout-large {
             grid-template-columns: 1fr;
         }
@@ -229,6 +228,16 @@
         .card-back {
             transform: rotateY(180deg);
             background: #15101f;
+        }
+
+        /* 橫長卡片背面的左右佈局 */
+        .game-grid.layout-large .card-back-body {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            gap: 15px;
+            height: 100%;
         }
 
         .card-header {
@@ -483,7 +492,6 @@
             border-color: var(--gold-primary);
         }
 
-        /* 歷史對戰表格：設定最大高度與滾動條 (超過10筆時滑動) */
         .records-table-container {
             max-height: 420px;
             overflow-y: auto;
@@ -557,6 +565,19 @@
             padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
+        }
+
+        /* 骰子動畫效果樣式 */
+        .dice-rolling {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            animation: pulse-dice 0.15s infinite alternate;
+        }
+
+        @keyframes pulse-dice {
+            from { transform: scale(0.95); }
+            to { transform: scale(1.1); }
         }
     </style>
 </head>
@@ -677,9 +698,9 @@
 
 <div class="modal-mask" id="diceModal">
     <div class="modal-content" style="text-align: center;">
-        <button class="modal-close-x" onclick="closeModal('diceModal')">✕</button>
-        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰結果</div>
-        <div id="diceResults" style="font-size: 1.05rem; line-height: 1.8; text-align: left; margin-top: 10px;"></div>
+        <button class="modal-close-x" id="btnDiceClose" onclick="closeModal('diceModal')">✕</button>
+        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰進行中...</div>
+        <div id="diceResults" style="font-size: 1.05rem; line-height: 1.8; text-align: left; margin-top: 10px; min-height: 120px;"></div>
     </div>
 </div>
 
@@ -719,7 +740,7 @@
     function handleCardClick(event, index) {
         const target = event.target;
         
-        // 若點擊按鈕或皇冠，不處理翻頁
+        // 點擊按鈕或皇冠時，絕不觸發卡片翻面
         if (target.closest('button') || target.closest('.monarch-crown')) {
             return;
         }
@@ -733,12 +754,12 @@
     // 長按連發（Hold to repeat）機制
     function startHold(actionFn) {
         stopHold();
-        actionFn(); // 點擊時立即執行一次
+        actionFn();
         holdTimer = setTimeout(() => {
             holdInterval = setInterval(() => {
                 actionFn();
-            }, 100); // 長按每 100ms 連發一次
-        }, 400); // 長按 400ms 後啟動連發
+            }, 100);
+        }, 400);
     }
 
     function stopHold() {
@@ -748,7 +769,6 @@
         holdInterval = null;
     }
 
-    // 綁定按鈕長按事件屬性
     function getHoldEvents(actionFnStr) {
         return `
             onmousedown="startHold(() => ${actionFnStr})" 
@@ -922,14 +942,14 @@
         if (!state.currentGame) return;
 
         const count = state.currentGame.players.length;
-        // 2~4張卡片：套用 layout-large（橫長卡片）；5~8張卡片：保留兩欄排版
-        if (count >= 2 && count <= 4) {
+        const isLayoutLarge = (count >= 2 && count <= 4);
+
+        if (isLayoutLarge) {
             grid.classList.add('layout-large');
         } else {
             grid.classList.remove('layout-large');
         }
 
-        // 保存目前已被翻牌的卡片索引，防止重新渲染時狀態丟失
         const flippedIndices = new Set();
         document.querySelectorAll('.player-card.flipped').forEach(card => {
             const idx = card.id.replace('card-', '');
@@ -946,6 +966,52 @@
             cardWrapper.onclick = function(e) {
                 handleCardClick(e, index);
             };
+
+            // 橫長卡片（2~4人）背面左右併排，5~8人上下排列
+            const backContentHtml = isLayoutLarge ? `
+                <div class="card-back-body">
+                    <div style="flex:1; text-align:center;">
+                        <div class="card-name" style="color:var(--gold-primary); margin-bottom:8px; width:100%;">${p.name}</div>
+                        <span style="font-size:0.8rem; color:#aaa;">點擊卡片空白處翻回正面</span>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.75rem;">🤢 中毒標記 (10淘汰)</label>
+                        <div class="life-controls">
+                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
+                            <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
+                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (10淘汰)</label>
+                        <div class="life-controls">
+                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
+                            <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
+                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+                        </div>
+                    </div>
+                </div>
+            ` : `
+                <div class="card-header">
+                    <div class="card-name" style="color:var(--gold-primary)">${p.name}</div>
+                </div>
+                <div style="margin: 2px 0;">
+                    <label style="font-size:0.75rem;">🤢 中毒標記 (達到10淘汰)</label>
+                    <div class="life-controls">
+                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
+                        <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
+                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                    </div>
+                </div>
+                <div style="margin: 2px 0;">
+                    <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (達到10淘汰)</label>
+                    <div class="life-controls">
+                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
+                        <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
+                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+                    </div>
+                </div>
+            `;
 
             cardWrapper.innerHTML = `
                 <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
@@ -970,25 +1036,7 @@
                     </div>
 
                     <div class="card-back">
-                        <div class="card-header">
-                            <div class="card-name" style="color:var(--gold-primary)">${p.name}</div>
-                        </div>
-                        <div style="margin: 2px 0;">
-                            <label style="font-size:0.75rem;">🤢 中毒標記 (達到10淘汰)</label>
-                            <div class="life-controls">
-                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                                <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
-                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
-                            </div>
-                        </div>
-                        <div style="margin: 2px 0;">
-                            <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (達到10淘汰)</label>
-                            <div class="life-controls">
-                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                                <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
-                                <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
-                            </div>
-                        </div>
+                        ${backContentHtml}
                     </div>
                 </div>
             `;
@@ -1023,45 +1071,77 @@
         renderGameGrid();
     }
 
+    // 帶有 3 秒滾動動畫的擲骰功能
     function rollD20All() {
         const results = document.getElementById('diceResults');
         const titleElem = document.getElementById('diceWinnerTitle');
-        results.innerHTML = '';
+        const closeBtn = document.getElementById('btnDiceClose');
 
+        titleElem.innerHTML = `🎲 擲骰進行中...`;
+        closeBtn.style.display = 'none';
+        document.getElementById('diceModal').classList.add('active');
+
+        // 計算結果資料
         let contenders = state.currentGame.players.map(p => ({ name: p.name }));
+        let roundLogs = [];
         let round = 1;
         let finalWinner = "";
 
         while (contenders.length > 1) {
-            if (round > 1) {
-                results.innerHTML += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${round} 輪同分重擲：</div>`;
-            }
-
+            let log = { round: round, rolls: [], isTie: false };
             let maxRoll = -1;
             let currentWinners = [];
 
             contenders.forEach(c => {
                 const roll = Math.floor(Math.random() * 20) + 1;
+                log.rolls.push({ name: c.name, roll: roll });
                 if (roll > maxRoll) {
                     maxRoll = roll;
                     currentWinners = [{ name: c.name, roll: roll }];
                 } else if (roll === maxRoll) {
                     currentWinners.push({ name: c.name, roll: roll });
                 }
-                results.innerHTML += `<div><strong>${c.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem;">${roll}</span> 點</div>`;
             });
 
             if (currentWinners.length === 1) {
                 finalWinner = currentWinners[0].name;
+                roundLogs.push(log);
                 break;
             } else {
+                log.isTie = true;
+                roundLogs.push(log);
                 contenders = currentWinners;
                 round++;
             }
         }
 
-        titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
-        document.getElementById('diceModal').classList.add('active');
+        // 3 秒動畫效果
+        let startTime = Date.now();
+        let animInterval = setInterval(() => {
+            let elapsedTime = Date.now() - startTime;
+            if (elapsedTime < 3000) {
+                let randomRolls = state.currentGame.players.map(p => 
+                    `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
+                ).join('');
+                results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
+            } else {
+                clearInterval(animInterval);
+                // 展示最終計算結果
+                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
+                closeBtn.style.display = 'block';
+
+                let finalHtml = '';
+                roundLogs.forEach(log => {
+                    if (log.round > 1) {
+                        finalHtml += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${log.round} 輪同分重擲：</div>`;
+                    }
+                    log.rolls.forEach(r => {
+                        finalHtml += `<div><strong>${r.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
+                    });
+                });
+                results.innerHTML = finalHtml;
+            }
+        }, 80);
     }
 
     function openResetModal() {
@@ -1130,7 +1210,6 @@
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
-        // 渲染全部對戰歷史紀錄
         state.records.slice().reverse().forEach(r => {
             tbody.innerHTML += `
                 <tr>
@@ -1142,7 +1221,6 @@
             `;
         });
 
-        // 計算個人勝負統計
         const statsMap = {};
         state.records.forEach(r => {
             const individualNames = r.name.split('&').map(s => s.trim());
@@ -1153,7 +1231,6 @@
             });
         });
 
-        // 轉換為陣列並依勝率從高到低排序
         const statsArray = Object.values(statsMap).map(s => {
             const total = s.win + s.lose;
             const rate = total > 0 ? (s.win / total) : 0;
