@@ -26,8 +26,9 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            background: #000 url('https://images.alphacoders.com/270/270438.jpg') no-repeat center center fixed;
-            background-size: cover;
+            /* 優化 1：使用提供的卡背圖片作為首頁背景 */
+            background: #000 url('https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering-card_back.jpg') no-repeat center center fixed;
+            background-size: contain;
             color: #e0e0e0;
             min-height: 100vh;
             display: flex;
@@ -47,7 +48,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 25px;
+            padding: 10px 20px;
             background: rgba(10, 8, 15, 0.9);
             border-bottom: 2px solid var(--gold-dark);
             position: relative;
@@ -56,7 +57,7 @@
 
         .brand {
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--gold-primary);
             text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
             font-weight: 700;
@@ -66,7 +67,7 @@
             background: none;
             border: none;
             color: var(--gold-primary);
-            font-size: 2rem;
+            font-size: 1.8rem;
             cursor: pointer;
         }
 
@@ -80,7 +81,7 @@
             border-left: 2px solid var(--gold-primary);
             box-shadow: -5px 0 25px rgba(0,0,0,0.8);
             transition: right 0.3s ease;
-            z-index: 200;
+            z-index: 500;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -119,8 +120,8 @@
             background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
             color: #0f0c19;
             border: 1px solid var(--gold-light);
-            padding: 12px 24px;
-            font-size: 1.1rem;
+            padding: 10px 18px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
@@ -133,7 +134,6 @@
         .btn-magic:hover {
             filter: brightness(1.2);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
 
         .btn-magic:disabled {
@@ -146,7 +146,7 @@
         .view {
             display: none;
             flex: 1;
-            padding: 20px;
+            padding: 10px;
         }
 
         .view.active {
@@ -160,11 +160,184 @@
 
         .home-title {
             font-family: 'Cinzel', serif;
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--gold-primary);
             text-align: center;
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* 優化 2：針對 6 張卡片進行縮小與 2 欄排列（左右左右），免滾動即可瀏覽 */
+        #game-view {
+            padding: 5px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 60px;
+        }
+
+        .player-card-wrapper {
+            perspective: 1000px;
+            height: 240px; /* 縮小高度以在一般螢幕呈現 6 張卡 */
+        }
+
+        .player-card {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+
+        .player-card.flipped { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            background: var(--card-bg);
+            border: var(--border-style);
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: #15101f;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-primary);
+            object-fit: cover;
+        }
+
+        .card-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 110px;
+        }
+
+        .monarch-crown {
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.3;
+            filter: grayscale(1);
+            transition: all 0.2s;
+        }
+
+        .monarch-crown.active {
+            opacity: 1;
+            filter: drop-shadow(0 0 6px #ffd700);
+        }
+
+        .life-display {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            text-shadow: 0 0 8px rgba(212,175,55,0.3);
+            margin: 2px 0;
+            line-height: 1;
+        }
+
+        .life-display.danger {
+            color: var(--crimson-glow);
+            text-shadow: 0 0 12px rgba(255, 77, 77, 0.8);
+        }
+
+        .life-controls {
+            display: flex;
+            justify-content: space-around;
+            gap: 4px;
+        }
+
+        .btn-life {
+            flex: 1;
+            padding: 4px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: rgba(212,175,55,0.15);
+            border: 1px solid var(--gold-dark);
+            color: var(--gold-light);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-life:active {
+            background: var(--gold-primary);
+            color: #000;
+        }
+
+        .flip-btn {
+            align-self: center;
+            background: none;
+            border: none;
+            color: var(--gold-primary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 2px;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 4px;
+            font-size: 0.7rem;
+        }
+
+        .badge {
+            background: #2a1f3d;
+            padding: 1px 4px;
+            border-radius: 3px;
+            border: 1px solid var(--gold-dark);
+            color: var(--gold-light);
+        }
+
+        .floating-controls {
+            position: fixed;
+            bottom: 15px; right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn-round {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
 
         .modal-mask {
@@ -183,67 +356,72 @@
             background: #181424;
             border: var(--border-style);
             border-radius: 8px;
-            padding: 25px;
+            padding: 20px;
             width: 90%;
-            max-width: 550px;
+            max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-close-x {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            cursor: pointer;
+            background: none;
+            border: none;
         }
 
         .modal-title {
             color: var(--gold-primary);
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             text-align: center;
             border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: var(--gold-light);
+            font-size: 0.9rem;
         }
 
         select, input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             background: #0a080f;
             border: 1px solid var(--gold-dark);
             color: #fff;
             border-radius: 4px;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .player-setup-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .player-setup-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(255,255,255,0.05);
-            padding: 10px;
+            padding: 8px;
             border-radius: 4px;
             border: 1px solid #332a45;
-            cursor: move;
-        }
-
-        .drag-handle {
-            cursor: grab;
-            color: var(--gold-primary);
-            font-size: 1.2rem;
         }
 
         .avatar-preview {
-            width: 45px; height: 45px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             border: 1px solid var(--gold-primary);
             object-fit: cover;
@@ -254,7 +432,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .avatar-option {
@@ -271,207 +449,18 @@
             border-color: var(--gold-primary);
         }
 
-        #game-view {
-            padding: 10px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 80px;
-        }
-
-        .player-card-wrapper {
-            perspective: 1000px;
-            height: 380px;
-        }
-
-        .player-card {
-            width: 100%; height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-        }
-
-        .player-card.flipped { transform: rotateY(180deg); }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%; height: 100%;
-            backface-visibility: hidden;
-            background: var(--card-bg);
-            border: var(--border-style);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            background: #15101f;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-avatar {
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--gold-primary);
-            object-fit: cover;
-        }
-
-        .card-name {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--gold-light);
-        }
-
-        .monarch-crown {
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.3;
-            filter: grayscale(1);
-            transition: all 0.2s;
-        }
-
-        .monarch-crown.active {
-            opacity: 1;
-            filter: drop-shadow(0 0 8px #ffd700);
-        }
-
-        .life-display {
-            font-size: 4.5rem;
-            font-weight: 900;
-            text-align: center;
-            font-family: 'Cinzel', serif;
-            color: var(--gold-primary);
-            text-shadow: 0 0 10px rgba(212,175,55,0.3);
-            margin: 10px 0;
-            transition: color 0.3s;
-        }
-
-        .life-display.danger {
-            color: var(--crimson-glow);
-            text-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        .life-controls {
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
-        }
-
-        .btn-life {
-            flex: 1;
-            padding: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: rgba(212,175,55,0.15);
-            border: 1px solid var(--gold-dark);
-            color: var(--gold-light);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-life:active {
-            background: var(--gold-primary);
-            color: #000;
-        }
-
-        .flip-btn {
-            align-self: center;
-            background: none;
-            border: none;
-            color: var(--gold-primary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: underline;
-            margin-top: 5px;
-        }
-
-        .status-badges {
-            display: flex;
-            gap: 8px;
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        .badge {
-            background: #2a1f3d;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid var(--gold-dark);
-            color: var(--gold-light);
-        }
-
-        .floating-controls {
-            position: fixed;
-            bottom: 20px; right: 20px;
-            display: flex;
-            gap: 15px;
-            z-index: 100;
-        }
-
-        .btn-round {
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-        }
-
-        .dice-result-overlay {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 12, 25, 0.95);
-            border: var(--border-style);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            z-index: 400;
-            display: none;
-            box-shadow: 0 0 50px var(--gold-primary);
-        }
-
         .records-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
             background: rgba(10, 8, 15, 0.8);
             border-radius: 8px;
             overflow: hidden;
+            font-size: 0.9rem;
         }
 
         .records-table th, .records-table td {
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             border-bottom: 1px solid #2a2038;
         }
@@ -482,20 +471,20 @@
         }
 
         .win-tag { color: #ffd700; font-weight: bold; }
-        .lose-tag { color: #4a90e2; font-weight: bold; }
 
         .stats-summary {
-            margin-top: 20px;
+            margin-top: 15px;
             background: rgba(255,255,255,0.05);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             width: 100%;
+            font-size: 0.9rem;
         }
 
         .winner-checkbox-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             margin: 15px 0;
             text-align: left;
         }
@@ -507,11 +496,6 @@
             background: rgba(255,255,255,0.05);
             padding: 8px 12px;
             border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .winner-checkbox-item input {
-            width: 18px; height: 18px;
             cursor: pointer;
         }
     </style>
@@ -535,7 +519,7 @@
     </div>
 
     <div id="home-view" class="view active">
-        <h1 class="home-title">MAGIC THE GATHERING<br><span style="font-size: 1.5rem; color: #fff;">決戰計血器</span></h1>
+        <h1 class="home-title">MAGIC THE GATHERING<br><span style="font-size: 1.3rem; color: #fff;">決戰計血器</span></h1>
         <div id="home-buttons" style="display: flex; flex-direction: column; gap: 15px;">
             <button class="btn-magic" id="btn-continue" style="display:none;" onclick="navTo('game-view')">繼續遊戲</button>
             <button class="btn-magic" onclick="openNewGameModal()">開新局</button>
@@ -595,7 +579,7 @@
         </div>
 
         <div style="margin-top: 15px;">
-            <label style="color: var(--gold-light);">玩家設定 (可拖移排序座位)</label>
+            <label style="color: var(--gold-light);">玩家設定</label>
             <div class="player-setup-list" id="playerSetupList"></div>
         </div>
 
@@ -614,32 +598,37 @@
     </div>
 </div>
 
+<!-- 優化 6：彈窗按鈕文字修正為「目前模式」 -->
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
         <div class="modal-title">重置對戰與勝負結算</div>
-        <p style="color: #ccc; font-size:0.95rem;">請勾選本局獲勝的個人或隊伍（可多選）：</p>
+        <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝的個人或隊伍：</p>
         
         <div class="winner-checkbox-group" id="winnerSelectorList"></div>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <button class="btn-magic" style="flex:1;" onclick="confirmReset('same')">沿用既有模式</button>
+            <button class="btn-magic" style="flex:1;" onclick="confirmReset('same')">目前模式</button>
             <button class="btn-magic" style="flex:1;" onclick="confirmReset('new')">新模式</button>
         </div>
         <button class="btn-magic" style="width: 100%; background: #444;" onclick="closeModal('resetModal')">取消</button>
     </div>
 </div>
 
-<div class="dice-result-overlay" id="diceOverlay">
-    <h2 style="color: var(--gold-primary); margin-bottom: 15px;">🎲 D20 先攻擲骰結果</h2>
-    <div id="diceResults" style="font-size: 1.2rem; line-height: 1.8;"></div>
+<!-- 優化 4：擲骰彈窗新增右上方 X 關閉按鈕，並顯示獲勝者 -->
+<div class="modal-mask" id="diceModal">
+    <div class="modal-content" style="text-align: center;">
+        <button class="modal-close-x" onclick="closeModal('diceModal')">✕</button>
+        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰結果：計算中...</div>
+        <div id="diceResults" style="font-size: 1.1rem; line-height: 1.8; text-align: left; margin-top: 10px;"></div>
+    </div>
 </div>
 
 <script>
+    // 優化 5：更新並補齊 15 個 Scryfall 穩定卡牌頭像網址
     const PLANESWALKERS = [
-        { name: "Elspeth", url: "https://cards.scryfall.io/art_crop/front/3/b/3b09ed3d-61a7-49d7-84ee-8a39c947d0c3.jpg" },
+        { name: "Jace", url: "https://cards.scryfall.io/art_crop/front/0/e/0e52778c-55d0-40e8-a83d-3965b262d12e.jpg" },
         { name: "Liliana", url: "https://cards.scryfall.io/art_crop/front/d/1/d12c8c97-6491-452c-811d-943441a7ef9f.jpg" },
         { name: "Chandra", url: "https://cards.scryfall.io/art_crop/front/0/1/012e161f-1328-48d3-a9d1-36b13e9a4f48.jpg" },
-        { name: "Jace", url: "https://cards.scryfall.io/art_crop/front/0/e/0e52778c-55d0-40e8-a83d-3965b262d12e.jpg" },
         { name: "Ajani", url: "https://cards.scryfall.io/art_crop/front/f/2/f25232a3-2218-498c-9b62-11119b4ef547.jpg" },
         { name: "Nissa", url: "https://cards.scryfall.io/art_crop/front/2/9/29283d01-a89f-431d-b0ed-28821950e303.jpg" },
         { name: "Teferi", url: "https://cards.scryfall.io/art_crop/front/5/d/5d10b752-d9cb-419d-a5c4-d4060667b676.jpg" },
@@ -650,6 +639,7 @@
         { name: "Vraska", url: "https://cards.scryfall.io/art_crop/front/a/0/a0209e7a-c322-4217-a006-bb5efb266bf2.jpg" },
         { name: "Vivien", url: "https://cards.scryfall.io/art_crop/front/2/2/2275f0a0-880d-4ef1-8a9b-7e61ef022131.jpg" },
         { name: "Kaito", url: "https://cards.scryfall.io/art_crop/front/e/7/e7751c6e-c689-4b6e-b3d5-223402778736.jpg" },
+        { name: "Elspeth", url: "https://cards.scryfall.io/art_crop/front/3/b/3b09ed3d-61a7-49d7-84ee-8a39c947d0c3.jpg" },
         { name: "Nahiri", url: "https://cards.scryfall.io/art_crop/front/5/0/5033c945-8167-4d7a-a638-301297e682e0.jpg" }
     ];
 
@@ -667,6 +657,15 @@
             document.getElementById('btn-continue').style.display = 'block';
         }
         updateRecordsTable();
+
+        // 優化 3：全域點擊監聽，點擊卡片外部區域時自動將翻轉的卡片翻回正面
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.player-card-wrapper')) {
+                document.querySelectorAll('.player-card.flipped').forEach(card => {
+                    card.classList.remove('flipped');
+                });
+            }
+        });
     };
 
     function toggleMenu() {
@@ -716,42 +715,26 @@
         for (let i = 0; i < rowCount; i++) {
             const row = document.createElement('div');
             row.className = 'player-setup-row';
-            row.draggable = true;
-            row.dataset.index = i;
 
             let defaultAvatar = PLANESWALKERS[i % PLANESWALKERS.length].url;
 
             if (mode === 'TwoHeadedGiant') {
                 row.innerHTML = `
-                    <span class="drag-handle">☰</span>
-                    <span style="color:var(--gold-primary)">隊伍 ${i+1}:</span>
-                    <input type="text" placeholder="隊友1 名字" class="p-name" data-team="${i}" data-sub="1" oninput="validateSetupForm()" list="history-names">
-                    <input type="text" placeholder="隊友2 名字" class="p-name" data-team="${i}" data-sub="2" oninput="validateSetupForm()" list="history-names">
+                    <span style="color:var(--gold-primary); font-size:0.85rem;">隊${i+1}:</span>
+                    <input type="text" placeholder="隊友1" class="p-name" oninput="validateSetupForm()">
+                    <input type="text" placeholder="隊友2" class="p-name" oninput="validateSetupForm()">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
                 `;
             } else {
                 row.innerHTML = `
-                    <span class="drag-handle">☰</span>
-                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" data-index="${i}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})" list="history-names">
+                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" onclick="openAvatarModal(${i})">
                 `;
             }
             container.appendChild(row);
         }
 
-        updateDatalist();
-        addDragAndDrop();
         validateSetupForm();
-    }
-
-    function updateDatalist() {
-        let datalist = document.getElementById('history-names');
-        if (!datalist) {
-            datalist = document.createElement('datalist');
-            datalist.id = 'history-names';
-            document.body.appendChild(datalist);
-        }
-        datalist.innerHTML = Object.keys(state.historyNames).map(name => `<option value="${name}">`).join('');
     }
 
     function autoFillAvatar(inputElem, index) {
@@ -759,23 +742,6 @@
         if (state.historyNames[val]) {
             document.getElementById(`avatar-prev-${index}`).src = state.historyNames[val];
         }
-    }
-
-    function addDragAndDrop() {
-        const list = document.getElementById('playerSetupList');
-        let dragItem = null;
-
-        list.querySelectorAll('.player-setup-row').forEach(row => {
-            row.addEventListener('dragstart', () => { dragItem = row; });
-            row.addEventListener('dragover', e => e.preventDefault());
-            row.addEventListener('drop', e => {
-                e.preventDefault();
-                if (row !== dragItem) {
-                    list.insertBefore(dragItem, row);
-                    validateSetupForm();
-                }
-            });
-        });
     }
 
     function validateSetupForm() {
@@ -819,7 +785,6 @@
                     cmdDamage: 0,
                     isMonarch: false
                 });
-                names.forEach(n => state.historyNames[n] = avatar);
             } else {
                 const name = row.querySelector('.p-name').value.trim();
                 const avatar = row.querySelector('.avatar-preview').src;
@@ -876,8 +841,8 @@
                         </div>
                         <div class="life-display ${p.life < 10 ? 'danger' : ''}">${p.life}</div>
                         <div class="status-badges">
-                            ${p.poison > 0 ? `<span class="badge">🤢 毒: ${p.poison}</span>` : ''}
-                            ${p.cmdDamage > 0 ? `<span class="badge">⚔️ 指揮官傷害: ${p.cmdDamage}</span>` : ''}
+                            ${p.poison > 0 ? `<span class="badge">🤢 毒:${p.poison}</span>` : ''}
+                            ${p.cmdDamage > 0 ? `<span class="badge">⚔️ 傷:${p.cmdDamage}</span>` : ''}
                         </div>
                         <div class="life-controls">
                             <button class="btn-life" onclick="changeLife(${index}, -5)">-5</button>
@@ -885,30 +850,30 @@
                             <button class="btn-life" onclick="changeLife(${index}, 1)">+1</button>
                             <button class="btn-life" onclick="changeLife(${index}, 5)">+5</button>
                         </div>
-                        <button class="flip-btn" onclick="flipCard(${index})">🔄 翻轉卡片 (計算毒/指揮官傷害)</button>
+                        <button class="flip-btn" onclick="flipCard(${index}, event)">🔄 翻轉 (毒/指揮官)</button>
                     </div>
 
                     <div class="card-back">
                         <div class="card-header">
-                            <div class="card-name" style="color:var(--gold-primary)">${p.name} - 特殊傷害</div>
+                            <div class="card-name" style="color:var(--gold-primary)">${p.name}</div>
                         </div>
-                        <div style="margin: 15px 0;">
-                            <label>🤢 中毒標記 (Poison)</label>
-                            <div class="life-controls" style="margin-top: 5px;">
+                        <div style="margin: 2px 0;">
+                            <label style="font-size:0.75rem;">🤢 中毒標記</label>
+                            <div class="life-controls">
                                 <button class="btn-life" onclick="changeStatus(${index}, 'poison', -1)">-1</button>
-                                <span style="font-size: 1.5rem; align-self: center;">${p.poison}</span>
+                                <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
                                 <button class="btn-life" onclick="changeStatus(${index}, 'poison', 1)">+1</button>
                             </div>
                         </div>
-                        <div style="margin: 15px 0;">
-                            <label>⚔️ 累積指揮官傷害</label>
-                            <div class="life-controls" style="margin-top: 5px;">
+                        <div style="margin: 2px 0;">
+                            <label style="font-size:0.75rem;">⚔️ 指揮官傷害</label>
+                            <div class="life-controls">
                                 <button class="btn-life" onclick="changeStatus(${index}, 'cmdDamage', -1)">-1</button>
-                                <span style="font-size: 1.5rem; align-self: center;">${p.cmdDamage}</span>
+                                <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
                                 <button class="btn-life" onclick="changeStatus(${index}, 'cmdDamage', 1)">+1</button>
                             </div>
                         </div>
-                        <button class="flip-btn" onclick="flipCard(${index})">🔄 翻回正面</button>
+                        <button class="flip-btn" onclick="flipCard(${index}, event)">🔄 翻回正面</button>
                     </div>
                 </div>
             `;
@@ -916,7 +881,8 @@
         });
     }
 
-    function flipCard(index) {
+    function flipCard(index, event) {
+        if(event) event.stopPropagation(); // 阻止冒泡，避免引發全域點擊還原
         document.getElementById(`card-${index}`).classList.toggle('flipped');
     }
 
@@ -947,20 +913,28 @@
         renderGameGrid();
     }
 
+    // 優化 4：擲骰計算最高者，調整彈窗顯示與手動關閉
     function rollD20All() {
-        const overlay = document.getElementById('diceOverlay');
         const results = document.getElementById('diceResults');
+        const titleElem = document.getElementById('diceWinnerTitle');
         results.innerHTML = '';
+
+        let maxRoll = -1;
+        let winners = [];
 
         state.currentGame.players.forEach(p => {
             const roll = Math.floor(Math.random() * 20) + 1;
-            results.innerHTML += `<div><strong>${p.name}</strong> 擲出了 🎲 <span style="color:var(--gold-primary); font-size:1.5rem;">${roll}</span> 點</div>`;
+            if (roll > maxRoll) {
+                maxRoll = roll;
+                winners = [p.name];
+            } else if (roll === maxRoll) {
+                winners.push(p.name);
+            }
+            results.innerHTML += `<div><strong>${p.name}</strong> 擲出了 🎲 <span style="color:var(--gold-primary); font-size:1.3rem;">${roll}</span> 點</div>`;
         });
 
-        overlay.style.display = 'block';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 3000);
+        titleElem.innerHTML = `🎲 擲骰結果：<span style="color:#ffd700">${winners.join(' & ')}</span> 獲勝！`;
+        document.getElementById('diceModal').classList.add('active');
     }
 
     function openResetModal() {
@@ -988,7 +962,6 @@
         });
 
         recordGameResult(winnersIndices);
-
         closeModal('resetModal');
 
         if (type === 'same') {
@@ -1036,7 +1009,7 @@
                     <td>${r.date}</td>
                     <td>第 ${r.gameIndex} 局</td>
                     <td>${r.name}</td>
-                    <td>${r.result === 'WIN' ? '<span class="win-tag">👑 贏</span>' : '<span class="lose-tag">輸</span>'}</td>
+                    <td>${r.result === 'WIN' ? '<span class="win-tag">👑 贏</span>' : '輸'}</td>
                 </tr>
             `;
         });
@@ -1050,8 +1023,8 @@
 
         const summaryElem = document.getElementById('statsSummaryContent');
         summaryElem.innerHTML = Object.keys(stats).map(name => `
-            <div style="display:inline-block; margin-right: 20px; margin-bottom: 10px;">
-                <strong>${name}:</strong> ${stats[name].win} 勝 / ${stats[name].lose} 敗 (勝率: ${Math.round(stats[name].win/(stats[name].win+stats[name].lose)*100 || 0)}%)
+            <div style="display:inline-block; margin-right: 15px; margin-bottom: 5px;">
+                <strong>${name}:</strong> ${stats[name].win}勝 / ${stats[name].lose}敗 (勝率: ${Math.round(stats[name].win/(stats[name].win+stats[name].lose)*100 || 0)}%)
             </div>
         `).join('');
     }
