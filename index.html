@@ -26,7 +26,6 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            /* 拿掉背景圖片，改用深色質感背景 */
             background: #0d0b14;
             color: #e0e0e0;
             min-height: 100vh;
@@ -173,7 +172,7 @@
             margin: 0 auto;
         }
 
-        /* 預設雙欄卡片網格 (5~8張卡片) */
+        /* 預設雙欄卡片網格 (4~8張卡片) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -182,7 +181,7 @@
             margin-bottom: 60px;
         }
 
-        /* 2~4張卡片：單欄橫長版面 */
+        /* 2~3張卡片：單欄橫長版面 */
         .game-grid.layout-large {
             grid-template-columns: 1fr;
         }
@@ -190,11 +189,10 @@
         .player-card-wrapper {
             perspective: 1000px;
             height: 220px;
-            cursor: pointer;
         }
 
         .game-grid.layout-large .player-card-wrapper {
-            height: 190px;
+            height: 180px;
         }
 
         .player-card {
@@ -228,22 +226,52 @@
         .card-back {
             transform: rotateY(180deg);
             background: #15101f;
+            position: relative;
+            justify-content: center;
         }
 
-        /* 橫長卡片背面的左右佈局 */
-        .game-grid.layout-large .card-back-body {
+        /* 背面佈局：去除左側多餘區域，集中顯示數值控制與翻正按鈕 */
+        .card-back-body {
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
-            gap: 15px;
+            gap: 10px;
+            width: 100%;
             height: 100%;
+        }
+
+        .card-back-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-flip-front {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-light);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .btn-flip-front:hover {
+            background: var(--gold-primary);
+            color: #000;
         }
 
         .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            cursor: pointer;
         }
 
         .player-info {
@@ -291,6 +319,7 @@
             text-shadow: 0 0 8px rgba(212,175,55,0.3);
             margin: 2px 0;
             line-height: 1;
+            cursor: pointer;
         }
 
         .life-display.danger {
@@ -301,7 +330,9 @@
         .life-controls {
             display: flex;
             justify-content: space-around;
+            align-items: center;
             gap: 8px;
+            width: 100%;
         }
 
         .btn-life {
@@ -331,6 +362,7 @@
             gap: 4px;
             font-size: 0.75rem;
             justify-content: center;
+            cursor: pointer;
         }
 
         .badge {
@@ -567,7 +599,6 @@
             cursor: pointer;
         }
 
-        /* 骰子動畫效果樣式 */
         .dice-rolling {
             font-size: 3rem;
             color: var(--gold-primary);
@@ -736,18 +767,19 @@
         updateRecordsTable();
     };
 
-    // 全域點擊管理：處理背面點擊空白處翻回正面
-    function handleCardClick(event, index) {
-        const target = event.target;
-        
-        // 點擊按鈕或皇冠時，絕不觸發卡片翻面
-        if (target.closest('button') || target.closest('.monarch-crown')) {
-            return;
-        }
-
+    // 正面點擊翻面
+    function flipCard(index) {
         const cardElem = document.getElementById(`card-${index}`);
         if (cardElem) {
-            cardElem.classList.toggle('flipped');
+            cardElem.classList.add('flipped');
+        }
+    }
+
+    // 背面專屬翻回正面
+    function flipCardFront(index) {
+        const cardElem = document.getElementById(`card-${index}`);
+        if (cardElem) {
+            cardElem.classList.remove('flipped');
         }
     }
 
@@ -942,7 +974,8 @@
         if (!state.currentGame) return;
 
         const count = state.currentGame.players.length;
-        const isLayoutLarge = (count >= 2 && count <= 4);
+        // 規則調整：2～3 人為單欄橫長，4～8 人維持雙欄 grid
+        const isLayoutLarge = (count >= 2 && count <= 3);
 
         if (isLayoutLarge) {
             grid.classList.add('layout-large');
@@ -963,80 +996,48 @@
             const isDead = (p.life <= 0) || (p.poison >= 10) || (p.cmdDamage >= 10);
             const isFlipped = flippedIndices.has(index);
 
-            cardWrapper.onclick = function(e) {
-                handleCardClick(e, index);
-            };
-
-            // 橫長卡片（2~4人）背面左右併排，5~8人上下排列
-            const backContentHtml = isLayoutLarge ? `
-                <div class="card-back-body">
-                    <div style="flex:1; text-align:center;">
-                        <div class="card-name" style="color:var(--gold-primary); margin-bottom:8px; width:100%;">${p.name}</div>
-                        <span style="font-size:0.8rem; color:#aaa;">點擊卡片空白處翻回正面</span>
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:0.75rem;">🤢 中毒標記 (10淘汰)</label>
-                        <div class="life-controls">
-                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                            <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
-                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
-                        </div>
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (10淘汰)</label>
-                        <div class="life-controls">
-                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                            <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
-                            <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
-                        </div>
-                    </div>
-                </div>
-            ` : `
-                <div class="card-header">
-                    <div class="card-name" style="color:var(--gold-primary)">${p.name}</div>
-                </div>
-                <div style="margin: 2px 0;">
-                    <label style="font-size:0.75rem;">🤢 中毒標記 (達到10淘汰)</label>
-                    <div class="life-controls">
-                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                        <span style="font-size: 1.1rem; align-self: center;">${p.poison}</span>
-                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
-                    </div>
-                </div>
-                <div style="margin: 2px 0;">
-                    <label style="font-size:0.75rem;">⚔️ 指揮官傷害 (達到10淘汰)</label>
-                    <div class="life-controls">
-                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                        <span style="font-size: 1.1rem; align-self: center;">${p.cmdDamage}</span>
-                        <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
-                    </div>
-                </div>
-            `;
-
             cardWrapper.innerHTML = `
                 <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
-                    <div class="card-front">
+                    <div class="card-front" onclick="flipCard(${index})">
                         <div class="card-header">
                             <div class="player-info">
                                 <img src="${p.avatar}" class="card-avatar" referrerpolicy="no-referrer">
                                 <div class="card-name">${p.name}</div>
                             </div>
                             ${state.currentGame.mode === 'Kingdoms' ? 
-                                `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
+                                `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="event.stopPropagation(); toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
                         </div>
                         <div class="life-display ${p.life > 0 && p.life <= 10 ? 'danger' : ''}">${p.life}</div>
                         <div class="status-badges">
                             ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 && p.poison <= 9 ? 'warning-glow' : ''}">🤢 毒:${p.poison}</span>` : ''}
                             ${p.cmdDamage > 0 ? `<span class="badge ${p.cmdDamage >= 8 && p.cmdDamage <= 9 ? 'warning-glow' : ''}">⚔️ 傷:${p.cmdDamage}</span>` : ''}
                         </div>
-                        <div class="life-controls">
+                        <div class="life-controls" onclick="event.stopPropagation()">
                             <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, -1)`)}>-1</button>
                             <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, 1)`)}>+1</button>
                         </div>
                     </div>
 
                     <div class="card-back">
-                        ${backContentHtml}
+                        <button class="btn-flip-front" onclick="flipCardFront(${index})">↺ 翻回正面</button>
+                        <div class="card-back-body">
+                            <div class="card-back-item">
+                                <label style="font-size:0.8rem; margin-bottom: 6px;">🤢 中毒標記 (10淘汰)</label>
+                                <div class="life-controls">
+                                    <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
+                                    <span style="font-size: 1.2rem; font-weight: bold; width: 30px; text-align: center;">${p.poison}</span>
+                                    <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                                </div>
+                            </div>
+                            <div class="card-back-item">
+                                <label style="font-size:0.8rem; margin-bottom: 6px;">⚔️ 指揮官傷害 (10淘汰)</label>
+                                <div class="life-controls">
+                                    <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
+                                    <span style="font-size: 1.2rem; font-weight: bold; width: 30px; text-align: center;">${p.cmdDamage}</span>
+                                    <button class="btn-life" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1071,7 +1072,6 @@
         renderGameGrid();
     }
 
-    // 帶有 3 秒滾動動畫的擲骰功能
     function rollD20All() {
         const results = document.getElementById('diceResults');
         const titleElem = document.getElementById('diceWinnerTitle');
@@ -1081,7 +1081,6 @@
         closeBtn.style.display = 'none';
         document.getElementById('diceModal').classList.add('active');
 
-        // 計算結果資料
         let contenders = state.currentGame.players.map(p => ({ name: p.name }));
         let roundLogs = [];
         let round = 1;
@@ -1115,7 +1114,6 @@
             }
         }
 
-        // 3 秒動畫效果
         let startTime = Date.now();
         let animInterval = setInterval(() => {
             let elapsedTime = Date.now() - startTime;
@@ -1126,7 +1124,6 @@
                 results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
             } else {
                 clearInterval(animInterval);
-                // 展示最終計算結果
                 titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
                 closeBtn.style.display = 'block';
 
