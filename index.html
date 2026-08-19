@@ -177,7 +177,7 @@
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 10px;
             width: 100%;
             margin-bottom: 60px;
         }
@@ -189,15 +189,12 @@
 
         .player-card-wrapper {
             perspective: 1000px;
-            height: 220px;
-        }
-
-        .game-grid.layout-large .player-card-wrapper {
-            height: 180px;
+            min-height: 180px;
         }
 
         .player-card {
-            width: 100%; height: 100%;
+            width: 100%; 
+            height: 100%;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1), filter 0.3s;
@@ -217,7 +214,7 @@
             background: var(--card-bg);
             border: var(--border-style);
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px 12px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -265,7 +262,7 @@
         }
 
         .card-avatar {
-            width: 32px; height: 32px;
+            width: 28px; height: 28px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-primary);
             object-fit: cover;
@@ -273,16 +270,16 @@
 
         .card-name {
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--gold-light);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 160px;
+            max-width: 120px;
         }
 
         .monarch-crown {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             opacity: 0.3;
             filter: grayscale(1);
@@ -295,13 +292,13 @@
         }
 
         .life-display {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 900;
             text-align: center;
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
             text-shadow: 0 0 8px rgba(212,175,55,0.3);
-            margin: 2px 0;
+            margin: 0;
             line-height: 1;
             cursor: pointer;
         }
@@ -321,8 +318,8 @@
 
         .btn-life {
             flex: 1;
-            padding: 6px 0;
-            font-size: 1.1rem;
+            padding: 4px 0;
+            font-size: 1rem;
             font-weight: bold;
             background: rgba(212,175,55,0.15);
             border: 1px solid var(--gold-dark);
@@ -332,14 +329,14 @@
         }
 
         .btn-life-large {
-            padding: 12px 0;
-            font-size: 1.8rem;
+            padding: 8px 0;
+            font-size: 1.4rem;
         }
 
         /* 背面專屬拉長按鈕 */
         .btn-status-large {
-            padding: 14px 0;
-            font-size: 1.5rem;
+            padding: 12px 0;
+            font-size: 1.3rem;
             border-radius: 6px;
         }
 
@@ -351,14 +348,15 @@
         .status-badges {
             display: flex;
             gap: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             justify-content: center;
             cursor: pointer;
+            min-height: 16px;
         }
 
         .badge {
             background: #2a1f3d;
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
@@ -632,7 +630,7 @@
     <div id="game-view" class="view">
         <div class="game-grid" id="gameGrid"></div>
 
-        <div class="floating-controls">
+        <div class="floating-controls" id="floatingControls" style="display: none;">
             <button class="btn-magic btn-round" onclick="rollD20All()" title="一鍵擲D20">🎲</button>
             <button class="btn-magic btn-round" onclick="openResetModal()" title="重置本局">🔄</button>
         </div>
@@ -813,7 +811,7 @@
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
         
-        if (viewId === 'game-view' && state.currentGame) {
+        if (viewId === 'game-view') {
             renderGameGrid();
         }
     }
@@ -962,8 +960,17 @@
 
     function renderGameGrid() {
         const grid = document.getElementById('gameGrid');
+        const controls = document.getElementById('floatingControls');
         grid.innerHTML = '';
-        if (!state.currentGame) return;
+
+        // 判斷若無遊戲資料或玩家陣列為空，隱藏浮動按鈕並返回
+        if (!state.currentGame || !state.currentGame.players || state.currentGame.players.length === 0) {
+            if (controls) controls.style.display = 'none';
+            return;
+        }
+
+        // 有資料時顯示控制按鈕
+        if (controls) controls.style.display = 'flex';
 
         const count = state.currentGame.players.length;
         const isLayoutLarge = (count >= 2 && count <= 3);
@@ -1012,18 +1019,16 @@
                     <div class="card-back" onclick="flipCardFront(${index})">
                         <div class="card-back-body">
                             <div class="card-back-item">
-                                <label style="font-size:0.9rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">🤢 中毒標記</label>
+                                <label style="font-size:0.85rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">🤢 中毒標記</label>
                                 <div class="life-controls" onclick="event.stopPropagation()">
                                     <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                                    <span style="font-size: 1.4rem; font-weight: bold; width: 35px; text-align: center;">${p.poison}</span>
                                     <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
                                 </div>
                             </div>
                             <div class="card-back-item">
-                                <label style="font-size:0.9rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">⚔️ 指揮官傷害</label>
+                                <label style="font-size:0.85rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">⚔️ 指揮官傷害</label>
                                 <div class="life-controls" onclick="event.stopPropagation()">
                                     <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                                    <span style="font-size: 1.4rem; font-weight: bold; width: 35px; text-align: center;">${p.cmdDamage}</span>
                                     <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
                                 </div>
                             </div>
@@ -1107,7 +1112,8 @@
         let startTime = Date.now();
         let animInterval = setInterval(() => {
             let elapsedTime = Date.now() - startTime;
-            if (elapsedTime < 3000) {
+            // 動畫縮短為 2 秒 (2000ms)
+            if (elapsedTime < 2000) {
                 let randomRolls = state.currentGame.players.map(p => 
                     `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
                 ).join('');
@@ -1217,7 +1223,7 @@
                         name: name, 
                         win: 0, 
                         lose: 0, 
-                        firstReachedIndex: recordIndex // 記錄最早達成/出現的對戰順序
+                        firstReachedIndex: recordIndex
                     };
                 }
                 if (r.result === 'WIN') statsMap[name].win++;
@@ -1231,7 +1237,6 @@
             return { ...s, total, rate };
         });
 
-        // 排序規則：勝率高者在前；勝率相同時，最早達成者在前 (firstReachedIndex 較小)
         statsArray.sort((a, b) => {
             if (b.rate !== a.rate) {
                 return b.rate - a.rate;
