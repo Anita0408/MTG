@@ -2,7 +2,6 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <!-- 修正問題 2：禁止手機瀏覽器放大縮小功能 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>魔法風雲會 - 決戰計血器</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
@@ -27,7 +26,6 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
-            /* 禁用雙擊放大 */
             touch-action: manipulation;
         }
 
@@ -117,9 +115,7 @@
             transition: all 0.2s;
         }
 
-        .menu-item:hover {
-            background: rgba(212, 175, 55, 0.2);
-        }
+        .menu-item:hover { background: rgba(212, 175, 55, 0.2); }
 
         .menu-item.active {
             background: rgba(138, 109, 27, 0.85);
@@ -151,12 +147,6 @@
             transform: none !important;
             cursor: pointer;
         }
-        .btn-static:hover, .btn-static:active {
-            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark)) !important;
-            color: #0f0c19 !important;
-            filter: none !important;
-            transform: none !important;
-        }
 
         .btn-magic:disabled {
             filter: grayscale(1);
@@ -185,13 +175,6 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-        }
-
-        .btn-round-home:hover {
-            transform: scale(1.08);
-            border-color: #fff;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.7), inset 0 0 20px rgba(212, 175, 55, 0.4);
-            color: #fff;
         }
 
         .view {
@@ -244,10 +227,7 @@
                 radial-gradient(2px 2px at 20px 30px, #ffaa33, rgba(0,0,0,0)),
                 radial-gradient(3px 3px at 150px 150px, #ff4400, rgba(0,0,0,0)),
                 radial-gradient(2px 2px at 280px 80px, #ffdd66, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 400px 220px, #ff3300, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 550px 110px, #ffaa00, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 700px 290px, #ff5500, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 850px 50px, #ffee88, rgba(0,0,0,0));
+                radial-gradient(3px 3px at 400px 220px, #ff3300, rgba(0,0,0,0));
             background-repeat: repeat;
             background-size: 900px 400px;
             animation: embersMove 12s linear infinite;
@@ -255,8 +235,8 @@
         }
 
         @keyframes embersMove {
-            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
-            100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px, -120px -400px, 60px -400px, -80px -400px; }
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
+            100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px; }
         }
 
         .game-grid {
@@ -268,11 +248,8 @@
             z-index: 2;
         }
 
-        .game-grid.layout-large {
-            grid-template-columns: 1fr;
-        }
+        .game-grid.layout-large { grid-template-columns: 1fr; }
 
-        /* 修正問題 1：調整高度以彈性擴展，避免跑版與元件擠出 */
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
@@ -293,11 +270,6 @@
         .player-card.flipped { 
             transform: rotateY(180deg); 
             -webkit-transform: rotateY(180deg); 
-        }
-
-        .player-card.dead {
-            filter: grayscale(0.9) brightness(0.35);
-            opacity: 0.7;
         }
 
         .card-front, .card-back {
@@ -345,7 +317,6 @@
             z-index: 2;
         }
 
-        /* 修正背面內部布局：採用緊湊彈性間距 */
         .card-back-body {
             display: flex;
             flex-direction: column;
@@ -481,6 +452,7 @@
             color: var(--gold-light);
         }
 
+        /* 警告發光（毒達 8、指揮官傷害達 6） */
         .badge.warning-glow {
             background: rgba(90, 0, 0, 0.85);
             border-color: #ff4d4d;
@@ -520,11 +492,7 @@
             transition: all 0.2s ease;
         }
 
-        .btn-icon-styled svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
+        .btn-icon-styled svg { width: 24px; height: 24px; fill: currentColor; }
 
         .modal-mask {
             position: fixed;
@@ -570,14 +538,41 @@
             padding-bottom: 8px;
         }
 
-        .form-group { margin-bottom: 12px; }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            color: var(--gold-light);
-            font-size: 0.9rem;
+        .cmd-damage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
         }
+
+        .cmd-damage-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gold-dark);
+        }
+
+        .cmd-damage-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cmd-damage-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-primary);
+            object-fit: cover;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; color: var(--gold-light); font-size: 0.9rem; }
 
         select, input[type="text"] {
             width: 100%;
@@ -591,142 +586,36 @@
             user-select: text;
         }
 
-        .player-setup-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
+        .player-setup-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .player-setup-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #332a45;
-            width: 100%;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.05); padding: 10px;
+            border-radius: 6px; border: 1px solid #332a45; width: 100%;
         }
-
-        .team-label {
-            color: var(--gold-primary);
-            font-size: 0.9rem;
-            font-weight: bold;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .avatar-preview {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-primary);
-            object-fit: cover;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .avatar-option {
-            width: 100%; aspect-ratio: 1;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            object-fit: cover;
-            cursor: pointer;
-        }
+        .team-label { color: var(--gold-primary); font-size: 0.9rem; font-weight: bold; white-space: nowrap; flex-shrink: 0; }
+        .avatar-preview { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--gold-primary); object-fit: cover; cursor: pointer; flex-shrink: 0; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        .avatar-option { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; object-fit: cover; cursor: pointer; }
 
         .records-table-container {
-            max-height: 420px;
-            overflow-y: auto;
-            border: 1px solid #2a2038;
-            border-radius: 8px;
-            margin-top: 15px;
-            background: rgba(10, 8, 15, 0.8);
+            max-height: 420px; overflow-y: auto;
+            border: 1px solid #2a2038; border-radius: 8px;
+            margin-top: 15px; background: rgba(10, 8, 15, 0.8);
         }
 
-        .records-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .records-table th, .records-table td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #2a2038;
-        }
-
-        .records-table th {
-            position: sticky;
-            top: 0;
-            background: rgba(212, 175, 55, 0.9);
-            color: #000;
-            font-weight: bold;
-            z-index: 10;
-        }
-
+        .records-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .records-table th, .records-table td { padding: 10px; text-align: center; border-bottom: 1px solid #2a2038; }
+        .records-table th { position: sticky; top: 0; background: rgba(212, 175, 55, 0.9); color: #000; font-weight: bold; z-index: 10; }
         .win-tag { color: #ffd700; font-weight: bold; }
 
-        .stats-summary {
-            margin-top: 15px;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 0.9rem;
-        }
+        .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; }
+        .stats-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .stats-item { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(10, 8, 15, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 4px; }
+        .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
+        .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
 
-        .stats-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .stats-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 10px;
-            background: rgba(10, 8, 15, 0.6);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 4px;
-        }
-
-        .winner-checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        .winner-checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .dice-rolling {
-            font-size: 3rem;
-            color: var(--gold-primary);
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
-            animation: pulse-dice 0.15s infinite alternate;
-        }
-
-        @keyframes pulse-dice {
-            from { transform: scale(0.95); }
-            to { transform: scale(1.1); }
-        }
+        .dice-rolling { font-size: 3rem; color: var(--gold-primary); text-shadow: 0 0 15px rgba(212, 175, 55, 0.8); animation: pulse-dice 0.15s infinite alternate; }
+        @keyframes pulse-dice { from { transform: scale(0.95); } to { transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -845,6 +734,15 @@
     </div>
 </div>
 
+<!-- 指揮官傷害詳細記錄 Modal -->
+<div class="modal-mask" id="cmdDamageModal">
+    <div class="modal-content">
+        <button class="modal-close-x" onclick="closeModal('cmdDamageModal')">✕</button>
+        <div class="modal-title" id="cmdModalTitle">⚔️ 指揮官傷害記錄</div>
+        <div class="cmd-damage-list" id="cmdDamageList"></div>
+    </div>
+</div>
+
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
         <div class="modal-title">重置對戰與勝負結算</div>
@@ -881,12 +779,7 @@
         { name: "Elspeth Resplendent", url: "https://cdn.cardsrealm.com/images/cartas/asnc-new-capenna-art-series/en/med/elspeth-resplendent-card-3s.png?4261" },
         { name: "Mu Yanling", url: "https://images.ctfassets.net/s5n2t79q9icq/6H7suxzk8ecyTTjvN7TCsO/e117e3b5c38137a45c840f5105d49a1b/mu-yanling-300.jpg" },
         { name: "Liliana Vess", url: "https://images.ctfassets.net/s5n2t79q9icq/7np4TX3O6p4VnJb0RLK65k/2e0509c14819abf6f7a4e14eb0da1db7/liliana-vess-300.jpg" },
-        { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" },
-        { name: "Planeswalker 13", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqxevkmljxgNj-i0HSSCn16-NATCmIlXvPIi9y_JPjDuxRqXZ_cJbhvPrB&s=10" },
-        { name: "Planeswalker 14", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsDRq6Mf_s-OgBPh_GsdD8Nlzool9LNvyAU6h4VcaV0rA0OADKMub-D3c&s=10" },
-        { name: "Planeswalker 15", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGXKZ59UXRhk2HUGVgXnFNTk0bSeuye3j63fk7l_JSbtaRayjOi-76dQA&s=10" },
-        { name: "Planeswalker 16", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYs6iaj4AFiUQnESzrotJ9zofbQGxczcGbI9K6G9e0yJwXAnfvrOtC4IA&s=10" },
-        { name: "Planeswalker 17", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSzANzc9wvTGGE7CcvKudpoBkekAzVwWeBurcLGD5YusEjfhdGcqF1vxjA&s=10" }
+        { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" }
     ];
 
     let state = {
@@ -1075,7 +968,7 @@
                     avatar: avatar,
                     life: defaultLife,
                     poison: 0,
-                    cmdDamage: 0,
+                    cmdDamages: {},
                     isMonarch: false
                 });
             } else {
@@ -1087,7 +980,7 @@
                     avatar: avatar,
                     life: defaultLife,
                     poison: 0,
-                    cmdDamage: 0,
+                    cmdDamages: {},
                     isMonarch: false
                 });
                 state.historyNames[name] = avatar;
@@ -1137,12 +1030,23 @@
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
-
-            const isDead = (p.life <= 0) || (p.poison >= 10) || (p.cmdDamage >= 10);
             const isFlipped = flippedIndices.has(index);
 
+            // 計算目前對該玩家造成的最高指揮官傷害與攻擊者名稱
+            let maxCmdDmg = 0;
+            let maxAttackerName = "";
+
+            if (p.cmdDamages) {
+                Object.entries(p.cmdDamages).forEach(([attacker, dmg]) => {
+                    if (dmg > maxCmdDmg) {
+                        maxCmdDmg = dmg;
+                        maxAttackerName = attacker;
+                    }
+                });
+            }
+
             cardWrapper.innerHTML = `
-                <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
+                <div class="player-card ${isFlipped ? 'flipped' : ''}" id="card-${index}">
                     <!-- 卡牌正面 -->
                     <div class="card-front" style="background-image: url('${p.avatar}');" onclick="flipCard(${index})">
                         <div class="card-header">
@@ -1152,18 +1056,25 @@
                             ${state.currentGame.mode === 'Kingdoms' ? 
                                 `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="event.stopPropagation(); toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
                         </div>
-                        <div class="life-display ${p.life > 0 && p.life <= 10 ? 'danger' : ''}">${p.life}</div>
+                        <div class="life-display ${p.life <= 10 ? 'danger' : ''}">${p.life}</div>
+                        
                         <div class="status-badges">
-                            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 && p.poison <= 9 ? 'warning-glow' : ''}">🤢 毒:${p.poison}</span>` : ''}
-                            ${p.cmdDamage > 0 ? `<span class="badge ${p.cmdDamage >= 8 && p.cmdDamage <= 9 ? 'warning-glow' : ''}">⚔️ 傷:${p.cmdDamage}</span>` : ''}
+                            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🤢 毒:${p.poison}</span>` : ''}
+                            ${maxCmdDmg > 0 ? `
+                                <span class="badge ${maxCmdDmg >= 6 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${maxAttackerName})` : ''}
+                                </span>
+                            ` : ''}
                         </div>
+
+                        <!-- 血量按鈕：左邊-1，右邊+1 -->
                         <div class="life-controls" onclick="event.stopPropagation()">
                             <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, -1)`)}>-1</button>
                             <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, 1)`)}>+1</button>
                         </div>
                     </div>
 
-                    <!-- 卡牌背面 (優化 layout 結構) -->
+                    <!-- 卡牌背面 -->
                     <div class="card-back" style="background-image: url('${p.avatar}');">
                         <div class="card-back-body">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1171,20 +1082,21 @@
                                 <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})">翻回正面 ↩</button>
                             </div>
 
+                            <!-- 中毒標記：左邊-1，右邊+1 -->
                             <div class="status-row">
                                 <div class="status-title">🤢 中毒標記</div>
                                 <div style="display:flex; gap:8px;">
-                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
                                     <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
+                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
                                 </div>
                             </div>
 
+                            <!-- 各家指揮官傷害選單入口按鈕 -->
                             <div class="status-row">
-                                <div class="status-title">⚔️ 指揮官傷害</div>
-                                <div style="display:flex; gap:8px;">
-                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
-                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                                </div>
+                                <div class="status-title">⚔️ 各玩家指揮官傷害</div>
+                                <button class="btn-magic" style="width:100%; padding: 5px; font-size:0.85rem; margin-top:2px;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                    開啟明細列表 (最高: ${maxCmdDmg})
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1194,18 +1106,68 @@
         });
     }
 
+    // 血量可自由扣至負數，無下限
     function changeLife(index, delta) {
         let p = state.currentGame.players[index];
-        p.life = Math.max(0, p.life + delta);
+        p.life += delta;
         saveCurrentGame();
         renderGameGrid();
     }
 
     function changeStatus(index, type, delta) {
         let p = state.currentGame.players[index];
-        p[type] = Math.max(0, p[type] + delta);
+        p[type] = Math.max(0, (p[type] || 0) + delta);
         saveCurrentGame();
         renderGameGrid();
+    }
+
+    function openCmdDamageModal(victimIndex) {
+        const victim = state.currentGame.players[victimIndex];
+        document.getElementById('cmdModalTitle').innerText = `⚔️ ${victim.name} 受到的指揮官傷害`;
+        
+        const listContainer = document.getElementById('cmdDamageList');
+        listContainer.innerHTML = '';
+
+        state.currentGame.players.forEach((attacker, attackerIdx) => {
+            if (attackerIdx === victimIndex) return;
+
+            if (!victim.cmdDamages) victim.cmdDamages = {};
+            const currentDmg = victim.cmdDamages[attacker.name] || 0;
+
+            const row = document.createElement('div');
+            row.className = 'cmd-damage-item';
+            row.innerHTML = `
+                <div class="cmd-damage-player">
+                    <img src="${attacker.avatar}" class="cmd-damage-avatar" referrerpolicy="no-referrer">
+                    <span style="color: var(--gold-light); font-weight: bold;">${attacker.name}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 6 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
+                        ${currentDmg} / 21
+                    </span>
+                    <!-- 傷害加減鈕：左邊-1，右邊+1 -->
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${attacker.name}', -1)`)}>-1</button>
+                        <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${attacker.name}', 1)`)}>+1</button>
+                    </div>
+                </div>
+            `;
+            listContainer.appendChild(row);
+        });
+
+        document.getElementById('cmdDamageModal').classList.add('active');
+    }
+
+    function changeCmdDamageDetail(victimIndex, attackerName, delta) {
+        const victim = state.currentGame.players[victimIndex];
+        if (!victim.cmdDamages) victim.cmdDamages = {};
+        
+        let current = victim.cmdDamages[attackerName] || 0;
+        victim.cmdDamages[attackerName] = Math.max(0, current + delta);
+
+        saveCurrentGame();
+        renderGameGrid();
+        openCmdDamageModal(victimIndex);
     }
 
     function toggleMonarch(index) {
@@ -1322,7 +1284,7 @@
             state.currentGame.players.forEach(p => {
                 p.life = p.isMonarch ? 50 : defaultLife;
                 p.poison = 0;
-                p.cmdDamage = 0;
+                p.cmdDamages = {};
             });
             saveCurrentGame();
             renderGameGrid();
