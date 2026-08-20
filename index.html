@@ -81,7 +81,6 @@
             justify-content: center;
             align-items: center;
             gap: 5px;
-            /* 魔法微光與紫色魂光效果 */
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.4), inset 0 0 8px rgba(138, 43, 226, 0.3);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -92,7 +91,6 @@
             transform: scale(1.05);
         }
 
-        /* 三條橫線本體 */
         .menu-line {
             display: block;
             width: 22px;
@@ -103,7 +101,6 @@
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background 0.3s ease;
         }
 
-        /* 魔法微粒星光特效 */
         .magic-menu-toggle::before,
         .magic-menu-toggle::after {
             content: '';
@@ -125,7 +122,6 @@
             50% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* --- 展開狀態 (Active)：變成交叉 X 形狀 --- */
         .magic-menu-toggle.active {
             background: radial-gradient(circle, rgba(50, 20, 30, 0.9) 0%, rgba(20, 8, 15, 0.95) 100%);
             border-color: var(--crimson-glow);
@@ -148,7 +144,6 @@
             transform: translateY(-7px) rotate(-45deg);
         }
 
-        /* 🪄 優化：背景遮罩 (含暗色毛玻璃效果) */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -169,7 +164,7 @@
             visibility: visible;
         }
 
-        /* 🪄 優化：寬度改為 68%、極致風格統一與手機觸控區微調 */
+        /* 1. 拿掉左邊直線與外框，改為純淨抽屜 */
         .menu-drawer {
             position: fixed;
             top: 0;
@@ -177,17 +172,17 @@
             width: 68%;
             max-width: 320px;
             height: 100%;
-            background: rgba(20, 16, 29, 0.92);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-left: 1px solid var(--gold-primary);
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+            background: rgba(16, 13, 24, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: none; 
+            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.85);
             transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 500;
-            padding: 24px 20px;
+            padding: 24px 0; /* 上下滿版，讓項目貼齊或簡潔排列 */
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 4px;
         }
 
         .menu-drawer.active { right: 0; }
@@ -196,38 +191,35 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 0 20px 16px 20px;
             color: var(--gold-primary);
         }
 
-        /* 🪄 選項拿掉厚底色，改為「細緻金框 + 透明底」與舒適觸控區 */
+        /* 3 & 4. 拿掉方框與 Emoji，改為質感清單列 */
         .menu-item {
-            padding: 14px 18px;
+            padding: 16px 24px;
             background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            color: var(--gold-light);
+            border: none;
+            border-left: 3px solid transparent; /* 未選中時左側保留透明條以防跳動 */
+            color: #bfa87a;
             text-align: left;
             cursor: pointer;
-            border-radius: 6px;
-            font-size: 1.05rem;
-            transition: all 0.25s ease;
-            box-shadow: inset 0 0 6px rgba(212, 175, 55, 0.05);
+            border-radius: 0;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
         }
 
         .menu-item:hover { 
-            background: rgba(212, 175, 55, 0.12); 
-            border-color: var(--gold-primary);
-            color: #fff;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2), inset 0 0 8px rgba(212, 175, 55, 0.15);
+            background: rgba(212, 175, 55, 0.08); 
+            color: var(--gold-light);
         }
 
         .menu-item.active {
-            background: rgba(212, 175, 55, 0.18);
-            border: 1px solid var(--gold-primary);
+            background: rgba(212, 175, 55, 0.15);
+            border-left: 3px solid var(--gold-primary); /* 選中時左側顯示精緻金線 */
             color: #fff;
             font-weight: bold;
-            box-shadow: inset 0 0 12px rgba(212, 175, 55, 0.3), 0 0 12px rgba(212, 175, 55, 0.35);
         }
 
         .btn-magic {
@@ -260,7 +252,6 @@
             opacity: 0.5;
         }
 
-        /* 低調風格的匯出/匯入按鈕 */
         .btn-subtle {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -919,7 +910,6 @@
 <div class="overlay">
     <nav class="navbar">
         <div class="brand">⚔️ MTG Life Counter</div>
-        <!-- 🪄 三條橫線魔力漢堡選單按鈕 -->
         <button class="magic-menu-toggle" onclick="toggleMenu()" aria-label="切換選單">
             <span class="menu-line"></span>
             <span class="menu-line"></span>
@@ -927,21 +917,21 @@
         </button>
     </nav>
 
-    <!-- 🪄 新增選單背後的毛玻璃遮罩 -->
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
+    <!-- 2 & 3 & 4. 簡化標題與頁籤設計 -->
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
-            <h3>選單 MENU</h3>
+            <h3>選單</h3>
             <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單" style="width: 32px; height: 32px;">
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
             </button>
         </div>
-        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
-        <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
-        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">📜 對戰紀錄</button>
+        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">首頁</button>
+        <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">比賽場</button>
+        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">對戰紀錄</button>
     </div>
 
     <!-- 首頁視圖 -->
@@ -979,7 +969,6 @@
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰歷史紀錄</h2>
 
-        <!-- 連勝紀錄區塊 -->
         <div class="streak-section" style="width: 100%;">
             <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
             <div id="streakSummaryContent" class="streak-grid">
@@ -1006,7 +995,6 @@
             <div id="statsSummaryContent" class="stats-list"></div>
         </div>
 
-        <!-- 匯出/匯入按鈕移至頁面最下方，並採用低調設計 -->
         <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center; width: 100%;">
             <button class="btn-subtle" onclick="exportRecords()">匯出紀錄</button>
             <button class="btn-subtle" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
