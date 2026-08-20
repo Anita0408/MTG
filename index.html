@@ -201,13 +201,14 @@
             margin-bottom: 10px;
         }
 
+        /* 修改：邊角改為直角 (border-radius: 0) */
         #game-view {
             padding: 15px 10px 80px 10px;
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
             position: relative;
-            border-radius: 12px;
+            border-radius: 0;
             box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
             border: none;
             overflow: hidden;
@@ -452,7 +453,6 @@
             color: var(--gold-light);
         }
 
-        /* 警告發光（毒達 8、指揮官傷害達 6） */
         .badge.warning-glow {
             background: rgba(90, 0, 0, 0.85);
             border-color: #ff4d4d;
@@ -1032,7 +1032,6 @@
             cardWrapper.className = 'player-card-wrapper';
             const isFlipped = flippedIndices.has(index);
 
-            // 計算目前對該玩家造成的最高指揮官傷害與攻擊者名稱
             let maxCmdDmg = 0;
             let maxAttackerName = "";
 
@@ -1082,7 +1081,7 @@
                                 <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})">翻回正面 ↩</button>
                             </div>
 
-                            <!-- 中毒標記：左邊-1，右邊+1 -->
+                            <!-- 中毒標記 -->
                             <div class="status-row">
                                 <div class="status-title">🤢 中毒標記</div>
                                 <div style="display:flex; gap:8px;">
@@ -1091,11 +1090,11 @@
                                 </div>
                             </div>
 
-                            <!-- 各家指揮官傷害選單入口按鈕 -->
+                            <!-- 修改：按鈕文字拆分為兩行顯示，排版更美觀 -->
                             <div class="status-row">
                                 <div class="status-title">⚔️ 各玩家指揮官傷害</div>
-                                <button class="btn-magic" style="width:100%; padding: 5px; font-size:0.85rem; margin-top:2px;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                                    開啟明細列表 (最高: ${maxCmdDmg})
+                                <button class="btn-magic" style="width:100%; padding: 4px; font-size:0.8rem; line-height: 1.3; margin-top:2px;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                    開啟明細列表<br><span style="font-size:0.75rem; opacity:0.9;">(最高: ${maxCmdDmg})</span>
                                 </button>
                             </div>
                         </div>
@@ -1106,7 +1105,6 @@
         });
     }
 
-    // 血量可自由扣至負數，無下限
     function changeLife(index, delta) {
         let p = state.currentGame.players[index];
         p.life += delta;
@@ -1121,6 +1119,7 @@
         renderGameGrid();
     }
 
+    // 修改：指揮官傷害顯示改為 / 10
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         document.getElementById('cmdModalTitle').innerText = `⚔️ ${victim.name} 受到的指揮官傷害`;
@@ -1143,9 +1142,8 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 6 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
-                        ${currentDmg} / 21
+                        ${currentDmg} / 10
                     </span>
-                    <!-- 傷害加減鈕：左邊-1，右邊+1 -->
                     <div style="display: flex; gap: 4px;">
                         <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${attacker.name}', -1)`)}>-1</button>
                         <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${attacker.name}', 1)`)}>+1</button>
