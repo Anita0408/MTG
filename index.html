@@ -471,7 +471,6 @@
             width: 100%;
         }
 
-        /* 3. 弱化 +1 / -1 按鈕，去除金邊、柔化外觀與陰影 */
         .btn-life {
             flex: 1;
             padding: 4px 0;
@@ -548,7 +547,6 @@
             box-shadow: 0 0 8px #ff0000;
         }
 
-        /* 2. 卡片反面的翻面按鈕：只留箭頭，拿掉方框背景 */
         .btn-flip-back {
             background: none !important;
             border: none !important;
@@ -729,9 +727,68 @@
         .records-table th { position: sticky; top: 0; background: rgba(212, 175, 55, 0.9); color: #000; font-weight: bold; z-index: 10; }
         .win-tag { color: #ffd700; font-weight: bold; }
 
+        /* 新增：可展開列與細節樣式 */
+        .history-main-row { cursor: pointer; transition: background 0.2s; }
+        .history-main-row:hover { background: rgba(212, 175, 55, 0.08); }
+        .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
+        .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
+
+        /* 新增：連勝紀錄區塊樣式 */
+        .streak-section {
+            background: rgba(20, 15, 30, 0.85);
+            border: 1px solid var(--gold-primary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        .streak-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-top: 8px;
+        }
+        .streak-badge {
+            background: linear-gradient(135deg, rgba(169, 27, 27, 0.4), rgba(42, 31, 61, 0.8));
+            border: 1px solid var(--gold-dark);
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 110px;
+            flex-shrink: 0;
+        }
+
+        /* 新增：勝率進度條樣式 */
         .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; }
-        .stats-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-        .stats-item { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(10, 8, 15, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 4px; }
+        .stats-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .stats-item { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px;
+            padding: 8px 10px; 
+            background: rgba(10, 8, 15, 0.6); 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 4px; 
+        }
+        .stats-info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary));
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
         .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
         .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
 
@@ -797,21 +854,29 @@
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
         </div>
 
-        <div class="records-table-container">
+        <!-- 新增：連勝紀錄區塊 -->
+        <div class="streak-section" style="width: 100%;">
+            <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
+            <div id="streakSummaryContent" class="streak-grid">
+                <div style="color: #aaa; font-size: 0.85rem;">尚無連勝紀錄</div>
+            </div>
+        </div>
+
+        <div class="records-table-container" style="width: 100%;">
             <table class="records-table">
                 <thead>
                     <tr>
                         <th>日期</th>
                         <th>局數</th>
-                        <th>姓名/隊伍</th>
-                        <th>戰績</th>
+                        <th>模式</th>
+                        <th>勝者 / 參與名單</th>
                     </tr>
                 </thead>
                 <tbody id="recordsTableBody"></tbody>
             </table>
         </div>
 
-        <div class="stats-summary">
+        <div class="stats-summary" style="width: 100%;">
             <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計</h3>
             <div id="statsSummaryContent" class="stats-list"></div>
         </div>
@@ -902,7 +967,6 @@
         { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" }
     ];
 
-    // 4. 更帥氣、更具黑暗奇幻與壓迫感的淘汰骷髏頭設計
     const SKULL_SVG_MARKUP = `
         <svg class="skull-svg" viewBox="0 0 512 512">
             <defs>
@@ -921,11 +985,9 @@
             <circle cx="256" cy="256" r="210" fill="none" stroke="#ff1a1a" stroke-width="2.5" stroke-dasharray="8 6" opacity="0.8" />
             <circle cx="256" cy="256" r="190" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4" />
             
-            <!-- 嚴肅冷酷且具有侵略性的骷髏頭輪廓與裂紋 -->
             <path d="M256 50c-75 0-135 55-135 130 0 35 15 68 40 92l-10 65c-2 10 5 18 15 18h30c4 0 8-2 10-6l10-25c14 6 29 9 45 9s31-3 45-9l10 25c2 4 6 6 10 6h30c10 0 17-8 15-18l-10-65c25-24 40-57 40-92 0-75-60-130-135-130zm-50 120c15 0 25 15 25 35s-10 35-25 35-25-15-25-35 10-35 25-35zm100 0c15 0 25 15 25 35s-10 35-25 35-25-15-25-35 10-35 25-35zm-50 90c-12 0-22 8-25 20l-15 40h80l-15-40c-3-12-13-20-25-20z" 
                   fill="url(#skullMetallic)" stroke="#ff4d4d" stroke-width="3" filter="drop-shadow(0 0 8px rgba(255,0,0,0.6))" />
             
-            <!-- 致命且具動態感的發光眼窩 -->
             <circle class="skull-eye-fire" cx="206" cy="205" r="16" fill="#ff1a1a" />
             <circle class="skull-eye-fire" cx="306" cy="205" r="16" fill="#ff1a1a" />
             <circle cx="206" cy="205" r="6" fill="#ffffff" />
@@ -1020,6 +1082,8 @@
 
         if (viewId === 'game-view') {
             renderGameGrid();
+        } else if (viewId === 'records-view') {
+            updateRecordsTable();
         }
     }
 
@@ -1201,8 +1265,6 @@
 
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
-            
-            // 只有總人數為 2 人時才啟動對坐模式 (index 為 1 的玩家旋轉 180 度)
             const isTwoPlayerMode = (count === 2);
             if (isTwoPlayerMode && index === 1) {
                 cardWrapper.className = 'player-card-wrapper seat-rotated';
@@ -1216,7 +1278,6 @@
                 <div class="player-card ${isEliminated ? 'eliminated' : ''} ${p.isImmune ? 'immunity-active' : ''}" id="card-${index}">
                     <div class="skull-overlay">${SKULL_SVG_MARKUP}</div>
 
-                    <!-- 卡牌正面 -->
                     <div class="card-front" style="background-image: url('${p.avatar}');" onclick="flipCard(${index})">
                         <div class="card-header">
                             <div class="player-info">
@@ -1239,7 +1300,6 @@
                         </div>
                     </div>
 
-                    <!-- 卡牌背面 -->
                     <div class="card-back" style="background-image: url('${p.avatar}');">
                         <div class="card-back-body">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1249,7 +1309,6 @@
                                 </button>
                             </div>
 
-                            <!-- 中毒標記 -->
                             <div class="status-row">
                                 <div class="status-title">🧪 中毒標記</div>
                                 <div style="display:flex; gap:8px;">
@@ -1258,7 +1317,6 @@
                                 </div>
                             </div>
 
-                            <!-- 指揮官傷害 -->
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
                                 <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 8px; font-size:0.85rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
@@ -1352,7 +1410,6 @@
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
-        const count = state.currentGame.players.length;
         
         document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
         
@@ -1549,21 +1606,27 @@
         if (!state.currentGame) return;
 
         let dateStr = new Date().toLocaleDateString();
+        let modeName = state.currentGame.mode === 'TwoHeadedGiant' ? '雙頭巨人' : (state.currentGame.mode === 'Kingdoms' ? '三國殺' : '指揮官');
 
-        // 1. 跨日後局數重新計數：檢查最新一筆紀錄的日期是否與今天相同
-        let lastRecord = state.records.length > 0 ? state.records[state.records.length - 1] : null;
-        if (!lastRecord || lastRecord.date !== dateStr) {
+        let lastRecordGroup = state.records.length > 0 ? state.records[state.records.length - 1] : null;
+        if (!lastRecordGroup || lastRecordGroup.date !== dateStr) {
             state.gameCount = 1;
         }
 
-        state.currentGame.players.forEach((p, idx) => {
-            let isWin = winnersIndices.includes(idx);
-            state.records.push({
-                date: dateStr,
-                gameIndex: state.gameCount,
-                name: p.name,
-                result: isWin ? 'WIN' : 'LOSE'
-            });
+        let playersSnapshot = state.currentGame.players.map(p => ({
+            name: p.name,
+            life: p.life,
+            isWinner: winnersIndices.includes(p.id)
+        }));
+
+        let winnersNames = playersSnapshot.filter(p => p.isWinner).map(p => p.name);
+
+        state.records.push({
+            date: dateStr,
+            gameIndex: state.gameCount,
+            mode: modeName,
+            winners: winnersNames,
+            players: playersSnapshot
         });
 
         state.gameCount++;
@@ -1572,50 +1635,107 @@
         updateRecordsTable();
     }
 
+    function toggleRowDetail(rowId) {
+        const detailRow = document.getElementById(rowId);
+        if (detailRow) {
+            detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
+        }
+    }
+
     function updateRecordsTable() {
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
-        state.records.slice().reverse().forEach(r => {
+        // 轉換紀錄結構以支援快速回顧與連勝計算
+        let formattedRecords = state.records.map(r => {
+            if (r.players && Array.isArray(r.players)) return r;
+            // 相容舊版資料格式
+            return {
+                date: r.date,
+                gameIndex: r.gameIndex || 1,
+                mode: '指揮官',
+                winners: r.result === 'WIN' ? [r.name] : [],
+                players: [{ name: r.name, isWinner: r.result === 'WIN', life: '-' }]
+            };
+        });
+
+        formattedRecords.slice().reverse().forEach((r, idx) => {
+            const mainRowId = `history-main-${idx}`;
+            const detailRowId = `history-detail-${idx}`;
+            const winnersText = r.winners.length > 0 ? `<span class="win-tag">👑 ${r.winners.join(', ')}</span>` : '<span style="color:#aaa;">無贏家記錄</span>';
+
             tbody.innerHTML += `
-                <tr>
+                <tr class="history-main-row" onclick="toggleRowDetail('${detailRowId}')">
                     <td>${r.date}</td>
                     <td>第 ${r.gameIndex} 局</td>
-                    <td>${r.name}</td>
-                    <td>${r.result === 'WIN' ? '<span class="win-tag">👑 贏</span>' : '輸'}</td>
+                    <td>${r.mode || '指揮官'}</td>
+                    <td>${winnersText}</td>
+                </tr>
+                <tr id="${detailRowId}" class="history-detail-row">
+                    <td colspan="4">
+                        <div class="history-detail-content">
+                            <strong>📊 本局參與玩家與血量結算：</strong><br>
+                            ${r.players.map(p => `• ${p.name}：${p.isWinner ? '<strong style="color:#ffd700;">[獲勝]</strong>' : '落敗'} (最終血量: ${p.life})`).join('<br>')}
+                        </div>
+                    </td>
                 </tr>
             `;
         });
 
+        // 1. 計算個人勝負與勝率進度條
         const statsMap = {};
-        state.records.forEach((r, recordIndex) => {
-            const individualNames = r.name.split('&').map(s => s.trim());
-            individualNames.forEach(name => {
-                if (!statsMap[name]) {
-                    statsMap[name] = { 
-                        name: name, 
-                        win: 0, 
-                        lose: 0, 
-                        firstReachedIndex: recordIndex
-                    };
+        const streakMap = {};
+
+        // 依時間順序（由舊到新）計算連勝與勝率
+        formattedRecords.forEach((r, recordIndex) => {
+            let activeMatchPlayers = r.players.map(p => p.name);
+
+            // 統計總勝敗
+            r.players.forEach(p => {
+                if (!statsMap[p.name]) {
+                    statsMap[p.name] = { name: p.name, win: 0, lose: 0, firstIndex: recordIndex };
                 }
-                if (r.result === 'WIN') statsMap[name].win++;
-                else statsMap[name].lose++;
+                if (p.isWinner) statsMap[p.name].win++;
+                else statsMap[p.name].lose++;
+            });
+
+            // 計算連勝邏輯：若參與了該場比賽，贏了則連勝 +1，輸了或未參戰則歸零
+            activeMatchPlayers.forEach(name => {
+                if (!streakMap[name]) streakMap[name] = 0;
+                let isWinnerInThisGame = r.winners.includes(name);
+                if (isWinnerInThisGame) {
+                    streakMap[name]++;
+                } else {
+                    streakMap[name] = 0; // 只要沒贏立刻斷掉
+                }
             });
         });
 
+        // 渲染連勝排行區塊（只顯示連勝 > 0 的玩家/隊伍）
+        const streakContainer = document.getElementById('streakSummaryContent');
+        const activeStreaks = Object.entries(streakMap)
+            .filter(([name, streak]) => streak > 0)
+            .sort((a, b) => b[1] - a[1]);
+
+        if (activeStreaks.length === 0) {
+            streakContainer.innerHTML = `<div style="color:#aaa; font-size: 0.85rem; padding: 4px;">目前沒有進行中的連勝紀錄</div>`;
+        } else {
+            streakContainer.innerHTML = activeStreaks.map(([name, streak]) => `
+                <div class="streak-badge">
+                    <span style="font-size:0.8rem; color:var(--gold-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${name}</span>
+                    <span style="font-size:1.1rem; font-weight:bold; color:#ff4d4d; margin-top:2px;">🔥 ${streak} 連勝</span>
+                </div>
+            `).join('');
+        }
+
+        // 渲染勝率統計（進度條 + 數字）
         const statsArray = Object.values(statsMap).map(s => {
             const total = s.win + s.lose;
-            const rate = total > 0 ? (s.win / total) : 0;
+            const rate = total > 0 ? Math.round((s.win / total) * 100) : 0;
             return { ...s, total, rate };
         });
 
-        statsArray.sort((a, b) => {
-            if (b.rate !== a.rate) {
-                return b.rate - a.rate;
-            }
-            return a.firstReachedIndex - b.firstReachedIndex;
-        });
+        statsArray.sort((a, b) => b.rate - a.rate || b.win - a.win);
 
         const summaryElem = document.getElementById('statsSummaryContent');
         if (statsArray.length === 0) {
@@ -1623,8 +1743,13 @@
         } else {
             summaryElem.innerHTML = statsArray.map(s => `
                 <div class="stats-item">
-                    <span><strong>${s.name}</strong></span>
-                    <span>${s.win}勝 / ${s.lose}敗 <span style="color:var(--gold-primary); margin-left:8px;">(勝率: ${Math.round(s.rate * 100)}%)</span></span>
+                    <div class="stats-info-row">
+                        <span><strong>${s.name}</strong></span>
+                        <span style="font-size: 0.85rem; color: var(--gold-light);">${s.win}勝 / ${s.lose}敗 (勝率: ${s.rate}%)</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${s.rate}%;"></div>
+                    </div>
                 </div>
             `).join('');
         }
@@ -1649,8 +1774,7 @@
                         const isDuplicate = state.records.some(existingRec => 
                             existingRec.date === importedRec.date &&
                             existingRec.gameIndex === importedRec.gameIndex &&
-                            existingRec.name === importedRec.name &&
-                            existingRec.result === importedRec.result
+                            JSON.stringify(existingRec.winners) === JSON.stringify(importedRec.winners)
                         );
 
                         if (!isDuplicate) {
