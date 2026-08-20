@@ -244,7 +244,7 @@
             100% { opacity: 0.8; }
         }
 
-        /* 網格與卡片排版設定 (支援 2-6 人對坐與寬版長方形) */
+        /* 網格與卡片排版設定 (支援 2-8 人) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -260,20 +260,18 @@
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
-            min-height: 155px; /* 四人時加寬成好閱讀的長方形尺寸 */
+            min-height: 155px; 
             width: 100%;
             will-change: transform;
             position: relative;
             transition: transform 0.3s ease;
         }
 
-        /* 左側欄位：統一往右旋轉 90 度 */
-        .game-grid .player-card-wrapper:nth-child(odd) {
+        /* 預設對坐旋轉 (2-4人模式會套用) */
+        .game-grid.facing-mode .player-card-wrapper:nth-child(odd) {
             transform: rotate(90deg);
         }
-
-        /* 右側欄位：統一往左旋轉 90 度 */
-        .game-grid .player-card-wrapper:nth-child(even) {
+        .game-grid.facing-mode .player-card-wrapper:nth-child(even) {
             transform: rotate(-90deg);
         }
 
@@ -490,37 +488,47 @@
             width: 100%;
         }
 
+        /* 調整 +1 / -1 按鈕：淡化視覺權重，讓焦點集中在血量數值 */
         .btn-life {
             flex: 1;
             padding: 4px 0;
-            font-size: 1rem;
-            font-weight: bold;
-            background: rgba(10, 8, 15, 0.75) !important;
-            border: 1px solid var(--gold-primary) !important;
-            color: var(--gold-light);
+            font-size: 0.85rem;
+            font-weight: normal;
+            background: rgba(10, 8, 15, 0.4) !important;
+            border: 1px solid rgba(212, 175, 55, 0.35) !important;
+            color: rgba(243, 229, 171, 0.75);
             border-radius: 4px;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
-            transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+            backdrop-filter: blur(2px);
+            box-shadow: none;
+            transition: transform 0.08s ease, background 0.15s ease, opacity 0.15s ease;
+            opacity: 0.65;
+        }
+
+        .btn-life:hover {
+            opacity: 0.95;
+            background: rgba(212, 175, 55, 0.15) !important;
+            color: var(--gold-light);
         }
 
         .btn-life-large {
-            padding: 6px 0;
-            font-size: 1.2rem;
+            padding: 5px 0;
+            font-size: 0.95rem;
         }
 
         .btn-status-ctrl {
             padding: 4px 0;
             font-size: 0.9rem;
             border-radius: 4px;
+            opacity: 0.85;
         }
 
         .btn-life:active {
             transform: scale(0.92) !important;
             background: var(--gold-primary) !important;
             color: #100b18 !important;
-            box-shadow: 0 0 15px var(--gold-primary) !important;
+            opacity: 1 !important;
+            box-shadow: 0 0 10px var(--gold-primary) !important;
         }
 
         .status-row {
@@ -566,7 +574,6 @@
             box-shadow: 0 0 8px #ff0000;
         }
 
-        /* 移除反面翻面箭頭的下方方框 */
         .btn-flip-back {
             background: transparent !important;
             border: none !important;
@@ -1198,20 +1205,36 @@
         const isLayoutLarge = (count >= 2 && count <= 3);
         const isKingdoms = (state.currentGame.mode === 'Kingdoms');
 
+        // 規則 1 & 2：2-4 人時自動切換為對坐排版並放大卡片；5-8 人則維持原有模式與尺寸
+        const isFacingMode = (count >= 2 && count <= 4);
+
         if (isLayoutLarge) {
             grid.classList.add('layout-large');
         } else {
             grid.classList.remove('layout-large');
         }
 
+        if (isFacingMode) {
+            grid.classList.add('facing-mode');
+        } else {
+            grid.classList.remove('facing-mode');
+        }
+
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
 
+            // 2-4 人模式下放大卡片尺寸
+            if (isFacingMode) {
+                cardWrapper.style.minHeight = '240px';
+            } else {
+                cardWrapper.style.minHeight = '155px';
+            }
+
             const isEliminated = checkEliminated(p);
 
             cardWrapper.innerHTML = `
-                <div class="player-card ${isEliminated ? 'eliminated' : ''} ${p.isImmune ? 'immunity-active' : ''}" id="card-${index}">
+                <div class="player-card ${isEliminated ? 'eliminated' : ''} ${p.isImmune ? 'immunity-active' : ''}" id="card-${index}" style="min-height: ${isFacingMode ? '240px' : '155px'};">
                     <div class="skull-overlay">${SKULL_SVG_MARKUP}</div>
 
                     <!-- 卡牌正面 -->
@@ -1551,15 +1574,14 @@
             let isWin = winnersIndices.includes(idx);
             state.records.push({
                 date: dateStr,
-                gameIndex: state.gameCount,
                 name: p.name,
                 result: isWin ? 'WIN' : 'LOSE'
             });
         });
 
-        state.gameCount++;
+        // 規則 4：跨日局數重新計數（完整保留歷史資料）
+        // 透過計算當日（dateStr）已有的獨立局數，若跨日則自動從第 1 局重新開始計算
         localStorage.setItem('mtg_records', JSON.stringify(state.records));
-        localStorage.setItem('mtg_gameCount', state.gameCount);
         updateRecordsTable();
     }
 
@@ -1567,11 +1589,45 @@
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
-        state.records.slice().reverse().forEach(r => {
+        // 規則 4 實作：依日期分組，跨日自動重新計算當日局數編號，歷史資料完整保留
+        let recordsByDate = {};
+        state.records.forEach(r => {
+            if (!recordsByDate[r.date]) {
+                recordsByDate[r.date] = [];
+            }
+            recordsByDate[r.date].push(r);
+        });
+
+        let processedDisplayRecords = [];
+        Object.keys(recordsByDate).forEach(date => {
+            let dateRecords = recordsByDate[date];
+            // 由於每個玩家會同時寫入一筆紀錄，因此以「每組玩家數量」或「不重複批次」來計算局數
+            // 這裡我們用簡單的遞增或以每筆資料進來的順序計算當日第幾局
+            let uniqueGameCounter = 1;
+            let lastRecordedBatchSize = state.currentGame ? state.currentGame.players.length : 4; 
+            
+            // 為了更精準，我們可以按每 N 個玩家為一局（例如 4 人局就是每 4 筆記錄算一局）
+            let batchSize = lastRecordedBatchSize > 0 ? lastRecordedBatchSize : 4;
+            
+            dateRecords.forEach((r, idx) => {
+                if (idx > 0 && idx % batchSize === 0) {
+                    uniqueGameCounter++;
+                }
+                processedDisplayRecords.push({
+                    date: r.date,
+                    displayGameIndex: uniqueGameCounter,
+                    name: r.name,
+                    result: r.result,
+                    originalRecord: r
+                });
+            });
+        });
+
+        processedDisplayRecords.slice().reverse().forEach(r => {
             tbody.innerHTML += `
                 <tr>
                     <td>${r.date}</td>
-                    <td>第 ${r.gameIndex} 局</td>
+                    <td>第 ${r.displayGameIndex} 局</td>
                     <td>${r.name}</td>
                     <td>${r.result === 'WIN' ? '<span class="win-tag">👑 贏</span>' : '輸'}</td>
                 </tr>
@@ -1639,7 +1695,6 @@
                     importedData.forEach(importedRec => {
                         const isDuplicate = state.records.some(existingRec => 
                             existingRec.date === importedRec.date &&
-                            existingRec.gameIndex === importedRec.gameIndex &&
                             existingRec.name === importedRec.name &&
                             existingRec.result === importedRec.result
                         );
@@ -1649,14 +1704,6 @@
                             addedCount++;
                         }
                     });
-
-                    state.records.sort((a, b) => a.gameIndex - b.gameIndex);
-
-                    const maxGameIdx = state.records.reduce((max, r) => Math.max(max, r.gameIndex || 0), 0);
-                    if (maxGameIdx >= state.gameCount) {
-                        state.gameCount = maxGameIdx + 1;
-                        localStorage.setItem('mtg_gameCount', state.gameCount);
-                    }
 
                     localStorage.setItem('mtg_records', JSON.stringify(state.records));
                     updateRecordsTable();
