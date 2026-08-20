@@ -67,106 +67,85 @@
             font-weight: 700;
         }
 
-        /* 🪄 魔法棒漢堡選單按鈕樣式 */
+        /* 🪄 魔法特效漢堡選單按鈕樣式 (三條橫線) */
         .magic-menu-toggle {
-            background: none;
-            border: none;
+            background: radial-gradient(circle, rgba(30, 20, 50, 0.9) 0%, rgba(10, 8, 20, 0.95) 100%);
+            border: 1px solid var(--gold-primary);
+            border-radius: 8px;
             cursor: pointer;
             width: 44px;
             height: 44px;
             position: relative;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 5px;
+            /* 魔法微光與紫色魂光效果 */
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4), inset 0 0 8px rgba(138, 43, 226, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 魔法棒主體 */
-        .wand {
+        .magic-menu-toggle:hover {
+            border-color: var(--gold-light);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.8), 0 0 25px rgba(138, 43, 226, 0.6), inset 0 0 10px rgba(243, 229, 171, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* 三條橫線本體 */
+        .menu-line {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-light), var(--gold-primary));
+            border-radius: 2px;
+            box-shadow: 0 0 5px rgba(243, 229, 171, 0.8);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background 0.3s ease;
+        }
+
+        /* 魔法微粒星光特效 */
+        .magic-menu-toggle::before,
+        .magic-menu-toggle::after {
+            content: '';
             position: absolute;
             width: 3px;
-            height: 24px;
-            background: #a78bfa;
-            border-radius: 2px;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease, background 0.4s ease;
-            transform-origin: bottom center;
-            transform: rotate(180deg); /* 初始未開啟時：倒立 */
+            height: 3px;
+            background: var(--gold-light);
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 6px var(--gold-primary);
+            pointer-events: none;
+            animation: menuSparkle 2s infinite ease-in-out;
+        }
+        .magic-menu-toggle::before { top: -4px; right: -4px; animation-delay: 0s; }
+        .magic-menu-toggle::after { bottom: -4px; left: -4px; animation-delay: 1s; }
+
+        @keyframes menuSparkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* 頂端星星標誌 */
-        .wand::before {
-            content: '★';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.7);
-            font-size: 12px;
-            color: #d8b4fe;
-            opacity: 0.4;
-            transition: all 0.4s ease;
+        /* --- 展開狀態 (Active)：變成交叉 X 形狀 --- */
+        .magic-menu-toggle.active {
+            background: radial-gradient(circle, rgba(50, 20, 30, 0.9) 0%, rgba(20, 8, 15, 0.95) 100%);
+            border-color: var(--crimson-glow);
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.6), inset 0 0 10px rgba(169, 27, 27, 0.5);
         }
 
-        /* --- 開啟狀態 (Active) --- */
-        .magic-menu-toggle.active .wand {
-            background: #c084fc;
-            box-shadow: 0 0 6px #e879f9;
+        .magic-menu-toggle.active .menu-line {
+            background: linear-gradient(90deg, #ffffff, var(--crimson-glow));
+            box-shadow: 0 0 8px var(--crimson-glow);
         }
 
-        .magic-menu-toggle.active .wand::before {
-            color: #fef08a;
-            opacity: 1;
-            transform: translateX(-50%) scale(1.1) rotate(360deg);
-            text-shadow: 0 0 5px #facc15, 0 0 10px #fef08a;
+        .magic-menu-toggle.active .menu-line:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
         }
-
-        /* 三根魔法棒立起並展開的角度與位移 */
-        .magic-menu-toggle.active .wand-1 {
-            transform: rotate(-30deg) translate(-8px, -4px);
+        .magic-menu-toggle.active .menu-line:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
         }
-        .magic-menu-toggle.active .wand-2 {
-            transform: rotate(0deg) translate(0, -10px);
-        }
-        .magic-menu-toggle.active .wand-3 {
-            transform: rotate(30deg) translate(8px, -4px);
-        }
-
-        /* 容器設定 */
-        .menu-container {
-          position: relative;
-        }
-
-        /* 卡片基礎樣式 */
-        .menu-card {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 260px;
-          height: 60px;
-          background: rgba(20, 20, 30, 0.85);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
-          display: flex;
-          align-items: center;
-          padding: 0 16px;
-          cursor: pointer;
-        }
-
-        /* 收合時的垂直階梯錯位 (透過 nth-child 模擬) */
-        .menu-container:not(.is-open) .menu-card:nth-child(1) { transform: translateY(0px); z-index: 3; }
-        .menu-container:not(.is-open) .menu-card:nth-child(2) { transform: translateY(12px) scale(0.98); z-index: 2; opacity: 0.8; }
-        .menu-container:not(.is-open) .menu-card:nth-child(3) { transform: translateY(24px) scale(0.96); z-index: 1; opacity: 0.6; }
-
-        /* 展開時的垂直向下抽開間距 */
-        .menu-container.is-open .menu-card:nth-child(1) { transform: translateY(0px); }
-        .menu-container.is-open .menu-card:nth-child(2) { transform: translateY(72px); }
-        .menu-container.is-open .menu-card:nth-child(3) { transform: translateY(144px); }
-
-        /* 懸停互動 */
-        .menu-card:hover {
-          transform: translateX(8px) !important;
-          border-color: #4f46e5;
-          background: rgba(30, 30, 45, 0.95);
+        .magic-menu-toggle.active .menu-line:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
         }
 
         .menu-drawer {
@@ -908,11 +887,11 @@
 <div class="overlay">
     <nav class="navbar">
         <div class="brand">⚔️ MTG Life Counter</div>
-        <!-- 🪄 改用三根魔法棒漢堡選單按鈕 -->
+        <!-- 🪄 三條橫線魔力漢堡選單按鈕 -->
         <button class="magic-menu-toggle" onclick="toggleMenu()" aria-label="切換選單">
-            <div class="wand wand-1"></div>
-            <div class="wand wand-2"></div>
-            <div class="wand wand-3"></div>
+            <span class="menu-line"></span>
+            <span class="menu-line"></span>
+            <span class="menu-line"></span>
         </button>
     </nav>
 
@@ -920,9 +899,9 @@
         <div class="menu-header">
             <h3>選單 MENU</h3>
             <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單" style="width: 32px; height: 32px;">
-                <div class="wand wand-1"></div>
-                <div class="wand wand-2"></div>
-                <div class="wand wand-3"></div>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
             </button>
         </div>
         <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
@@ -1187,15 +1166,15 @@
 
     function toggleMenu() {
         document.getElementById('menuDrawer').classList.toggle('active');
-        // 同步切換導覽列魔法棒按鈕的動態 active 狀態
-        document.querySelector('.navbar .magic-menu-toggle').classList.toggle('active');
+        // 同步切換所有導覽列中的魔法漢堡按鈕 active 狀態
+        document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.toggle('active'));
     }
 
     function navTo(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
-        document.querySelector('.navbar .magic-menu-toggle').classList.remove('active');
+        document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.remove('active'));
         
         document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
         const activeMenuItem = document.getElementById(`menu-${viewId}`);
