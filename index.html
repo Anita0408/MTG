@@ -115,14 +115,17 @@
             transition: all 0.2s;
         }
 
-        .menu-item:hover { background: rgba(212, 175, 55, 0.2); }
+        /* 2. 取消按鈕的記憶狀態（移除黃色底維持預設） */
+        .menu-item:hover { 
+            background: rgba(212, 175, 55, 0.2); 
+        }
 
         .menu-item.active {
-            background: rgba(138, 109, 27, 0.85);
-            border: 1px solid var(--gold-light);
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--gold-dark);
             color: #fff;
-            font-weight: bold;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+            font-weight: normal;
+            box-shadow: none;
         }
 
         .btn-magic {
@@ -202,9 +205,9 @@
         }
 
         #game-view {
-            padding: 40px 10px 80px 10px;
+            padding: 15px 10px 80px 10px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
             position: relative;
             border-radius: 0;
@@ -244,15 +247,13 @@
             100% { opacity: 0.8; }
         }
 
-        /* 網格與卡片排版設定 (支援 2-8 人) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
+            gap: 12px;
             width: 100%;
             position: relative;
             z-index: 2;
-            padding: 20px;
         }
 
         .game-grid.layout-large { grid-template-columns: 1fr; }
@@ -260,33 +261,21 @@
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
-            min-height: 155px; 
-            width: 100%;
+            min-height: 205px;
+            height: 100%;
             will-change: transform;
             position: relative;
-            transition: transform 0.3s ease;
         }
 
-        /* 預設對坐旋轉 (2-4人模式會套用) */
-        .game-grid.facing-mode .player-card-wrapper:nth-child(odd) {
-            transform: rotate(90deg);
-        }
-        .game-grid.facing-mode .player-card-wrapper:nth-child(even) {
-            transform: rotate(-90deg);
-        }
-
-        /* 單欄模式下的旋轉處理 */
-        .game-grid.layout-large .player-card-wrapper:nth-child(1) {
+        /* 1. 調整為只有兩人才是對坐模式：支援對坐旋轉 180 度 */
+        .player-card-wrapper.seat-rotated {
             transform: rotate(180deg);
-        }
-        .game-grid.layout-large .player-card-wrapper:nth-child(n+2) {
-            transform: rotate(0deg);
         }
 
         .player-card {
             width: 100%; 
             height: 100%;
-            min-height: 155px;
+            min-height: 205px;
             position: relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
@@ -462,7 +451,7 @@
         }
 
         .life-display {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 900;
             text-align: center;
             font-family: 'Cinzel', serif;
@@ -488,47 +477,37 @@
             width: 100%;
         }
 
-        /* 調整 +1 / -1 按鈕：淡化視覺權重，讓焦點集中在血量數值 */
         .btn-life {
             flex: 1;
             padding: 4px 0;
-            font-size: 0.85rem;
-            font-weight: normal;
-            background: rgba(10, 8, 15, 0.4) !important;
-            border: 1px solid rgba(212, 175, 55, 0.35) !important;
-            color: rgba(243, 229, 171, 0.75);
+            font-size: 1rem;
+            font-weight: bold;
+            background: rgba(10, 8, 15, 0.75) !important;
+            border: 1px solid var(--gold-primary) !important;
+            color: var(--gold-light);
             border-radius: 4px;
             cursor: pointer;
-            backdrop-filter: blur(2px);
-            box-shadow: none;
-            transition: transform 0.08s ease, background 0.15s ease, opacity 0.15s ease;
-            opacity: 0.65;
-        }
-
-        .btn-life:hover {
-            opacity: 0.95;
-            background: rgba(212, 175, 55, 0.15) !important;
-            color: var(--gold-light);
+            backdrop-filter: blur(4px);
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+            transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
 
         .btn-life-large {
-            padding: 5px 0;
-            font-size: 0.95rem;
+            padding: 8px 0;
+            font-size: 1.4rem;
         }
 
         .btn-status-ctrl {
             padding: 4px 0;
             font-size: 0.9rem;
             border-radius: 4px;
-            opacity: 0.85;
         }
 
         .btn-life:active {
             transform: scale(0.92) !important;
             background: var(--gold-primary) !important;
             color: #100b18 !important;
-            opacity: 1 !important;
-            box-shadow: 0 0 10px var(--gold-primary) !important;
+            box-shadow: 0 0 15px var(--gold-primary) !important;
         }
 
         .status-row {
@@ -575,11 +554,11 @@
         }
 
         .btn-flip-back {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: var(--gold-light);
-            padding: 2px;
+            background: var(--gold-dark);
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -587,8 +566,8 @@
         }
 
         .btn-flip-back svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             fill: currentColor;
         }
 
@@ -644,6 +623,12 @@
             overflow-y: auto;
             position: relative;
             box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
+            transition: transform 0.3s ease;
+        }
+
+        /* 3. 傷害列表彈窗跟隨卡片旋轉（當為對坐的上方玩家時旋轉 180 度） */
+        .modal-content.rotated-180 {
+            transform: rotate(180deg);
         }
 
         .modal-close-x {
@@ -769,7 +754,7 @@
             <h3>選單 MENU</h3>
             <button class="hamburger-btn" onclick="toggleMenu()" aria-label="關閉選單">✕</button>
         </div>
-        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
+        <button class="menu-item" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
         <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
         <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">📜 對戰紀錄</button>
     </div>
@@ -873,7 +858,7 @@
 </div>
 
 <div class="modal-mask" id="cmdDamageModal">
-    <div class="modal-content">
+    <div class="modal-content" id="cmdModalContent">
         <button class="modal-close-x" onclick="closeModal('cmdDamageModal')" aria-label="關閉">✕</button>
         <div class="modal-title" id="cmdModalTitle">⚔️ 受到的指揮官傷害</div>
         <div class="cmd-damage-list" id="cmdDamageList"></div>
@@ -1205,36 +1190,27 @@
         const isLayoutLarge = (count >= 2 && count <= 3);
         const isKingdoms = (state.currentGame.mode === 'Kingdoms');
 
-        // 規則 1 & 2：2-4 人時自動切換為對坐排版並放大卡片；5-8 人則維持原有模式與尺寸
-        const isFacingMode = (count >= 2 && count <= 4);
-
         if (isLayoutLarge) {
             grid.classList.add('layout-large');
         } else {
             grid.classList.remove('layout-large');
         }
 
-        if (isFacingMode) {
-            grid.classList.add('facing-mode');
-        } else {
-            grid.classList.remove('facing-mode');
-        }
-
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
-            cardWrapper.className = 'player-card-wrapper';
-
-            // 2-4 人模式下放大卡片尺寸
-            if (isFacingMode) {
-                cardWrapper.style.minHeight = '240px';
+            
+            // 1. 調整為只有總人數為 2 人時才啟動對坐模式 (index 為 1 的玩家旋轉 180 度)
+            const isTwoPlayerMode = (count === 2);
+            if (isTwoPlayerMode && index === 1) {
+                cardWrapper.className = 'player-card-wrapper seat-rotated';
             } else {
-                cardWrapper.style.minHeight = '155px';
+                cardWrapper.className = 'player-card-wrapper';
             }
 
             const isEliminated = checkEliminated(p);
 
             cardWrapper.innerHTML = `
-                <div class="player-card ${isEliminated ? 'eliminated' : ''} ${p.isImmune ? 'immunity-active' : ''}" id="card-${index}" style="min-height: ${isFacingMode ? '240px' : '155px'};">
+                <div class="player-card ${isEliminated ? 'eliminated' : ''} ${p.isImmune ? 'immunity-active' : ''}" id="card-${index}">
                     <div class="skull-overlay">${SKULL_SVG_MARKUP}</div>
 
                     <!-- 卡牌正面 -->
@@ -1279,10 +1255,10 @@
                                 </div>
                             </div>
 
-                            <!-- 指揮官傷害 -->
+                            <!-- 指揮官傷害 (4. 按鈕優化：調整邊框、陰影與互動感) -->
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
-                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 4px; font-size:0.82rem; line-height: 1.2; margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 8px; font-size:0.85rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
                                     傷害列表
                                 </button>
                             </div>
@@ -1373,7 +1349,16 @@
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
+        const count = state.currentGame.players.length;
         
+        // 3. 確保手機上方卡片的傷害列表依據該玩家的旋轉方向同步旋轉
+        const modalContent = document.getElementById('cmdModalContent');
+        if (count === 2 && victimIndex === 1) {
+            modalContent.classList.add('rotated-180');
+        } else {
+            modalContent.classList.remove('rotated-180');
+        }
+
         document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
         
         const listContainer = document.getElementById('cmdDamageList');
@@ -1574,14 +1559,15 @@
             let isWin = winnersIndices.includes(idx);
             state.records.push({
                 date: dateStr,
+                gameIndex: state.gameCount,
                 name: p.name,
                 result: isWin ? 'WIN' : 'LOSE'
             });
         });
 
-        // 規則 4：跨日局數重新計數（完整保留歷史資料）
-        // 透過計算當日（dateStr）已有的獨立局數，若跨日則自動從第 1 局重新開始計算
+        state.gameCount++;
         localStorage.setItem('mtg_records', JSON.stringify(state.records));
+        localStorage.setItem('mtg_gameCount', state.gameCount);
         updateRecordsTable();
     }
 
@@ -1589,45 +1575,11 @@
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
-        // 規則 4 實作：依日期分組，跨日自動重新計算當日局數編號，歷史資料完整保留
-        let recordsByDate = {};
-        state.records.forEach(r => {
-            if (!recordsByDate[r.date]) {
-                recordsByDate[r.date] = [];
-            }
-            recordsByDate[r.date].push(r);
-        });
-
-        let processedDisplayRecords = [];
-        Object.keys(recordsByDate).forEach(date => {
-            let dateRecords = recordsByDate[date];
-            // 由於每個玩家會同時寫入一筆紀錄，因此以「每組玩家數量」或「不重複批次」來計算局數
-            // 這裡我們用簡單的遞增或以每筆資料進來的順序計算當日第幾局
-            let uniqueGameCounter = 1;
-            let lastRecordedBatchSize = state.currentGame ? state.currentGame.players.length : 4; 
-            
-            // 為了更精準，我們可以按每 N 個玩家為一局（例如 4 人局就是每 4 筆記錄算一局）
-            let batchSize = lastRecordedBatchSize > 0 ? lastRecordedBatchSize : 4;
-            
-            dateRecords.forEach((r, idx) => {
-                if (idx > 0 && idx % batchSize === 0) {
-                    uniqueGameCounter++;
-                }
-                processedDisplayRecords.push({
-                    date: r.date,
-                    displayGameIndex: uniqueGameCounter,
-                    name: r.name,
-                    result: r.result,
-                    originalRecord: r
-                });
-            });
-        });
-
-        processedDisplayRecords.slice().reverse().forEach(r => {
+        state.records.slice().reverse().forEach(r => {
             tbody.innerHTML += `
                 <tr>
                     <td>${r.date}</td>
-                    <td>第 ${r.displayGameIndex} 局</td>
+                    <td>第 ${r.gameIndex} 局</td>
                     <td>${r.name}</td>
                     <td>${r.result === 'WIN' ? '<span class="win-tag">👑 贏</span>' : '輸'}</td>
                 </tr>
@@ -1695,6 +1647,7 @@
                     importedData.forEach(importedRec => {
                         const isDuplicate = state.records.some(existingRec => 
                             existingRec.date === importedRec.date &&
+                            existingRec.gameIndex === importedRec.gameIndex &&
                             existingRec.name === importedRec.name &&
                             existingRec.result === importedRec.result
                         );
@@ -1704,6 +1657,14 @@
                             addedCount++;
                         }
                     });
+
+                    state.records.sort((a, b) => a.gameIndex - b.gameIndex);
+
+                    const maxGameIdx = state.records.reduce((max, r) => Math.max(max, r.gameIndex || 0), 0);
+                    if (maxGameIdx >= state.gameCount) {
+                        state.gameCount = maxGameIdx + 1;
+                        localStorage.setItem('mtg_gameCount', state.gameCount);
+                    }
 
                     localStorage.setItem('mtg_records', JSON.stringify(state.records));
                     updateRecordsTable();
