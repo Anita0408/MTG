@@ -125,19 +125,34 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(212, 175, 55, 0.4);
         }
 
+        /* 魔法流光按鈕與質感優化 */
         .btn-magic {
-            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
-            color: #0f0c19;
+            background: linear-gradient(180deg, #e6c566 0%, #d4af37 40%, #8a6d1b 100%);
+            color: #0a0712;
             border: 1px solid var(--gold-light);
-            padding: 10px 18px;
-            font-size: 1rem;
+            padding: 11px 20px;
+            font-size: 0.98rem;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 4px;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Cinzel', 'Noto Serif TC', serif;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-magic:hover:not(:disabled) {
+            filter: brightness(1.15);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.6), 0 4px 15px rgba(0, 0, 0, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .btn-magic:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
         }
 
         .btn-static {
@@ -258,7 +273,8 @@
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
-            min-height: 205px;
+            min-height: 220px;
+            aspect-ratio: 4 / 5;
             height: 100%;
             will-change: transform;
             position: relative;
@@ -285,10 +301,10 @@
             width: 100%; height: 100%;
             backface-visibility: hidden !important;
             -webkit-backface-visibility: hidden !important;
-            border: 1px solid var(--gold-primary) !important;
+            border: 1.5px solid var(--gold-primary) !important;
             outline: 1px solid rgba(212, 175, 55, 0.25);
             outline-offset: -4px;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 8px 10px;
             display: flex;
             flex-direction: column;
@@ -348,7 +364,6 @@
             transform: scale(1.1);
         }
 
-        /* 調整皇冠與不死圖示的垂直距離 */
         .action-icon-column {
             display: flex;
             flex-direction: column;
@@ -410,6 +425,9 @@
             align-items: flex-start;
             justify-content: space-between;
             cursor: pointer;
+            background: linear-gradient(180deg, rgba(10, 8, 15, 0.85) 0%, rgba(10, 8, 15, 0) 100%);
+            padding: 6px 8px;
+            border-radius: 6px 6px 0 0;
         }
 
         .player-info {
@@ -443,64 +461,94 @@
             filter: drop-shadow(0 0 6px #ffd700);
         }
 
+        /* 血量數字：絕對視覺焦點 (3.8rem) */
         .life-display {
-            font-size: 2.8rem;
+            font-size: 3.8rem !important;
             font-weight: 900;
             text-align: center;
             font-family: 'Cinzel', serif;
-            color: var(--gold-primary);
-            text-shadow: 0 3px 6px rgba(0, 0, 0, 1), 0 0 15px rgba(212, 175, 55, 0.6);
-            letter-spacing: 1px;
-            margin: 0;
+            color: var(--gold-light);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.75), 0 4px 12px rgba(0, 0, 0, 0.9);
+            letter-spacing: 2px;
+            margin: 4px 0;
             line-height: 1;
             cursor: pointer;
-            transition: transform 0.1s ease, color 0.15s ease;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s ease;
         }
 
         .life-display.danger {
-            color: var(--crimson-glow);
-            text-shadow: 0 0 12px rgba(255, 77, 77, 0.8);
+            color: var(--crimson-glow) !important;
+            text-shadow: 0 0 20px rgba(255, 77, 77, 0.9), 0 4px 12px rgba(0, 0, 0, 0.95) !important;
         }
 
+        /* 玻璃擬物風格按鈕 (Glassmorphism) */
         .life-controls {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
+            padding: 6px;
+            background: rgba(15, 10, 25, 0.45);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
         .btn-life {
             flex: 1;
-            padding: 4px 0;
-            font-size: 1rem;
+            padding: 8px 0;
+            font-size: 1.2rem;
             font-weight: bold;
-            background: rgba(10, 8, 15, 0.75) !important;
-            border: 1px solid var(--gold-primary) !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+            border: 1px solid rgba(212, 175, 55, 0.4) !important;
             color: var(--gold-light);
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
-            transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-life-large {
-            padding: 8px 0;
-            font-size: 1.4rem;
+        .btn-life:hover {
+            border-color: var(--gold-primary) !important;
+            color: #ffffff;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 0 12px rgba(212, 175, 55, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* 點擊脈衝動畫 (Pulse Animation) */
+        .btn-life:active {
+            animation: pulse-click 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+            background: rgba(212, 175, 55, 0.85) !important;
+            color: #0d0814 !important;
+            border-color: #ffffff !important;
+        }
+
+        @keyframes pulse-click {
+            0% {
+                transform: scale(0.92);
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 18px 6px rgba(212, 175, 55, 0.4);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+            }
         }
 
         .btn-status-ctrl {
             padding: 4px 0;
             font-size: 0.9rem;
-            border-radius: 4px;
-        }
-
-        .btn-life:active {
-            transform: scale(0.92) !important;
-            background: var(--gold-primary) !important;
-            color: #100b18 !important;
-            box-shadow: 0 0 15px var(--gold-primary) !important;
+            border-radius: 6px;
         }
 
         .status-row {
@@ -524,26 +572,29 @@
 
         .status-badges {
             display: flex;
-            gap: 4px;
-            font-size: 0.75rem;
+            gap: 6px;
+            font-size: 0.8rem;
             justify-content: center;
             cursor: pointer;
-            min-height: 16px;
+            min-height: 22px;
+            margin-bottom: 4px;
         }
 
         .badge {
-            background: rgba(42, 31, 61, 0.85);
-            padding: 1px 6px;
-            border-radius: 3px;
+            background: rgba(15, 12, 25, 0.85);
+            padding: 2px 8px;
+            border-radius: 4px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
         }
 
         .badge.warning-glow {
-            background: rgba(90, 0, 0, 0.85);
+            background: rgba(80, 10, 10, 0.9);
             border-color: #ff4d4d;
-            color: #ff9999;
-            box-shadow: 0 0 8px #ff0000;
+            color: #ffb3b3;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
         }
 
         .btn-flip-back {
@@ -592,11 +643,12 @@
 
         .btn-icon-styled svg { width: 24px; height: 24px; fill: currentColor; }
 
+        /* Modal 質感升級 */
         .modal-mask {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(6px);
+            background: rgba(5, 3, 10, 0.88);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -606,16 +658,21 @@
         .modal-mask.active { display: flex; }
 
         .modal-content {
-            background: rgba(24, 20, 36, 0.95);
-            border: 1px solid var(--gold-primary);
-            border-radius: 8px;
-            padding: 20px;
-            width: 95%;
-            max-width: 600px;
-            max-height: 90vh;
+            background: 
+                radial-gradient(circle at 50% 0%, rgba(138, 27, 27, 0.25) 0%, transparent 75%),
+                radial-gradient(circle at 50% 100%, rgba(35, 20, 60, 0.4) 0%, transparent 80%),
+                linear-gradient(180deg, #161124 0%, #0d0915 100%);
+            border: 1.5px solid var(--gold-primary);
+            outline: 1px solid rgba(212, 175, 55, 0.3);
+            outline-offset: -5px;
+            border-radius: 12px;
+            padding: 24px;
+            width: 92%;
+            max-width: 580px;
+            max-height: 85vh;
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(212, 175, 55, 0.2);
         }
 
         .modal-close-x {
@@ -629,12 +686,16 @@
         }
 
         .modal-title {
+            font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 18px;
             text-align: center;
-            border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 175, 55, 0.4);
+            letter-spacing: 1px;
         }
 
         .cmd-damage-list {
@@ -1211,8 +1272,8 @@
                         <div class="status-badges" id="status-badges-${index}"></div>
 
                         <div class="life-controls" onclick="event.stopPropagation()">
-                            <button class="btn-life btn-life-large btn-minus">-1</button>
-                            <button class="btn-life btn-life-large btn-plus">+1</button>
+                            <button class="btn-life btn-minus">-1</button>
+                            <button class="btn-life btn-plus">+1</button>
                         </div>
                     </div>
 
