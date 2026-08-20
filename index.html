@@ -148,21 +148,46 @@
             transform: translateY(-7px) rotate(-45deg);
         }
 
+        /* 🪄 優化：背景遮罩 (含暗色毛玻璃效果) */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 8, 15, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 499;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 🪄 優化：寬度改為 68%、極致風格統一與手機觸控區微調 */
         .menu-drawer {
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 300px;
+            right: -68%;
+            width: 68%;
+            max-width: 320px;
             height: 100%;
-            background: #14101d;
-            border-left: 2px solid var(--gold-primary);
-            box-shadow: -5px 0 25px rgba(0,0,0,0.8);
-            transition: right 0.3s ease;
+            background: rgba(20, 16, 29, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 1px solid var(--gold-primary);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 500;
-            padding: 20px;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .menu-drawer.active { right: 0; }
@@ -172,30 +197,37 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             color: var(--gold-primary);
         }
 
+        /* 🪄 選項拿掉厚底色，改為「細緻金框 + 透明底」與舒適觸控區 */
         .menu-item {
-            padding: 12px 15px;
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid var(--gold-dark);
-            color: #fff;
+            padding: 14px 18px;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--gold-light);
             text-align: left;
             cursor: pointer;
-            border-radius: 4px;
-            font-size: 1.1rem;
-            transition: all 0.2s;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 0 6px rgba(212, 175, 55, 0.05);
         }
 
-        .menu-item:hover { background: rgba(212, 175, 55, 0.2); }
+        .menu-item:hover { 
+            background: rgba(212, 175, 55, 0.12); 
+            border-color: var(--gold-primary);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2), inset 0 0 8px rgba(212, 175, 55, 0.15);
+        }
 
         .menu-item.active {
-            background: rgba(138, 109, 27, 0.85);
-            border: 1px solid var(--gold-light);
+            background: rgba(212, 175, 55, 0.18);
+            border: 1px solid var(--gold-primary);
             color: #fff;
             font-weight: bold;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+            box-shadow: inset 0 0 12px rgba(212, 175, 55, 0.3), 0 0 12px rgba(212, 175, 55, 0.35);
         }
 
         .btn-magic {
@@ -895,6 +927,9 @@
         </button>
     </nav>
 
+    <!-- 🪄 新增選單背後的毛玻璃遮罩 -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
             <h3>選單 MENU</h3>
@@ -1166,7 +1201,7 @@
 
     function toggleMenu() {
         document.getElementById('menuDrawer').classList.toggle('active');
-        // 同步切換所有導覽列中的魔法漢堡按鈕 active 狀態
+        document.getElementById('menuOverlay').classList.toggle('active');
         document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.toggle('active'));
     }
 
@@ -1174,6 +1209,7 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
+        document.getElementById('menuOverlay').classList.remove('active');
         document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.remove('active'));
         
         document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
