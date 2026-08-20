@@ -115,17 +115,14 @@
             transition: all 0.2s;
         }
 
-        /* 2. 取消按鈕的記憶狀態（移除黃色底維持預設） */
-        .menu-item:hover { 
-            background: rgba(212, 175, 55, 0.2); 
-        }
+        .menu-item:hover { background: rgba(212, 175, 55, 0.2); }
 
         .menu-item.active {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid var(--gold-dark);
+            background: rgba(138, 109, 27, 0.85);
+            border: 1px solid var(--gold-light);
             color: #fff;
-            font-weight: normal;
-            box-shadow: none;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(212, 175, 55, 0.4);
         }
 
         .btn-magic {
@@ -267,11 +264,6 @@
             position: relative;
         }
 
-        /* 1. 調整為只有兩人才是對坐模式：支援對坐旋轉 180 度 */
-        .player-card-wrapper.seat-rotated {
-            transform: rotate(180deg);
-        }
-
         .player-card {
             width: 100%; 
             height: 100%;
@@ -356,6 +348,7 @@
             transform: scale(1.1);
         }
 
+        /* 調整皇冠與不死圖示的垂直距離 */
         .action-icon-column {
             display: flex;
             flex-direction: column;
@@ -623,12 +616,6 @@
             overflow-y: auto;
             position: relative;
             box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
-            transition: transform 0.3s ease;
-        }
-
-        /* 3. 傷害列表彈窗跟隨卡片旋轉（當為對坐的上方玩家時旋轉 180 度） */
-        .modal-content.rotated-180 {
-            transform: rotate(180deg);
         }
 
         .modal-close-x {
@@ -754,7 +741,7 @@
             <h3>選單 MENU</h3>
             <button class="hamburger-btn" onclick="toggleMenu()" aria-label="關閉選單">✕</button>
         </div>
-        <button class="menu-item" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
+        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
         <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
         <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">📜 對戰紀錄</button>
     </div>
@@ -858,7 +845,7 @@
 </div>
 
 <div class="modal-mask" id="cmdDamageModal">
-    <div class="modal-content" id="cmdModalContent">
+    <div class="modal-content">
         <button class="modal-close-x" onclick="closeModal('cmdDamageModal')" aria-label="關閉">✕</button>
         <div class="modal-title" id="cmdModalTitle">⚔️ 受到的指揮官傷害</div>
         <div class="cmd-damage-list" id="cmdDamageList"></div>
@@ -1198,14 +1185,7 @@
 
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
-            
-            // 1. 調整為只有總人數為 2 人時才啟動對坐模式 (index 為 1 的玩家旋轉 180 度)
-            const isTwoPlayerMode = (count === 2);
-            if (isTwoPlayerMode && index === 1) {
-                cardWrapper.className = 'player-card-wrapper seat-rotated';
-            } else {
-                cardWrapper.className = 'player-card-wrapper';
-            }
+            cardWrapper.className = 'player-card-wrapper';
 
             const isEliminated = checkEliminated(p);
 
@@ -1255,10 +1235,10 @@
                                 </div>
                             </div>
 
-                            <!-- 指揮官傷害 (4. 按鈕優化：調整邊框、陰影與互動感) -->
+                            <!-- 指揮官傷害 -->
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
-                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 8px; font-size:0.85rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 4px; font-size:0.82rem; line-height: 1.2; margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
                                     傷害列表
                                 </button>
                             </div>
@@ -1349,16 +1329,7 @@
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
-        const count = state.currentGame.players.length;
         
-        // 3. 確保手機上方卡片的傷害列表依據該玩家的旋轉方向同步旋轉
-        const modalContent = document.getElementById('cmdModalContent');
-        if (count === 2 && victimIndex === 1) {
-            modalContent.classList.add('rotated-180');
-        } else {
-            modalContent.classList.remove('rotated-180');
-        }
-
         document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
         
         const listContainer = document.getElementById('cmdDamageList');
