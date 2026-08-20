@@ -67,12 +67,66 @@
             font-weight: 700;
         }
 
-        .hamburger-btn {
+        /* 🪄 魔法棒漢堡選單按鈕樣式 */
+        .magic-menu-toggle {
             background: none;
             border: none;
-            color: var(--gold-primary);
-            font-size: 1.8rem;
             cursor: pointer;
+            width: 44px;
+            height: 44px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 魔法棒主體 */
+        .wand {
+            position: absolute;
+            width: 3px;
+            height: 24px;
+            background: #a78bfa;
+            border-radius: 2px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease, background 0.4s ease;
+            transform-origin: bottom center;
+            transform: rotate(180deg); /* 初始未開啟時：倒立 */
+        }
+
+        /* 頂端星星標誌 */
+        .wand::before {
+            content: '★';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.7);
+            font-size: 12px;
+            color: #d8b4fe;
+            opacity: 0.4;
+            transition: all 0.4s ease;
+        }
+
+        /* --- 開啟狀態 (Active) --- */
+        .magic-menu-toggle.active .wand {
+            background: #c084fc;
+            box-shadow: 0 0 6px #e879f9;
+        }
+
+        .magic-menu-toggle.active .wand::before {
+            color: #fef08a;
+            opacity: 1;
+            transform: translateX(-50%) scale(1.1) rotate(360deg);
+            text-shadow: 0 0 5px #facc15, 0 0 10px #fef08a;
+        }
+
+        /* 三根魔法棒立起並展開的角度與位移 */
+        .magic-menu-toggle.active .wand-1 {
+            transform: rotate(-30deg) translate(-8px, -4px);
+        }
+        .magic-menu-toggle.active .wand-2 {
+            transform: rotate(0deg) translate(0, -10px);
+        }
+        .magic-menu-toggle.active .wand-3 {
+            transform: rotate(30deg) translate(8px, -4px);
         }
 
         /* 容器設定 */
@@ -854,13 +908,22 @@
 <div class="overlay">
     <nav class="navbar">
         <div class="brand">⚔️ MTG Life Counter</div>
-        <button class="hamburger-btn" onclick="toggleMenu()" aria-label="切換選單">☰</button>
+        <!-- 🪄 改用三根魔法棒漢堡選單按鈕 -->
+        <button class="magic-menu-toggle" onclick="toggleMenu()" aria-label="切換選單">
+            <div class="wand wand-1"></div>
+            <div class="wand wand-2"></div>
+            <div class="wand wand-3"></div>
+        </button>
     </nav>
 
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
             <h3>選單 MENU</h3>
-            <button class="hamburger-btn" onclick="toggleMenu()" aria-label="關閉選單">✕</button>
+            <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單" style="width: 32px; height: 32px;">
+                <div class="wand wand-1"></div>
+                <div class="wand wand-2"></div>
+                <div class="wand wand-3"></div>
+            </button>
         </div>
         <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
         <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
@@ -1124,12 +1187,15 @@
 
     function toggleMenu() {
         document.getElementById('menuDrawer').classList.toggle('active');
+        // 同步切換導覽列魔法棒按鈕的動態 active 狀態
+        document.querySelector('.navbar .magic-menu-toggle').classList.toggle('active');
     }
 
     function navTo(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
+        document.querySelector('.navbar .magic-menu-toggle').classList.remove('active');
         
         document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
         const activeMenuItem = document.getElementById(`menu-${viewId}`);
