@@ -164,7 +164,6 @@
             visibility: visible;
         }
 
-        /* 1. 拿掉左邊直線與外框，改為純淨抽屜 */
         .menu-drawer {
             position: fixed;
             top: 0;
@@ -179,7 +178,7 @@
             box-shadow: -15px 0 40px rgba(0, 0, 0, 0.85);
             transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 500;
-            padding: 24px 0; /* 上下滿版，讓項目貼齊或簡潔排列 */
+            padding: 24px 0;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -189,24 +188,24 @@
 
         .menu-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             padding: 0 20px 16px 20px;
             color: var(--gold-primary);
         }
 
-        /* 3 & 4. 拿掉方框與 Emoji，改為質感清單列 */
         .menu-item {
             padding: 16px 24px;
             background: transparent;
             border: none;
-            border-left: 3px solid transparent; /* 未選中時左側保留透明條以防跳動 */
+            border-left: 3px solid transparent;
             color: #bfa87a;
             text-align: left;
             cursor: pointer;
             border-radius: 0;
             font-size: 1.1rem;
+            font-family: 'Noto Serif TC', serif;
             transition: all 0.2s ease;
         }
 
@@ -217,7 +216,7 @@
 
         .menu-item.active {
             background: rgba(212, 175, 55, 0.15);
-            border-left: 3px solid var(--gold-primary); /* 選中時左側顯示精緻金線 */
+            border-left: 3px solid var(--gold-primary);
             color: #fff;
             font-weight: bold;
         }
@@ -260,6 +259,7 @@
             font-size: 0.85rem;
             border-radius: 4px;
             cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
             transition: all 0.2s;
         }
         .btn-subtle:hover {
@@ -595,6 +595,7 @@
             cursor: pointer;
             backdrop-filter: blur(2px);
             box-shadow: none !important;
+            font-family: 'Noto Serif TC', serif;
             transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
         }
 
@@ -737,6 +738,7 @@
             overflow-y: auto;
             position: relative;
             box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
+            font-family: 'Noto Serif TC', serif;
         }
 
         .modal-close-x {
@@ -813,6 +815,7 @@
             color: #fff;
             border-radius: 4px;
             font-size: 0.9rem;
+            font-family: 'Noto Serif TC', serif;
             -webkit-user-select: text;
             user-select: text;
         }
@@ -919,11 +922,10 @@
 
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
-    <!-- 2 & 3 & 4. 簡化標題與頁籤設計 -->
+    <!-- 抽屜選單 -->
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
-            <h3>選單</h3>
-            <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單" style="width: 32px; height: 32px;">
+            <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單">
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
@@ -1485,10 +1487,10 @@
         }
 
         badgesContainer.innerHTML = `
-            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 毒:${p.poison}</span>` : ''}
+            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 ${p.poison}</span>` : ''}
             ${maxCmdDmg > 0 ? `
                 <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                    ⚔️ 傷:${maxCmdDmg}
+                    ⚔️ ${maxCmdDmg}
                 </span>
             ` : ''}
         `;
