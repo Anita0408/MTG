@@ -13,7 +13,7 @@
             --gold-dark: #8a6d1b;
             --crimson: #a91b1b;
             --crimson-glow: #ff4d4d;
-            --border-style: 2px solid var(--gold-primary);
+            --border-style: 1px solid var(--gold-primary);
         }
 
         * {
@@ -230,13 +230,18 @@
                 radial-gradient(3px 3px at 400px 220px, #ff3300, rgba(0,0,0,0));
             background-repeat: repeat;
             background-size: 900px 400px;
-            animation: embersMove 12s linear infinite;
+            animation: embersMove 12s linear infinite, pulseGlow 4s ease-in-out infinite alternate;
             opacity: 0.7;
         }
 
         @keyframes embersMove {
             0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
             100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px; }
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
         }
 
         .game-grid {
@@ -255,6 +260,7 @@
             -webkit-perspective: 1000px;
             min-height: 195px;
             height: 100%;
+            will-change: transform;
         }
 
         .player-card {
@@ -284,7 +290,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 0 1px rgba(243, 229, 171, 0.3), 0 8px 25px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             background-size: cover;
             background-position: center;
@@ -368,7 +374,8 @@
             text-align: center;
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 8px rgba(212,175,55,0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(212, 175, 55, 0.5);
+            letter-spacing: 1px;
             margin: 0;
             line-height: 1;
             cursor: pointer;
@@ -398,6 +405,7 @@
             border-radius: 4px;
             cursor: pointer;
             backdrop-filter: blur(2px);
+            transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
 
         .btn-life-large {
@@ -412,8 +420,10 @@
         }
 
         .btn-life:active {
-            background: var(--gold-primary);
-            color: #000;
+            transform: scale(0.92);
+            background: var(--gold-primary) !important;
+            color: #000 !important;
+            box-shadow: 0 0 10px var(--gold-primary);
         }
 
         .status-row {
@@ -505,6 +515,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -514,8 +525,8 @@
         .modal-mask.active { display: flex; }
 
         .modal-content {
-            background: #181424;
-            border: var(--border-style);
+            background: rgba(24, 20, 36, 0.95);
+            border: 1px solid var(--gold-primary);
             border-radius: 8px;
             padding: 20px;
             width: 95%;
@@ -523,7 +534,7 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
         .modal-close-x {
@@ -798,34 +809,59 @@
 
     let activeSelectingPlayerIndex = null;
 
-    // 核心 Pointer Event 長按事件綁定工具
+    /**
+     * 重構後的長按工具：
+     * 1. 支援點擊（點一次加減一次）
+     * 2. 按住 350ms 後開啓連續觸發
+     * 3. 初始頻率 150ms，後續漸進加速，不暴走
+     * 4. 嚴格鎖定 Pointer Capture，避免 DOM 或觸控轉移導致事件遺失
+     */
     function bindHoldEvent(element, actionFn) {
         if (!element) return;
         let holdTimer = null;
         let holdInterval = null;
-
-        const start = (e) => {
-            if (e.cancelable) e.preventDefault();
-            e.stopPropagation();
-            stop();
-            actionFn();
-            holdTimer = setTimeout(() => {
-                holdInterval = setInterval(actionFn, 100);
-            }, 400);
-        };
+        let activePointerId = null;
 
         const stop = (e) => {
-            if (e) e.stopPropagation();
+            if (activePointerId !== null && element.releasePointerCapture) {
+                try { element.releasePointerCapture(activePointerId); } catch(err){}
+                activePointerId = null;
+            }
             if (holdTimer) clearTimeout(holdTimer);
             if (holdInterval) clearInterval(holdInterval);
             holdTimer = null;
             holdInterval = null;
         };
 
+        const start = (e) => {
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+            stop();
+
+            activePointerId = e.pointerId;
+            if (element.setPointerCapture) {
+                try { element.setPointerCapture(e.pointerId); } catch(err){}
+            }
+
+            // 立即執行第一次點擊
+            actionFn();
+
+            // 延遲 350ms 後開始連刷
+            holdTimer = setTimeout(() => {
+                let speed = 150;
+                const runStep = () => {
+                    actionFn();
+                    speed = Math.max(60, speed * 0.9); // 逐漸加速，上限 60ms
+                    holdInterval = setTimeout(runStep, speed);
+                };
+                runStep();
+            }, 350);
+        };
+
         element.addEventListener('pointerdown', start);
         element.addEventListener('pointerup', stop);
-        element.addEventListener('pointerleave', stop);
         element.addEventListener('pointercancel', stop);
+        element.addEventListener('pointerleave', stop);
     }
 
     function truncateName(name, limit = 7, cutLen = 6) {
@@ -1036,31 +1072,12 @@
             grid.classList.remove('layout-large');
         }
 
-        const flippedIndices = new Set();
-        document.querySelectorAll('.player-card.flipped').forEach(card => {
-            const idx = card.id.replace('card-', '');
-            flippedIndices.add(parseInt(idx));
-        });
-
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
             cardWrapper.className = 'player-card-wrapper';
-            const isFlipped = flippedIndices.has(index);
-
-            let maxCmdDmg = 0;
-            let maxAttackerName = "";
-
-            if (p.cmdDamages) {
-                Object.entries(p.cmdDamages).forEach(([attacker, dmg]) => {
-                    if (dmg > maxCmdDmg) {
-                        maxCmdDmg = dmg;
-                        maxAttackerName = attacker;
-                    }
-                });
-            }
 
             cardWrapper.innerHTML = `
-                <div class="player-card ${isFlipped ? 'flipped' : ''}" id="card-${index}">
+                <div class="player-card" id="card-${index}">
                     <!-- 卡牌正面 -->
                     <div class="card-front" style="background-image: url('${p.avatar}');" onclick="flipCard(${index})">
                         <div class="card-header">
@@ -1070,16 +1087,9 @@
                             ${state.currentGame.mode === 'Kingdoms' ? 
                                 `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="event.stopPropagation(); toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
                         </div>
-                        <div class="life-display ${p.life <= 10 ? 'danger' : ''}">${p.life}</div>
+                        <div class="life-display ${p.life <= 10 ? 'danger' : ''}" id="life-val-${index}">${p.life}</div>
                         
-                        <div class="status-badges">
-                            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 毒:${p.poison}</span>` : ''}
-                            ${maxCmdDmg > 0 ? `
-                                <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${truncateName(maxAttackerName)})` : ''}
-                                </span>
-                            ` : ''}
-                        </div>
+                        <div class="status-badges" id="status-badges-${index}"></div>
 
                         <div class="life-controls" onclick="event.stopPropagation()">
                             <button class="btn-life btn-life-large btn-minus">-1</button>
@@ -1109,8 +1119,8 @@
                             <!-- 指揮官傷害 -->
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
-                                <button class="btn-magic" style="width:100%; padding: 6px 4px; font-size:0.82rem; line-height: 1.2; margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                                    傷害列表 (最高: ${maxCmdDmg})
+                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 4px; font-size:0.82rem; line-height: 1.2; margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                    傷害列表
                                 </button>
                             </div>
                         </div>
@@ -1118,28 +1128,75 @@
                 </div>
             `;
 
-            // 動態綁定 Pointer 事件長按
+            // 動態綁定長按與點擊事件（綁定一次，永不上拆）
             bindHoldEvent(cardWrapper.querySelector('.btn-minus'), () => changeLife(index, -1));
             bindHoldEvent(cardWrapper.querySelector('.btn-plus'), () => changeLife(index, 1));
             bindHoldEvent(cardWrapper.querySelector('.btn-poison-minus'), () => changeStatus(index, 'poison', -1));
             bindHoldEvent(cardWrapper.querySelector('.btn-poison-plus'), () => changeStatus(index, 'poison', 1));
 
             grid.appendChild(cardWrapper);
+            updateCardBadgesUI(index);
         });
+    }
+
+    /**
+     * 局部更新 DOM，避免重建全體卡牌
+     */
+    function updateCardBadgesUI(index) {
+        const p = state.currentGame.players[index];
+        const badgesContainer = document.getElementById(`status-badges-${index}`);
+        const cmdBtn = document.getElementById(`cmd-btn-${index}`);
+
+        if (!badgesContainer) return;
+
+        let maxCmdDmg = 0;
+        let maxAttackerName = "";
+
+        if (p.cmdDamages) {
+            Object.entries(p.cmdDamages).forEach(([attacker, dmg]) => {
+                if (dmg > maxCmdDmg) {
+                    maxCmdDmg = dmg;
+                    maxAttackerName = attacker;
+                }
+            });
+        }
+
+        badgesContainer.innerHTML = `
+            ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 毒:${p.poison}</span>` : ''}
+            ${maxCmdDmg > 0 ? `
+                <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${truncateName(maxAttackerName)})` : ''}
+                </span>
+            ` : ''}
+        `;
+
+        if (cmdBtn) {
+            cmdBtn.innerText = `傷害列表 (最高: ${maxCmdDmg})`;
+        }
     }
 
     function changeLife(index, delta) {
         let p = state.currentGame.players[index];
         p.life += delta;
         saveCurrentGame();
-        renderGameGrid();
+
+        // 精準局部更新數字與視覺，不重建 DOM
+        const lifeDisplay = document.getElementById(`life-val-${index}`);
+        if (lifeDisplay) {
+            lifeDisplay.innerText = p.life;
+            if (p.life <= 10) {
+                lifeDisplay.classList.add('danger');
+            } else {
+                lifeDisplay.classList.remove('danger');
+            }
+        }
     }
 
     function changeStatus(index, type, delta) {
         let p = state.currentGame.players[index];
         p[type] = Math.max(0, (p[type] || 0) + delta);
         saveCurrentGame();
-        renderGameGrid();
+        updateCardBadgesUI(index);
     }
 
     function openCmdDamageModal(victimIndex) {
@@ -1175,7 +1232,7 @@
                         <span style="color: var(--gold-light); font-weight: bold;" title="${atk.name}">${displayName}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
+                        <span id="cmd-val-${victimIndex}-${atk.name}" style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
                             ${currentDmg} / 21
                         </span>
                         <div style="display: flex; gap: 4px;">
@@ -1200,11 +1257,19 @@
         if (!victim.cmdDamages) victim.cmdDamages = {};
         
         let current = victim.cmdDamages[attackerName] || 0;
-        victim.cmdDamages[attackerName] = Math.max(0, current + delta);
+        let updated = Math.max(0, current + delta);
+        victim.cmdDamages[attackerName] = updated;
 
         saveCurrentGame();
-        renderGameGrid();
-        openCmdDamageModal(victimIndex);
+        
+        // 局部更新 Modal 中的數值
+        const valElem = document.getElementById(`cmd-val-${victimIndex}-${attackerName}`);
+        if (valElem) {
+            valElem.innerText = `${updated} / 21`;
+            valElem.style.color = updated >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)';
+        }
+
+        updateCardBadgesUI(victimIndex);
     }
 
     function toggleMonarch(index) {
