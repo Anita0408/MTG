@@ -2,12 +2,12 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 修正問題 2：禁止手機瀏覽器放大縮小功能 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>魔法風雲會 - 決戰計血器</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 調淡遮罩層，讓照片更清楚 */
             --bg-overlay: rgba(15, 12, 25, 0.75);
             --gold-primary: #d4af37;
             --gold-light: #f3e5ab;
@@ -27,6 +27,8 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
+            /* 禁用雙擊放大 */
+            touch-action: manipulation;
         }
 
         body {
@@ -119,7 +121,6 @@
             background: rgba(212, 175, 55, 0.2);
         }
 
-        /* 漢堡選單：所在的頁籤顏色較深、被選取的感視覺效果 */
         .menu-item.active {
             background: rgba(138, 109, 27, 0.85);
             border: 1px solid var(--gold-light);
@@ -143,12 +144,6 @@
             font-family: 'Cinzel', 'Noto Serif TC', serif;
         }
 
-        .btn-magic:hover {
-            filter: brightness(1.1);
-            transform: translateY(-2px);
-        }
-
-        /* 固定顏色的匯入/匯出按鈕：無視 Hover/Active 的變色效果 */
         .btn-static {
             background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark)) !important;
             color: #0f0c19 !important;
@@ -277,16 +272,18 @@
             grid-template-columns: 1fr;
         }
 
-        /* CSS 3D 翻轉與 iOS Safari 相容性修正 */
+        /* 修正問題 1：調整高度以彈性擴展，避免跑版與元件擠出 */
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
-            min-height: 180px;
+            min-height: 195px;
+            height: 100%;
         }
 
         .player-card {
             width: 100%; 
             height: 100%;
+            min-height: 195px;
             position: relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
@@ -311,7 +308,7 @@
             -webkit-backface-visibility: hidden !important;
             border: var(--border-style);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 8px 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -319,6 +316,7 @@
             overflow: hidden;
             background-size: cover;
             background-position: center;
+            box-sizing: border-box;
         }
 
         .card-front {
@@ -331,15 +329,14 @@
             z-index: 1;
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
-            padding: 10px;
+            padding: 8px 10px;
         }
 
-        /* 調整遮罩透明度，使背景照片顯現更加清晰 (從原本 0.85/0.95 調淡至 0.45/0.65) */
         .card-front::before, .card-back::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(15, 12, 25, 0.45) 0%, rgba(10, 8, 15, 0.65) 100%);
+            background: linear-gradient(180deg, rgba(15, 12, 25, 0.5) 0%, rgba(10, 8, 15, 0.75) 100%);
             z-index: 1;
         }
 
@@ -348,12 +345,13 @@
             z-index: 2;
         }
 
+        /* 修正背面內部布局：採用緊湊彈性間距 */
         .card-back-body {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            gap: 6px;
+            gap: 4px;
         }
 
         .card-header {
@@ -376,7 +374,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 200px;
+            max-width: 180px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.9);
         }
 
@@ -437,8 +435,8 @@
         }
 
         .btn-status-ctrl {
-            padding: 6px 0;
-            font-size: 0.95rem;
+            padding: 4px 0;
+            font-size: 0.9rem;
             border-radius: 4px;
         }
 
@@ -450,15 +448,15 @@
         .status-row {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 6px 8px;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 4px 8px;
             border-radius: 6px;
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
 
         .status-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: var(--gold-light);
             display: flex;
@@ -784,7 +782,6 @@
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰歷史紀錄</h2>
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <!-- 加上 btn-static 固定顏色，不隨 Hover / Click 改變 -->
             <button class="btn-magic btn-static" onclick="exportRecords()">匯出紀錄</button>
             <button class="btn-magic btn-static" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
@@ -959,7 +956,6 @@
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
         
-        // 更新漢堡選單的頁籤深色選取效果
         document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
         const activeMenuItem = document.getElementById(`menu-${viewId}`);
         if (activeMenuItem) activeMenuItem.classList.add('active');
@@ -1167,7 +1163,7 @@
                         </div>
                     </div>
 
-                    <!-- 卡牌背面 (僅顯示中毒標記與指揮官傷害按鈕) -->
+                    <!-- 卡牌背面 (優化 layout 結構) -->
                     <div class="card-back" style="background-image: url('${p.avatar}');">
                         <div class="card-back-body">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1422,7 +1418,6 @@
         dlAnchorElem.click();
     }
 
-    // 匯入資料邏輯修正：合併（去重）歷史紀錄，不覆蓋既有資料
     function importRecords(event) {
         const fileReader = new FileReader();
         fileReader.onload = function(e) {
@@ -1431,7 +1426,6 @@
                 if (Array.isArray(importedData)) {
                     let addedCount = 0;
                     importedData.forEach(importedRec => {
-                        // 檢查該條紀錄是否已存在（避免重複加入）
                         const isDuplicate = state.records.some(existingRec => 
                             existingRec.date === importedRec.date &&
                             existingRec.gameIndex === importedRec.gameIndex &&
@@ -1445,10 +1439,8 @@
                         }
                     });
 
-                    // 重新依局數與日期排序
                     state.records.sort((a, b) => a.gameIndex - b.gameIndex);
 
-                    // 更新最大局數
                     const maxGameIdx = state.records.reduce((max, r) => Math.max(max, r.gameIndex || 0), 0);
                     if (maxGameIdx >= state.gameCount) {
                         state.gameCount = maxGameIdx + 1;
@@ -1462,7 +1454,6 @@
             } catch (err) {
                 alert("檔案格式錯誤，匯入失敗。");
             }
-            // 清空 file input，允許重複選擇相同檔案
             event.target.value = '';
         };
         fileReader.readAsText(event.target.files[0]);
