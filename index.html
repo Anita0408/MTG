@@ -20,7 +20,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* 徹底防止行動裝置長壓出現藍色選取框與點擊高亮 */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -147,7 +146,6 @@
             opacity: 0.5;
         }
 
-        /* 首頁圓形魔法按鈕樣式 */
         .btn-round-home {
             width: 120px;
             height: 120px;
@@ -170,23 +168,12 @@
             overflow: hidden;
         }
 
-        .btn-round-home::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
         .btn-round-home:hover {
             transform: scale(1.08);
             border-color: #fff;
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.7), inset 0 0 20px rgba(212, 175, 55, 0.4);
             color: #fff;
         }
-
-        .btn-round-home:hover::after { opacity: 1; }
 
         .view {
             display: none;
@@ -212,9 +199,6 @@
             margin-bottom: 10px;
         }
 
-        /* -------------------------------------------------------------
-           獨立賽場背景樣式：深邃魔幻漸層 + 戰鬥點點火光（無邊框）
-        ------------------------------------------------------------- */
         #game-view {
             padding: 15px 10px 80px 10px;
             width: 100%;
@@ -223,7 +207,7 @@
             position: relative;
             border-radius: 12px;
             box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
-            border: none; /* 已移除金邊 */
+            border: none;
             overflow: hidden;
             background: 
                 radial-gradient(circle at 50% 30%, rgba(138, 27, 27, 0.35) 0%, transparent 70%),
@@ -232,7 +216,6 @@
                 linear-gradient(180deg, #07050a 0%, #150a18 50%, #08030b 100%);
         }
 
-        /* 賽場火光粒子層 */
         .ember-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -257,7 +240,6 @@
             100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px, -120px -400px, 60px -400px, -80px -400px; }
         }
 
-        /* 雙欄網格 */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -267,13 +249,16 @@
             z-index: 2;
         }
 
-        /* 2~3人單欄橫長版面 */
         .game-grid.layout-large {
             grid-template-columns: 1fr;
         }
 
+        /* -------------------------------------------------------------
+           修正 3D 翻轉與 iOS Safari 視角問題
+        ------------------------------------------------------------- */
         .player-card-wrapper {
             perspective: 1000px;
+            -webkit-perspective: 1000px;
             min-height: 180px;
         }
 
@@ -282,10 +267,15 @@
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1), filter 0.3s;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
 
-        .player-card.flipped { transform: rotateY(180deg); }
+        /* 翻牌時旋轉 180 度 */
+        .player-card.flipped { 
+            transform: rotateY(180deg); 
+            -webkit-transform: rotateY(180deg); 
+        }
 
         .player-card.dead {
             filter: grayscale(0.9) brightness(0.35);
@@ -296,8 +286,8 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden !important;
+            -webkit-backface-visibility: hidden !important;
             border: var(--border-style);
             border-radius: 8px;
             padding: 8px 12px;
@@ -310,12 +300,25 @@
             background-position: center;
         }
 
-        /* 深色圖層遮罩以保證文字清晰 */
+        .card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
+        }
+
+        .card-back {
+            z-index: 1;
+            /* 關鍵：背面初始必須先轉 180 度，這樣當父級翻轉 180 度時，背面才會是正的 */
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            padding: 10px;
+        }
+
         .card-front::before, .card-back::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(15, 12, 25, 0.8) 0%, rgba(10, 8, 15, 0.92) 100%);
+            background: linear-gradient(180deg, rgba(15, 12, 25, 0.85) 0%, rgba(10, 8, 15, 0.95) 100%);
             z-index: 1;
         }
 
@@ -324,28 +327,12 @@
             z-index: 2;
         }
 
-        .card-back {
-            transform: rotateY(180deg);
-            padding: 12px;
-        }
-
         .card-back-body {
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-around;
-            gap: 12px;
-            width: 100%;
-            height: 100%;
-        }
-
-        .card-back-item {
-            flex: 1;
-            display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             height: 100%;
+            gap: 6px;
         }
 
         .card-header {
@@ -428,15 +415,34 @@
             font-size: 1.4rem;
         }
 
-        .btn-status-large {
-            padding: 12px 0;
-            font-size: 1.3rem;
-            border-radius: 6px;
+        .btn-status-ctrl {
+            padding: 4px 0;
+            font-size: 1.1rem;
+            border-radius: 4px;
         }
 
         .btn-life:active {
             background: var(--gold-primary);
             color: #000;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .status-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .status-badges {
@@ -454,7 +460,6 @@
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
-            transition: all 0.2s;
         }
 
         .badge.warning-glow {
@@ -462,12 +467,16 @@
             border-color: #ff4d4d;
             color: #ff9999;
             box-shadow: 0 0 8px #ff0000;
-            animation: pulse-red 1.2s infinite alternate;
         }
 
-        @keyframes pulse-red {
-            from { box-shadow: 0 0 4px #ff0000; }
-            to { box-shadow: 0 0 12px #ff4d4d; }
+        .btn-flip-back {
+            background: var(--gold-dark);
+            color: #fff;
+            border: none;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         .floating-controls {
@@ -478,7 +487,6 @@
             z-index: 100;
         }
 
-        /* 賽場設計感按鈕 (SVG) */
         .btn-icon-styled {
             width: 52px; height: 52px;
             border-radius: 50%;
@@ -491,13 +499,6 @@
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.8), 0 0 10px rgba(212, 175, 55, 0.2);
             transition: all 0.2s ease;
-        }
-
-        .btn-icon-styled:hover {
-            transform: scale(1.1);
-            border-color: #fff;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
         }
 
         .btn-icon-styled svg {
@@ -619,12 +620,6 @@
             border: 2px solid transparent;
             object-fit: cover;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .avatar-option:hover {
-            transform: scale(1.1);
-            border-color: var(--gold-primary);
         }
 
         .records-table-container {
@@ -737,7 +732,6 @@
     <div id="home-view" class="view active">
         <h1 class="home-title">MAGIC THE GATHERING<br><span style="font-size: 1.3rem; color: #fff;">決戰計血器</span></h1>
         
-        <!-- 左右並排的圓形按鈕容器 -->
         <div id="home-buttons" style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: center;">
             <button class="btn-round-home" id="btn-continue" style="display:none;" onclick="navTo('game-view')">
                 <svg style="width:28px;height:28px;fill:currentColor;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -757,11 +751,9 @@
 
         <div class="floating-controls" id="floatingControls" style="display: none;">
             <button class="btn-icon-styled" onclick="rollD20All()" title="一鍵擲D20">
-                <!-- 20面骰造型 SVG -->
                 <svg viewBox="0 0 24 24"><path d="M12 2L2 7l3.5 12L12 22l6.5-3L22 7L12 2zm0 2.8L18.2 8H5.8L12 4.8zM4.5 9.5h15l-3.3 3.5L12 10.8l-4.2 2.2L4.5 9.5zM12 13.2l3.8 2-3.8 4.5-3.8-4.5 3.8-2zM6.2 14.2l3.8 2-4.1 2.2L4 13.2l2.2 1zM17.8 14.2l2.2-1-1.9 5.2-4.1-2.2 3.8-2z"/></svg>
             </button>
             <button class="btn-icon-styled" onclick="openResetModal()" title="重置本局">
-                <!-- 質感重置環狀箭頭 SVG -->
                 <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
             </button>
         </div>
@@ -797,7 +789,7 @@
     </div>
 </div>
 
-<!-- 各類彈窗 Modal -->
+<!-- Modal 區塊 -->
 <div class="modal-mask" id="newGameModal">
     <div class="modal-content">
         <div class="modal-title">開新局設定</div>
@@ -1128,7 +1120,7 @@
 
             cardWrapper.innerHTML = `
                 <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
-                    <!-- 正面 -->
+                    <!-- 卡牌正面 -->
                     <div class="card-front" style="background-image: url('${p.avatar}');" onclick="flipCard(${index})">
                         <div class="card-header">
                             <div class="player-info">
@@ -1148,21 +1140,29 @@
                         </div>
                     </div>
 
-                    <!-- 背面 (具備獨立計數功能，點擊可翻回正面) -->
-                    <div class="card-back" style="background-image: url('${p.avatar}');" onclick="flipCardFront(${index})">
+                    <!-- 卡牌背面 (清楚條列中毒標記與指揮官傷害) -->
+                    <div class="card-back" style="background-image: url('${p.avatar}');">
                         <div class="card-back-body">
-                            <div class="card-back-item">
-                                <label style="font-size:0.85rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">🤢 中毒標記 (${p.poison})</label>
-                                <div class="life-controls" onclick="event.stopPropagation()">
-                                    <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                                    <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-weight:bold; color:var(--gold-light); font-size:0.9rem;">${p.name} - 狀態設定</span>
+                                <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})">翻回正面 ↩</button>
+                            </div>
+
+                            <div class="status-row">
+                                <div class="status-title">🤢 中毒標記</div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
+                                    <span style="font-size:1.2rem; font-weight:bold; color:#fff; min-width:24px; text-align:center;">${p.poison}</span>
+                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
                                 </div>
                             </div>
-                            <div class="card-back-item">
-                                <label style="font-size:0.85rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">⚔️ 指揮官傷害 (${p.cmdDamage})</label>
-                                <div class="life-controls" onclick="event.stopPropagation()">
-                                    <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                                    <button class="btn-life btn-status-large" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+
+                            <div class="status-row">
+                                <div class="status-title">⚔️ 指揮官傷害</div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
+                                    <span style="font-size:1.2rem; font-weight:bold; color:#fff; min-width:24px; text-align:center;">${p.cmdDamage}</span>
+                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
                                 </div>
                             </div>
                         </div>
@@ -1245,7 +1245,7 @@
         let startTime = Date.now();
         let animInterval = setInterval(() => {
             let elapsedTime = Date.now() - startTime;
-            if (elapsedTime < 1000) { // 縮短為 1 秒
+            if (elapsedTime < 1000) {
                 let randomRolls = state.currentGame.players.map(p => 
                     `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
                 ).join('');
