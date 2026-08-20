@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>魔法風雲會 - 決戰計血器</title>
+    <title>魔法風雲會 - 決戰計血器[span_0](start_span)[span_0](end_span)</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -153,6 +153,22 @@
             cursor: not-allowed;
             transform: none;
             opacity: 0.5;
+        }
+
+        /* 低調風格的匯出/匯入按鈕 */
+        .btn-subtle {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold-light);
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-subtle:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold-primary);
         }
 
         .btn-round-home {
@@ -727,13 +743,11 @@
         .records-table th { position: sticky; top: 0; background: rgba(212, 175, 55, 0.9); color: #000; font-weight: bold; z-index: 10; }
         .win-tag { color: #ffd700; font-weight: bold; }
 
-        /* 新增：可展開列與細節樣式 */
         .history-main-row { cursor: pointer; transition: background 0.2s; }
         .history-main-row:hover { background: rgba(212, 175, 55, 0.08); }
         .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
         .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
 
-        /* 新增：連勝紀錄區塊樣式 */
         .streak-section {
             background: rgba(20, 15, 30, 0.85);
             border: 1px solid var(--gold-primary);
@@ -761,7 +775,6 @@
             flex-shrink: 0;
         }
 
-        /* 新增：勝率進度條樣式 */
         .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; }
         .stats-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
         .stats-item { 
@@ -848,13 +861,8 @@
     <!-- 紀錄視圖 -->
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰歷史紀錄</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="btn-magic btn-static" onclick="exportRecords()">匯出紀錄</button>
-            <button class="btn-magic btn-static" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
-            <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
-        </div>
 
-        <!-- 新增：連勝紀錄區塊 -->
+        <!-- 連勝紀錄區塊 -->
         <div class="streak-section" style="width: 100%;">
             <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
             <div id="streakSummaryContent" class="streak-grid">
@@ -869,7 +877,7 @@
                         <th>日期</th>
                         <th>局數</th>
                         <th>模式</th>
-                        <th>勝者 / 參與名單</th>
+                        <th>冠軍</th>
                     </tr>
                 </thead>
                 <tbody id="recordsTableBody"></tbody>
@@ -879,6 +887,13 @@
         <div class="stats-summary" style="width: 100%;">
             <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計</h3>
             <div id="statsSummaryContent" class="stats-list"></div>
+        </div>
+
+        <!-- 匯出/匯入按鈕移至頁面最下方，並採用低調設計 -->
+        <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center; width: 100%;">
+            <button class="btn-subtle" onclick="exportRecords()">匯出紀錄</button>
+            <button class="btn-subtle" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
+            <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
         </div>
     </div>
 </div>
@@ -1646,10 +1661,8 @@
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
 
-        // 轉換紀錄結構以支援快速回顧與連勝計算
         let formattedRecords = state.records.map(r => {
             if (r.players && Array.isArray(r.players)) return r;
-            // 相容舊版資料格式
             return {
                 date: r.date,
                 gameIndex: r.gameIndex || 1,
@@ -1660,9 +1673,9 @@
         });
 
         formattedRecords.slice().reverse().forEach((r, idx) => {
-            const mainRowId = `history-main-${idx}`;
             const detailRowId = `history-detail-${idx}`;
-            const winnersText = r.winners.length > 0 ? `<span class="win-tag">👑 ${r.winners.join(', ')}</span>` : '<span style="color:#aaa;">無贏家記錄</span>';
+            // 冠軍欄位不顯示 Emoji，僅顯示名字（純文字）
+            const winnersText = r.winners.length > 0 ? `<span class="win-tag">${r.winners.join(', ')}</span>` : '<span style="color:#aaa;">無贏家記錄</span>';
 
             tbody.innerHTML += `
                 <tr class="history-main-row" onclick="toggleRowDetail('${detailRowId}')">
@@ -1682,15 +1695,13 @@
             `;
         });
 
-        // 1. 計算個人勝負與勝率進度條
         const statsMap = {};
         const streakMap = {};
 
-        // 依時間順序（由舊到新）計算連勝與勝率
+        // 依時間順序計算勝負與連勝
         formattedRecords.forEach((r, recordIndex) => {
             let activeMatchPlayers = r.players.map(p => p.name);
 
-            // 統計總勝敗
             r.players.forEach(p => {
                 if (!statsMap[p.name]) {
                     statsMap[p.name] = { name: p.name, win: 0, lose: 0, firstIndex: recordIndex };
@@ -1699,36 +1710,43 @@
                 else statsMap[p.name].lose++;
             });
 
-            // 計算連勝邏輯：若參與了該場比賽，贏了則連勝 +1，輸了或未參戰則歸零
+            // 修正：只要跟近一局相比，贏家非同一人，該玩家的連勝就中斷歸零
             activeMatchPlayers.forEach(name => {
-                if (!streakMap[name]) streakMap[name] = 0;
+                if (!streakMap[name]) streakMap[name] = { currentStreak: 0, lastWinner: null };
+                
                 let isWinnerInThisGame = r.winners.includes(name);
                 if (isWinnerInThisGame) {
-                    streakMap[name]++;
+                    if (streakMap[name].lastWinner === true) {
+                        streakMap[name].currentStreak++;
+                    } else {
+                        // 若上一局不是贏家，則從這局開始算 1 連勝
+                        streakMap[name].currentStreak = 1;
+                    }
+                    streakMap[name].lastWinner = true;
                 } else {
-                    streakMap[name] = 0; // 只要沒贏立刻斷掉
+                    streakMap[name].currentStreak = 0;
+                    streakMap[name].lastWinner = false;
                 }
             });
         });
 
-        // 渲染連勝排行區塊（只顯示連勝 > 0 的玩家/隊伍）
+        // 篩選出連勝大於 0 的排行
         const streakContainer = document.getElementById('streakSummaryContent');
         const activeStreaks = Object.entries(streakMap)
-            .filter(([name, streak]) => streak > 0)
-            .sort((a, b) => b[1] - a[1]);
+            .filter(([name, data]) => data.currentStreak > 0)
+            .sort((a, b) => b[1].currentStreak - a[1].currentStreak);
 
         if (activeStreaks.length === 0) {
             streakContainer.innerHTML = `<div style="color:#aaa; font-size: 0.85rem; padding: 4px;">目前沒有進行中的連勝紀錄</div>`;
         } else {
-            streakContainer.innerHTML = activeStreaks.map(([name, streak]) => `
+            streakContainer.innerHTML = activeStreaks.map(([name, data]) => `
                 <div class="streak-badge">
                     <span style="font-size:0.8rem; color:var(--gold-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${name}</span>
-                    <span style="font-size:1.1rem; font-weight:bold; color:#ff4d4d; margin-top:2px;">🔥 ${streak} 連勝</span>
+                    <span style="font-size:1.1rem; font-weight:bold; color:#ff4d4d; margin-top:2px;">🔥 ${data.currentStreak} 連勝</span>
                 </div>
             `).join('');
         }
 
-        // 渲染勝率統計（進度條 + 數字）
         const statsArray = Object.values(statsMap).map(s => {
             const total = s.win + s.lose;
             const rate = total > 0 ? Math.round((s.win / total) * 100) : 0;
