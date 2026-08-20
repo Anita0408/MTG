@@ -459,7 +459,6 @@
             box-shadow: 0 0 8px #ff0000;
         }
 
-        /* 僅保留箭頭圖示的翻頁按鈕 */
         .btn-flip-back {
             background: var(--gold-dark);
             color: #fff;
@@ -746,7 +745,7 @@
 <div class="modal-mask" id="cmdDamageModal">
     <div class="modal-content">
         <button class="modal-close-x" onclick="closeModal('cmdDamageModal')">✕</button>
-        <div class="modal-title" id="cmdModalTitle">⚔️ 指揮官傷害記錄</div>
+        <div class="modal-title" id="cmdModalTitle">⚔️ 受到的指揮官傷害</div>
         <div class="cmd-damage-list" id="cmdDamageList"></div>
     </div>
 </div>
@@ -800,6 +799,16 @@
     let activeSelectingPlayerIndex = null;
     let holdTimer = null;
     let holdInterval = null;
+
+    // 字數限制與裁切輔助函式
+    function truncateName(name, limit = 7, cutLen = 6) {
+        if (!name) return '';
+        const charArray = Array.from(name);
+        if (charArray.length > limit) {
+            return charArray.slice(0, cutLen).join('') + '…';
+        }
+        return name;
+    }
 
     window.onload = function() {
         if (state.currentGame) {
@@ -1070,7 +1079,7 @@
                             ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 毒:${p.poison}</span>` : ''}
                             ${maxCmdDmg > 0 ? `
                                 <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${maxAttackerName})` : ''}
+                                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${truncateName(maxAttackerName)})` : ''}
                                 </span>
                             ` : ''}
                         </div>
@@ -1091,7 +1100,7 @@
                                 </button>
                             </div>
 
-                            <!-- 中毒標記（換成 🧪 圖示） -->
+                            <!-- 中毒標記 -->
                             <div class="status-row">
                                 <div class="status-title">🧪 中毒標記</div>
                                 <div style="display:flex; gap:8px;">
@@ -1100,11 +1109,11 @@
                                 </div>
                             </div>
 
-                            <!-- 各玩家指揮官傷害 -->
+                            <!-- 指揮官傷害 -->
                             <div class="status-row">
-                                <div class="status-title">⚔️ 各玩家指揮官傷害</div>
-                                <button class="btn-magic" style="width:100%; padding: 4px; font-size:0.8rem; line-height: 1.3; margin-top:2px;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                                    開啟明細列表<br><span style="font-size:0.75rem; opacity:0.9;">(最高: ${maxCmdDmg})</span>
+                                <div class="status-title">⚔️ 指揮官傷害</div>
+                                <button class="btn-magic" style="width:100%; padding: 6px 4px; font-size:0.82rem; line-height: 1.2; margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                    傷害列表 (最高: ${maxCmdDmg})
                                 </button>
                             </div>
                         </div>
@@ -1132,7 +1141,9 @@
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
-        document.getElementById('cmdModalTitle').innerText = `⚔️ ${victim.name} 受到的指揮官傷害`;
+        
+        // 1. 標題不顯示玩家自己的名字，只顯示「受到的指揮官傷害」
+        document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
         
         const listContainer = document.getElementById('cmdDamageList');
         listContainer.innerHTML = '';
@@ -1151,21 +1162,23 @@
 
             attackerList.forEach(atk => {
                 const currentDmg = victim.cmdDamages[atk.name] || 0;
+                // 3. 列表的其他玩家名字超過七個字元，就顯示前六個字元 + …
+                const displayName = truncateName(atk.name, 7, 6);
 
                 const row = document.createElement('div');
                 row.className = 'cmd-damage-item';
                 row.innerHTML = `
                     <div class="cmd-damage-player">
                         <img src="${atk.avatar}" class="cmd-damage-avatar" referrerpolicy="no-referrer">
-                        <span style="color: var(--gold-light); font-weight: bold;">${atk.name}</span>
+                        <span style="color: var(--gold-light); font-weight: bold;" title="${atk.name}">${displayName}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
                             ${currentDmg} / 21
                         </span>
                         <div style="display: flex; gap: 4px;">
-                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name}', -1)`)}>-1</button>
-                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name}', 1)`)}>+1</button>
+                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name.replace(/'/g, "\\'")}', -1)`)}>-1</button>
+                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name.replace(/'/g, "\\'")}', 1)`)}>+1</button>
                         </div>
                     </div>
                 `;
@@ -1248,12 +1261,12 @@
             let elapsedTime = Date.now() - startTime;
             if (elapsedTime < 1000) {
                 let randomRolls = state.currentGame.players.map(p => 
-                    `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
+                    `<div><strong>${truncateName(p.name)}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
                 ).join('');
                 results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
             } else {
                 clearInterval(animInterval);
-                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
+                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${truncateName(finalWinner)}</span>！`;
                 closeBtn.style.display = 'block';
 
                 let finalHtml = '';
@@ -1262,7 +1275,7 @@
                         finalHtml += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${log.round} 輪同分重擲：</div>`;
                     }
                     log.rolls.forEach(r => {
-                        finalHtml += `<div><strong>${r.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
+                        finalHtml += `<div><strong>${truncateName(r.name)}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
                     });
                 });
                 results.innerHTML = finalHtml;
