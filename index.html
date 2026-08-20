@@ -20,7 +20,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            /* 徹底防止行動裝置長壓出現藍色選取框與點擊高亮 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
         body {
@@ -165,20 +171,59 @@
             margin-bottom: 20px;
         }
 
+        /* -------------------------------------------------------------
+           獨立賽場背景樣式：深邃魔幻漸層 + 戰鬥點點火光與煙硝特效
+        ------------------------------------------------------------- */
         #game-view {
-            padding: 5px;
+            padding: 15px 10px 80px 10px;
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9), 0 0 20px rgba(169, 27, 27, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(138, 27, 27, 0.35) 0%, transparent 70%),
+                radial-gradient(circle at 20% 80%, rgba(75, 18, 110, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(20, 10, 35, 0.8) 0%, transparent 60%),
+                linear-gradient(180deg, #07050a 0%, #150a18 50%, #08030b 100%);
+        }
+
+        /* 賽場火光粒子層 */
+        .ember-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #ffaa33, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 150px 150px, #ff4400, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 280px 80px, #ffdd66, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 400px 220px, #ff3300, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 550px 110px, #ffaa00, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 700px 290px, #ff5500, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 850px 50px, #ffee88, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 900px 400px;
+            animation: embersMove 12s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes embersMove {
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
+            100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px, -120px -400px, 60px -400px, -80px -400px; }
         }
 
         /* 雙欄網格 */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            margin-bottom: 60px;
+            position: relative;
+            z-index: 2;
         }
 
         /* 2~3人單欄橫長版面 */
@@ -216,7 +261,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
             overflow: hidden;
             background-size: cover;
             background-position: center;
@@ -342,7 +387,6 @@
             font-size: 1.4rem;
         }
 
-        /* 背面專屬拉長按鈕 */
         .btn-status-large {
             padding: 12px 0;
             font-size: 1.3rem;
@@ -387,9 +431,9 @@
 
         .floating-controls {
             position: fixed;
-            bottom: 15px; right: 15px;
+            bottom: 20px; right: 20px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             z-index: 100;
         }
 
@@ -464,6 +508,8 @@
             color: #fff;
             border-radius: 4px;
             font-size: 0.9rem;
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         .player-setup-list {
@@ -636,7 +682,9 @@
         </div>
     </div>
 
+    <!-- 比賽場視圖 -->
     <div id="game-view" class="view">
+        <div class="ember-layer"></div>
         <div class="game-grid" id="gameGrid"></div>
 
         <div class="floating-controls" id="floatingControls" style="display: none;">
@@ -772,7 +820,6 @@
         updateRecordsTable();
     };
 
-    // 翻面切換
     function flipCard(index) {
         const cardElem = document.getElementById(`card-${index}`);
         if (cardElem) {
@@ -787,7 +834,6 @@
         }
     }
 
-    // 長按連發（Hold to repeat）機制
     function startHold(event, actionFn) {
         event.stopPropagation();
         stopHold();
