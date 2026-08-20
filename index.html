@@ -13,7 +13,6 @@
             --gold-dark: #8a6d1b;
             --crimson: #a91b1b;
             --crimson-glow: #ff4d4d;
-            --card-bg: linear-gradient(145deg, rgba(31, 27, 44, 0.95), rgba(18, 15, 26, 0.95));
             --border-style: 2px solid var(--gold-primary);
         }
 
@@ -26,7 +25,7 @@
 
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
-            background: #0d0b14 url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ30h4EJtyO5d6LgZaRL0Mj9yT3ST-adc7nHXOmOAgUQ&s=10') no-repeat center center fixed;
+            background: #0d0b14 url('https://cdn.cardsrealm.com/images/cartas/atdm-tarkir-dragonstom-art-series/EN/med/elspeth-storm-slayer-art-series-49.png?3317') no-repeat center center fixed;
             background-size: cover;
             color: #e0e0e0;
             min-height: 100vh;
@@ -211,7 +210,6 @@
             position: absolute;
             width: 100%; height: 100%;
             backface-visibility: hidden;
-            background: var(--card-bg);
             border: var(--border-style);
             border-radius: 8px;
             padding: 8px 12px;
@@ -219,11 +217,27 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* 深色圖層遮罩以保證文字清晰 */
+        .card-front::before, .card-back::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(15, 12, 25, 0.75) 0%, rgba(10, 8, 15, 0.88) 100%);
+            z-index: 1;
+        }
+
+        .card-front > *, .card-back > * {
+            position: relative;
+            z-index: 2;
         }
 
         .card-back {
             transform: rotateY(180deg);
-            background: rgba(21, 16, 31, 0.95);
             cursor: pointer;
             justify-content: center;
             padding: 12px;
@@ -261,21 +275,15 @@
             gap: 6px;
         }
 
-        .card-avatar {
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-primary);
-            object-fit: cover;
-        }
-
         .card-name {
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 1rem;
             color: var(--gold-light);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 120px;
+            max-width: 200px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .monarch-crown {
@@ -292,12 +300,12 @@
         }
 
         .life-display {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 900;
             text-align: center;
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            text-shadow: 0 0 8px rgba(212,175,55,0.3);
+            text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 8px rgba(212,175,55,0.4);
             margin: 0;
             line-height: 1;
             cursor: pointer;
@@ -321,11 +329,12 @@
             padding: 4px 0;
             font-size: 1rem;
             font-weight: bold;
-            background: rgba(212,175,55,0.15);
+            background: rgba(15, 12, 25, 0.6);
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
             border-radius: 4px;
             cursor: pointer;
+            backdrop-filter: blur(2px);
         }
 
         .btn-life-large {
@@ -348,15 +357,15 @@
         .status-badges {
             display: flex;
             gap: 4px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             justify-content: center;
             cursor: pointer;
             min-height: 16px;
         }
 
         .badge {
-            background: #2a1f3d;
-            padding: 1px 5px;
+            background: rgba(42, 31, 61, 0.8);
+            padding: 1px 6px;
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
@@ -364,7 +373,7 @@
         }
 
         .badge.warning-glow {
-            background: #5a0000;
+            background: rgba(90, 0, 0, 0.85);
             border-color: #ff4d4d;
             color: #ff9999;
             box-shadow: 0 0 8px #ff0000;
@@ -733,7 +742,16 @@
         { name: "Nissa Revane", url: "https://images.ctfassets.net/s5n2t79q9icq/4QQyvTFy433ucZsAukFCy/74498ba02a7ed94bce4a290506253552/nissa-revane-300.jpg" },
         { name: "Ajani", url: "https://images.ctfassets.net/s5n2t79q9icq/6aF1l2DFY0oRxa4Zsmm7PR/87b8393aae247b2d2d9c4274b370a9b4/ajani-300.jpg" },
         { name: "Oko", url: "https://images.ctfassets.net/s5n2t79q9icq/OuYONzWUywVZy13ScRKXO/5a5b83df87b60b4f8d13988db5ed5788/oko-300.jpg" },
-        { name: "Serra", url: "https://images.ctfassets.net/s5n2t79q9icq/78Bo4S43kxvjlaGYbcK8JU/070181e909364fe85c9b5d58e8778bfd/serra-300.jpg" }
+        { name: "Serra", url: "https://images.ctfassets.net/s5n2t79q9icq/78Bo4S43kxvjlaGYbcK8JU/070181e909364fe85c9b5d58e8778bfd/serra-300.jpg" },
+        { name: "Elspeth Resplendent", url: "https://cdn.cardsrealm.com/images/cartas/asnc-new-capenna-art-series/en/med/elspeth-resplendent-card-3s.png?4261" },
+        { name: "Mu Yanling", url: "https://images.ctfassets.net/s5n2t79q9icq/6H7suxzk8ecyTTjvN7TCsO/e117e3b5c38137a45c840f5105d49a1b/mu-yanling-300.jpg" },
+        { name: "Liliana Vess", url: "https://images.ctfassets.net/s5n2t79q9icq/7np4TX3O6p4VnJb0RLK65k/2e0509c14819abf6f7a4e14eb0da1db7/liliana-vess-300.jpg" },
+        { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" },
+        { name: "Planeswalker 13", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqxevkmljxgNj-i0HSSCn16-NATCmIlXvPIi9y_JPjDuxRqXZ_cJbhvPrB&s=10" },
+        { name: "Planeswalker 14", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsDRq6Mf_s-OgBPh_GsdD8Nlzool9LNvyAU6h4VcaV0rA0OADKMub-D3c&s=10" },
+        { name: "Planeswalker 15", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGXKZ59UXRhk2HUGVgXnFNTk0bSeuye3j63fk7l_JSbtaRayjOi-76dQA&s=10" },
+        { name: "Planeswalker 16", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYs6iaj4AFiUQnESzrotJ9zofbQGxczcGbI9K6G9e0yJwXAnfvrOtC4IA&s=10" },
+        { name: "Planeswalker 17", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSzANzc9wvTGGE7CcvKudpoBkekAzVwWeBurcLGD5YusEjfhdGcqF1vxjA&s=10" }
     ];
 
     let state = {
@@ -992,10 +1010,9 @@
 
             cardWrapper.innerHTML = `
                 <div class="player-card ${isDead ? 'dead' : ''} ${isFlipped ? 'flipped' : ''}" id="card-${index}">
-                    <div class="card-front" onclick="flipCard(${index})">
+                    <div class="card-front" style="background-image: url('${p.avatar}');" onclick="flipCard(${index})">
                         <div class="card-header">
                             <div class="player-info">
-                                <img src="${p.avatar}" class="card-avatar" referrerpolicy="no-referrer">
                                 <div class="card-name">${p.name}</div>
                             </div>
                             ${state.currentGame.mode === 'Kingdoms' ? 
@@ -1012,7 +1029,7 @@
                         </div>
                     </div>
 
-                    <div class="card-back" onclick="flipCardFront(${index})">
+                    <div class="card-back" style="background-image: url('${p.avatar}');" onclick="flipCardFront(${index})">
                         <div class="card-back-body">
                             <div class="card-back-item">
                                 <label style="font-size:0.85rem; margin-bottom: 8px; font-weight:bold; color:var(--gold-light);">🤢 中毒標記</label>
