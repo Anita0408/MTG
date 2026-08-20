@@ -279,7 +279,6 @@
             -webkit-transform: rotateY(180deg); 
         }
 
-        /* 雙線卡牌邊框與滿版質感 */
         .card-front, .card-back {
             position: absolute;
             top: 0; left: 0;
@@ -328,36 +327,40 @@
             z-index: 2;
         }
 
-        /* 不死之身（Immunity）聖光護罩視覺 */
+        /* 不死之身（Immunity）護罩視覺與圖示樣式 */
         .player-card.immunity-active .card-front,
         .player-card.immunity-active .card-back {
             border-color: #ffd700 !important;
             box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.6) !important;
         }
 
-        .btn-immunity {
-            background: rgba(20, 15, 30, 0.8);
-            border: 1px solid var(--gold-dark);
-            color: #aaa;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+        .icon-btn-immunity {
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.2s;
+            opacity: 0.35;
+            filter: grayscale(1);
+            transition: all 0.2s ease;
+            line-height: 1;
         }
 
-        .player-card.immunity-active .btn-immunity {
-            background: #ffd700;
-            color: #000;
-            font-weight: bold;
-            border-color: #fff;
-            box-shadow: 0 0 8px #ffd700;
+        .icon-btn-immunity.active {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px #ffd700);
+            transform: scale(1.1);
         }
 
-        /* 淘汰機制：反灰與 SVG 骷髏頭印章 */
+        .action-icon-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* 淘汰機制：深色霸氣反灰與銳利骷髏頭印章 */
         .player-card.eliminated .card-front,
         .player-card.eliminated .card-back {
-            filter: grayscale(100%) brightness(0.35);
+            filter: grayscale(100%) brightness(0.28);
         }
 
         .skull-overlay {
@@ -375,17 +378,17 @@
         }
 
         .skull-svg {
-            width: 90px;
-            height: 90px;
-            fill: #e0e0e0;
-            filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.95));
-            opacity: 0.85;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 105px;
+            height: 105px;
+            fill: #b52a2a;
+            filter: drop-shadow(0px 0px 14px rgba(255, 0, 0, 0.6)) drop-shadow(0px 0px 6px #000);
+            opacity: 0.9;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 0.85; }
+            0% { transform: scale(0.2) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
         }
 
         .card-back-body {
@@ -426,6 +429,7 @@
             opacity: 0.3;
             filter: grayscale(1);
             transition: all 0.2s;
+            line-height: 1;
         }
 
         .monarch-crown.active {
@@ -647,7 +651,6 @@
             gap: 10px;
         }
 
-        /* 玩家名稱完整顯示 (無長度限制與截斷) */
         .cmd-damage-player {
             display: flex;
             align-items: center;
@@ -883,10 +886,11 @@
         { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" }
     ];
 
-    // 高解析向量金屬骷髏頭圖示 (非 Emoji)
+    // 銳利霸氣風格的黑暗骷髏頭向量印章 SVG
     const SKULL_SVG_MARKUP = `
-        <svg class="skull-svg" viewBox="0 0 24 24">
-            <path d="M12,2C6.47,2 2,6.47 2,12C2,15.22 3.53,18.09 5.9,19.92C6.18,20.14 6.53,20.25 6.88,20.25H8V22H16V20.25H17.12C17.47,20.25 17.82,20.14 18.1,19.92C20.47,18.09 22,15.22 22,12C22,6.47 17.53,2 12,2ZM9,9A1.5,1.5 0 0,1 10.5,10.5A1.5,1.5 0 0,1 9,12A1.5,1.5 0 0,1 7.5,10.5A1.5,1.5 0 0,1 9,9ZM15,9A1.5,1.5 0 0,1 16.5,10.5A1.5,1.5 0 0,1 15,12A1.5,1.5 0 0,1 13.5,10.5A1.5,1.5 0 0,1 15,9ZM8.5,15.5H15.5V17H8.5V15.5Z"/>
+        <svg class="skull-svg" viewBox="0 0 512 512">
+            <path d="M256 16C132.3 16 32 116.3 32 240c0 62.5 25.6 119.1 67 160.2l-23 57.6c-4.4 11 3.7 22.2 15.6 22.2h44.3c8.2 0 15.6-5 18.7-12.7l13.5-33.8c27 15 58.1 23.5 91.9 23.5s64.9-8.5 91.9-23.5l13.5 33.8c3.1 7.7 10.5 12.7 18.7 12.7h44.3c11.9 0 20-11.2 15.6-22.2l-23-57.6c41.4-41.1 67-97.7 67-160.2C480 116.3 379.7 16 256 16zm-76 172c24.3 0 44 23.3 44 52s-19.7 52-44 52-44-23.3-44-52 19.7-52 44-52zm152 0c24.3 0 44 23.3 44 52s-19.7 52-44 52-44-23.3-44-52 19.7-52 44-52zm-128 176v48h-24v-48h24zm48 0v48h-24v-48h24zm48 0v48h-24v-48h24z"/>
+            <path d="M256 290l-28 36h56l-28-36z" fill="#0d0b14"/>
         </svg>
     `;
 
@@ -899,9 +903,6 @@
 
     let activeSelectingPlayerIndex = null;
 
-    /**
-     * 長按工具：綁定 Pointer Capture
-     */
     function bindHoldEvent(element, actionFn) {
         if (!element) return;
         let holdTimer = null;
@@ -1128,13 +1129,11 @@
         document.getElementById('btn-continue').style.display = 'flex';
     }
 
-    // 檢查卡牌淘汰狀態
     function checkEliminated(p) {
         let maxCmdDmg = 0;
         if (p.cmdDamages) {
             Object.values(p.cmdDamages).forEach(d => { if (d > maxCmdDmg) maxCmdDmg = d; });
         }
-        // 淘汰條件：血量 <= 0 OR 中毒 >= 10 OR 任意指揮官傷害 >= 21，且未開啟不死之身
         const conditionMet = (p.life <= 0 || p.poison >= 10 || maxCmdDmg >= 21);
         return conditionMet && !p.isImmune;
     }
@@ -1153,6 +1152,7 @@
 
         const count = state.currentGame.players.length;
         const isLayoutLarge = (count >= 2 && count <= 3);
+        const isKingdoms = (state.currentGame.mode === 'Kingdoms');
 
         if (isLayoutLarge) {
             grid.classList.add('layout-large');
@@ -1176,12 +1176,11 @@
                             <div class="player-info">
                                 <div class="card-name">${p.name}</div>
                             </div>
-                            <div style="display: flex; gap: 4px; align-items: center;">
-                                <button class="btn-immunity" onclick="event.stopPropagation(); toggleImmunity(${index})">
-                                    🛡️ ${p.isImmune ? '不死' : '正常'}
-                                </button>
-                                ${state.currentGame.mode === 'Kingdoms' ? 
-                                    `<div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="event.stopPropagation(); toggleMonarch(${index})" title="指定主公">👑</div>` : ''}
+                            <div class="action-icon-column">
+                                ${isKingdoms ? `
+                                    <div class="monarch-crown ${p.isMonarch ? 'active' : ''}" onclick="event.stopPropagation(); toggleMonarch(${index})" title="指定主公">👑</div>
+                                ` : ''}
+                                <div class="icon-btn-immunity ${p.isImmune ? 'active' : ''}" onclick="event.stopPropagation(); toggleImmunity(${index})" title="切換不死之身">🛡️</div>
                             </div>
                         </div>
                         <div class="life-display ${p.life <= 10 ? 'danger' : ''}" id="life-val-${index}">${p.life}</div>
@@ -1270,7 +1269,6 @@
             cmdBtn.innerText = `傷害列表 (最高: ${maxCmdDmg})`;
         }
 
-        // 動態檢查與切換淘汰反灰狀態
         if (cardElem) {
             const isEliminated = checkEliminated(p);
             if (isEliminated) {
