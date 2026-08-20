@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-overlay: rgba(15, 12, 25, 0.85);
+            /* 調淡遮罩層，讓照片更清楚 */
+            --bg-overlay: rgba(15, 12, 25, 0.75);
             --gold-primary: #d4af37;
             --gold-light: #f3e5ab;
             --gold-dark: #8a6d1b;
@@ -104,7 +105,7 @@
 
         .menu-item {
             padding: 12px 15px;
-            background: rgba(212, 175, 55, 0.1);
+            background: rgba(212, 175, 55, 0.05);
             border: 1px solid var(--gold-dark);
             color: #fff;
             text-align: left;
@@ -115,8 +116,16 @@
         }
 
         .menu-item:hover {
-            background: var(--gold-primary);
-            color: #000;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        /* 漢堡選單：所在的頁籤顏色較深、被選取的感視覺效果 */
+        .menu-item.active {
+            background: rgba(138, 109, 27, 0.85);
+            border: 1px solid var(--gold-light);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(212, 175, 55, 0.4);
         }
 
         .btn-magic {
@@ -135,8 +144,23 @@
         }
 
         .btn-magic:hover {
-            filter: brightness(1.2);
+            filter: brightness(1.1);
             transform: translateY(-2px);
+        }
+
+        /* 固定顏色的匯入/匯出按鈕：無視 Hover/Active 的變色效果 */
+        .btn-static {
+            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark)) !important;
+            color: #0f0c19 !important;
+            filter: none !important;
+            transform: none !important;
+            cursor: pointer;
+        }
+        .btn-static:hover, .btn-static:active {
+            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark)) !important;
+            color: #0f0c19 !important;
+            filter: none !important;
+            transform: none !important;
         }
 
         .btn-magic:disabled {
@@ -210,9 +234,9 @@
             border: none;
             overflow: hidden;
             background: 
-                radial-gradient(circle at 50% 30%, rgba(138, 27, 27, 0.35) 0%, transparent 70%),
-                radial-gradient(circle at 20% 80%, rgba(75, 18, 110, 0.4) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(20, 10, 35, 0.8) 0%, transparent 60%),
+                radial-gradient(circle at 50% 30%, rgba(138, 27, 27, 0.25) 0%, transparent 70%),
+                radial-gradient(circle at 20% 80%, rgba(75, 18, 110, 0.3) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(20, 10, 35, 0.6) 0%, transparent 60%),
                 linear-gradient(180deg, #07050a 0%, #150a18 50%, #08030b 100%);
         }
 
@@ -253,9 +277,7 @@
             grid-template-columns: 1fr;
         }
 
-        /* -------------------------------------------------------------
-           修正 3D 翻轉與 iOS Safari 視角問題
-        ------------------------------------------------------------- */
+        /* CSS 3D 翻轉與 iOS Safari 相容性修正 */
         .player-card-wrapper {
             perspective: 1000px;
             -webkit-perspective: 1000px;
@@ -271,7 +293,6 @@
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
 
-        /* 翻牌時旋轉 180 度 */
         .player-card.flipped { 
             transform: rotateY(180deg); 
             -webkit-transform: rotateY(180deg); 
@@ -308,17 +329,17 @@
 
         .card-back {
             z-index: 1;
-            /* 關鍵：背面初始必須先轉 180 度，這樣當父級翻轉 180 度時，背面才會是正的 */
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             padding: 10px;
         }
 
+        /* 調整遮罩透明度，使背景照片顯現更加清晰 (從原本 0.85/0.95 調淡至 0.45/0.65) */
         .card-front::before, .card-back::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(15, 12, 25, 0.85) 0%, rgba(10, 8, 15, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(15, 12, 25, 0.45) 0%, rgba(10, 8, 15, 0.65) 100%);
             z-index: 1;
         }
 
@@ -356,7 +377,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 200px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
         }
 
         .monarch-crown {
@@ -402,7 +423,7 @@
             padding: 4px 0;
             font-size: 1rem;
             font-weight: bold;
-            background: rgba(15, 12, 25, 0.6);
+            background: rgba(15, 12, 25, 0.7);
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
             border-radius: 4px;
@@ -416,8 +437,8 @@
         }
 
         .btn-status-ctrl {
-            padding: 4px 0;
-            font-size: 1.1rem;
+            padding: 6px 0;
+            font-size: 0.95rem;
             border-radius: 4px;
         }
 
@@ -428,10 +449,10 @@
 
         .status-row {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 4px 8px;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 8px;
             border-radius: 6px;
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
@@ -455,7 +476,7 @@
         }
 
         .badge {
-            background: rgba(42, 31, 61, 0.8);
+            background: rgba(42, 31, 61, 0.85);
             padding: 1px 6px;
             border-radius: 3px;
             border: 1px solid var(--gold-dark);
@@ -723,9 +744,9 @@
             <h3>選單 MENU</h3>
             <button class="hamburger-btn" onclick="toggleMenu()">✕</button>
         </div>
-        <button class="menu-item" onclick="navTo('home-view')">🏠 首頁</button>
-        <button class="menu-item" onclick="navTo('game-view')">⚔️ 比賽場</button>
-        <button class="menu-item" onclick="navTo('records-view')">📜 對戰紀錄</button>
+        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
+        <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
+        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">📜 對戰紀錄</button>
     </div>
 
     <!-- 首頁視圖 -->
@@ -763,8 +784,9 @@
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰歷史紀錄</h2>
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="btn-magic" onclick="exportRecords()">匯出紀錄</button>
-            <button class="btn-magic" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
+            <!-- 加上 btn-static 固定顏色，不隨 Hover / Click 改變 -->
+            <button class="btn-magic btn-static" onclick="exportRecords()">匯出紀錄</button>
+            <button class="btn-magic btn-static" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
         </div>
 
@@ -937,6 +959,11 @@
         document.getElementById(viewId).classList.add('active');
         document.getElementById('menuDrawer').classList.remove('active');
         
+        // 更新漢堡選單的頁籤深色選取效果
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        const activeMenuItem = document.getElementById(`menu-${viewId}`);
+        if (activeMenuItem) activeMenuItem.classList.add('active');
+
         if (viewId === 'game-view') {
             renderGameGrid();
         }
@@ -1140,29 +1167,27 @@
                         </div>
                     </div>
 
-                    <!-- 卡牌背面 (清楚條列中毒標記與指揮官傷害) -->
+                    <!-- 卡牌背面 (僅顯示中毒標記與指揮官傷害按鈕) -->
                     <div class="card-back" style="background-image: url('${p.avatar}');">
                         <div class="card-back-body">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-weight:bold; color:var(--gold-light); font-size:0.9rem;">${p.name} - 狀態設定</span>
+                                <span style="font-weight:bold; color:var(--gold-light); font-size:0.9rem;">${p.name}</span>
                                 <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})">翻回正面 ↩</button>
                             </div>
 
                             <div class="status-row">
                                 <div class="status-title">🤢 中毒標記</div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                                    <span style="font-size:1.2rem; font-weight:bold; color:#fff; min-width:24px; text-align:center;">${p.poison}</span>
-                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
                                 </div>
                             </div>
 
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
-                                    <span style="font-size:1.2rem; font-weight:bold; color:#fff; min-width:24px; text-align:center;">${p.cmdDamage}</span>
-                                    <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', 1)`)}>+1</button>
+                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'cmdDamage', -1)`)}>-1</button>
                                 </div>
                             </div>
                         </div>
@@ -1397,20 +1422,48 @@
         dlAnchorElem.click();
     }
 
+    // 匯入資料邏輯修正：合併（去重）歷史紀錄，不覆蓋既有資料
     function importRecords(event) {
         const fileReader = new FileReader();
         fileReader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (Array.isArray(importedData)) {
-                    state.records = importedData;
+                    let addedCount = 0;
+                    importedData.forEach(importedRec => {
+                        // 檢查該條紀錄是否已存在（避免重複加入）
+                        const isDuplicate = state.records.some(existingRec => 
+                            existingRec.date === importedRec.date &&
+                            existingRec.gameIndex === importedRec.gameIndex &&
+                            existingRec.name === importedRec.name &&
+                            existingRec.result === importedRec.result
+                        );
+
+                        if (!isDuplicate) {
+                            state.records.push(importedRec);
+                            addedCount++;
+                        }
+                    });
+
+                    // 重新依局數與日期排序
+                    state.records.sort((a, b) => a.gameIndex - b.gameIndex);
+
+                    // 更新最大局數
+                    const maxGameIdx = state.records.reduce((max, r) => Math.max(max, r.gameIndex || 0), 0);
+                    if (maxGameIdx >= state.gameCount) {
+                        state.gameCount = maxGameIdx + 1;
+                        localStorage.setItem('mtg_gameCount', state.gameCount);
+                    }
+
                     localStorage.setItem('mtg_records', JSON.stringify(state.records));
                     updateRecordsTable();
-                    alert("對戰紀錄匯入成功！");
+                    alert(`對戰紀錄匯入成功！共新增 ${addedCount} 筆對戰歷史。`);
                 }
             } catch (err) {
                 alert("檔案格式錯誤，匯入失敗。");
             }
+            // 清空 file input，允許重複選擇相同檔案
+            event.target.value = '';
         };
         fileReader.readAsText(event.target.files[0]);
     }
