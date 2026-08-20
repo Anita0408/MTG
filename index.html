@@ -29,6 +29,10 @@
             touch-action: manipulation;
         }
 
+        html, body {
+            height: 100%;
+        }
+
         body {
             font-family: 'Noto Serif TC', 'Cinzel', serif;
             background: #0d0b14 url('https://cdn.cardsrealm.com/images/cartas/atdm-tarkir-dragonstom-art-series/EN/med/elspeth-storm-slayer-art-series-49.png?3317') no-repeat center center fixed;
@@ -236,14 +240,6 @@
             font-family: 'Cinzel', 'Noto Serif TC', serif;
         }
 
-        .btn-static {
-            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark)) !important;
-            color: #0f0c19 !important;
-            filter: none !important;
-            transform: none !important;
-            cursor: pointer;
-        }
-
         .btn-magic:disabled {
             filter: grayscale(1);
             cursor: not-allowed;
@@ -255,9 +251,9 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
             color: var(--gold-light);
-            padding: 6px 14px;
-            font-size: 0.85rem;
-            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Noto Serif TC', serif;
             transition: all 0.2s;
@@ -265,13 +261,19 @@
         .btn-subtle:hover {
             background: rgba(212, 175, 55, 0.15);
             border-color: var(--gold-primary);
+            color: #fff;
+        }
+        .btn-subtle:active {
+            background: rgba(212, 175, 55, 0.25);
+            transform: scale(0.97);
         }
 
+        /* 🌟 首頁按鈕美化設定 */
         .btn-round-home {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
-            background: radial-gradient(circle, #2a1f3d 0%, #110b1a 100%);
+            background: radial-gradient(circle, #382852 0%, #150c24 100%);
             border: 2px solid var(--gold-primary);
             color: var(--gold-light);
             font-family: 'Cinzel', 'Noto Serif TC', serif;
@@ -282,11 +284,35 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.2);
+            gap: 8px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35), inset 0 0 20px rgba(138, 43, 226, 0.3);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+        }
+
+        .btn-round-home::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-round-home:hover {
+            transform: scale(1.08);
+            border-color: var(--gold-light);
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.6), 0 0 20px rgba(138, 43, 226, 0.5), inset 0 0 15px rgba(243, 229, 171, 0.4);
+            color: #fff;
+        }
+
+        .btn-round-home:hover::before {
+            opacity: 1;
+        }
+
+        .btn-round-home:active {
+            transform: scale(0.95);
         }
 
         .view {
@@ -933,7 +959,7 @@
         </div>
         <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">首頁</button>
         <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">比賽場</button>
-        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">對戰紀錄</button>
+        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">對戰記錄</button>
     </div>
 
     <!-- 首頁視圖 -->
@@ -969,7 +995,7 @@
 
     <!-- 紀錄視圖 -->
     <div id="records-view" class="view">
-        <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰歷史紀錄</h2>
+        <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰記錄</h2>
 
         <div class="streak-section" style="width: 100%;">
             <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
