@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>魔法風雲會 - 決戰計血器[span_0](start_span)[span_0](end_span)</title>
+    <title>魔法風雲會 - 決戰計血器</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -73,6 +73,46 @@
             color: var(--gold-primary);
             font-size: 1.8rem;
             cursor: pointer;
+        }
+
+        /* 容器設定 */
+        .menu-container {
+          position: relative;
+        }
+
+        /* 卡片基礎樣式 */
+        .menu-card {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 260px;
+          height: 60px;
+          background: rgba(20, 20, 30, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          cursor: pointer;
+        }
+
+        /* 收合時的垂直階梯錯位 (透過 nth-child 模擬) */
+        .menu-container:not(.is-open) .menu-card:nth-child(1) { transform: translateY(0px); z-index: 3; }
+        .menu-container:not(.is-open) .menu-card:nth-child(2) { transform: translateY(12px) scale(0.98); z-index: 2; opacity: 0.8; }
+        .menu-container:not(.is-open) .menu-card:nth-child(3) { transform: translateY(24px) scale(0.96); z-index: 1; opacity: 0.6; }
+
+        /* 展開時的垂直向下抽開間距 */
+        .menu-container.is-open .menu-card:nth-child(1) { transform: translateY(0px); }
+        .menu-container.is-open .menu-card:nth-child(2) { transform: translateY(72px); }
+        .menu-container.is-open .menu-card:nth-child(3) { transform: translateY(144px); }
+
+        /* 懸停互動 */
+        .menu-card:hover {
+          transform: translateX(8px) !important;
+          border-color: #4f46e5;
+          background: rgba(30, 30, 45, 0.95);
         }
 
         .menu-drawer {
@@ -1674,7 +1714,6 @@
 
         formattedRecords.slice().reverse().forEach((r, idx) => {
             const detailRowId = `history-detail-${idx}`;
-            // 冠軍欄位不顯示 Emoji，僅顯示名字（純文字）
             const winnersText = r.winners.length > 0 ? `<span class="win-tag">${r.winners.join(', ')}</span>` : '<span style="color:#aaa;">無贏家記錄</span>';
 
             tbody.innerHTML += `
@@ -1698,7 +1737,6 @@
         const statsMap = {};
         const streakMap = {};
 
-        // 依時間順序計算勝負與連勝
         formattedRecords.forEach((r, recordIndex) => {
             let activeMatchPlayers = r.players.map(p => p.name);
 
@@ -1710,7 +1748,6 @@
                 else statsMap[p.name].lose++;
             });
 
-            // 修正：只要跟近一局相比，贏家非同一人，該玩家的連勝就中斷歸零
             activeMatchPlayers.forEach(name => {
                 if (!streakMap[name]) streakMap[name] = { currentStreak: 0, lastWinner: null };
                 
@@ -1719,7 +1756,6 @@
                     if (streakMap[name].lastWinner === true) {
                         streakMap[name].currentStreak++;
                     } else {
-                        // 若上一局不是贏家，則從這局開始算 1 連勝
                         streakMap[name].currentStreak = 1;
                     }
                     streakMap[name].lastWinner = true;
@@ -1730,7 +1766,6 @@
             });
         });
 
-        // 篩選出連勝大於 0 的排行
         const streakContainer = document.getElementById('streakSummaryContent');
         const activeStreaks = Object.entries(streakMap)
             .filter(([name, data]) => data.currentStreak > 0)
