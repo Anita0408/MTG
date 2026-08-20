@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>魔法風雲會 - 決戰計血器</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -630,13 +630,13 @@
 <div class="overlay">
     <nav class="navbar">
         <div class="brand">⚔️ MTG Life Counter</div>
-        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+        <button class="hamburger-btn" onclick="toggleMenu()" aria-label="切換選單">☰</button>
     </nav>
 
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
             <h3>選單 MENU</h3>
-            <button class="hamburger-btn" onclick="toggleMenu()">✕</button>
+            <button class="hamburger-btn" onclick="toggleMenu()" aria-label="關閉選單">✕</button>
         </div>
         <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">🏠 首頁</button>
         <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 比賽場</button>
@@ -665,10 +665,10 @@
         <div class="game-grid" id="gameGrid"></div>
 
         <div class="floating-controls" id="floatingControls" style="display: none;">
-            <button class="btn-icon-styled" onclick="rollD20All()" title="一鍵擲D20">
+            <button class="btn-icon-styled" onclick="rollD20All()" title="一鍵擲D20" aria-label="一鍵擲D20">
                 <svg viewBox="0 0 24 24"><path d="M12 2L2 7l3.5 12L12 22l6.5-3L22 7L12 2zm0 2.8L18.2 8H5.8L12 4.8zM4.5 9.5h15l-3.3 3.5L12 10.8l-4.2 2.2L4.5 9.5zM12 13.2l3.8 2-3.8 4.5-3.8-4.5 3.8-2zM6.2 14.2l3.8 2-4.1 2.2L4 13.2l2.2 1zM17.8 14.2l2.2-1-1.9 5.2-4.1-2.2 3.8-2z"/></svg>
             </button>
-            <button class="btn-icon-styled" onclick="openResetModal()" title="重置本局">
+            <button class="btn-icon-styled" onclick="openResetModal()" title="重置本局" aria-label="重置本局">
                 <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
             </button>
         </div>
@@ -709,7 +709,7 @@
     <div class="modal-content">
         <div class="modal-title">開新局設定</div>
         <div class="form-group">
-            <label>模式 (必填)</label>
+            <label for="modeSelect">模式 (必填)</label>
             <select id="modeSelect" onchange="updateSetupForm()">
                 <option value="Commander">指揮官</option>
                 <option value="TwoHeadedGiant">雙頭巨人</option>
@@ -717,7 +717,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label>人數 (必填)</label>
+            <label for="playerCountSelect">人數 (必填)</label>
             <select id="playerCountSelect" onchange="updatePlayerRows()"></select>
         </div>
 
@@ -744,7 +744,7 @@
 <!-- 指揮官傷害詳細記錄 Modal -->
 <div class="modal-mask" id="cmdDamageModal">
     <div class="modal-content">
-        <button class="modal-close-x" onclick="closeModal('cmdDamageModal')">✕</button>
+        <button class="modal-close-x" onclick="closeModal('cmdDamageModal')" aria-label="關閉">✕</button>
         <div class="modal-title" id="cmdModalTitle">⚔️ 受到的指揮官傷害</div>
         <div class="cmd-damage-list" id="cmdDamageList"></div>
     </div>
@@ -767,7 +767,7 @@
 
 <div class="modal-mask" id="diceModal">
     <div class="modal-content" style="text-align: center;">
-        <button class="modal-close-x" id="btnDiceClose" onclick="closeModal('diceModal')">✕</button>
+        <button class="modal-close-x" id="btnDiceClose" onclick="closeModal('diceModal')" aria-label="關閉">✕</button>
         <div class="modal-title" id="diceWinnerTitle">🎲 擲骰進行中...</div>
         <div id="diceResults" style="font-size: 1.05rem; line-height: 1.8; text-align: left; margin-top: 10px; min-height: 120px;"></div>
     </div>
@@ -797,10 +797,37 @@
     };
 
     let activeSelectingPlayerIndex = null;
-    let holdTimer = null;
-    let holdInterval = null;
 
-    // 字數限制與裁切輔助函式
+    // 核心 Pointer Event 長按事件綁定工具
+    function bindHoldEvent(element, actionFn) {
+        if (!element) return;
+        let holdTimer = null;
+        let holdInterval = null;
+
+        const start = (e) => {
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+            stop();
+            actionFn();
+            holdTimer = setTimeout(() => {
+                holdInterval = setInterval(actionFn, 100);
+            }, 400);
+        };
+
+        const stop = (e) => {
+            if (e) e.stopPropagation();
+            if (holdTimer) clearTimeout(holdTimer);
+            if (holdInterval) clearInterval(holdInterval);
+            holdTimer = null;
+            holdInterval = null;
+        };
+
+        element.addEventListener('pointerdown', start);
+        element.addEventListener('pointerup', stop);
+        element.addEventListener('pointerleave', stop);
+        element.addEventListener('pointercancel', stop);
+    }
+
     function truncateName(name, limit = 7, cutLen = 6) {
         if (!name) return '';
         const charArray = Array.from(name);
@@ -825,36 +852,6 @@
     function flipCardFront(index) {
         const cardElem = document.getElementById(`card-${index}`);
         if (cardElem) cardElem.classList.remove('flipped');
-    }
-
-    function startHold(event, actionFn) {
-        event.stopPropagation();
-        stopHold();
-        actionFn();
-        holdTimer = setTimeout(() => {
-            holdInterval = setInterval(() => {
-                actionFn();
-            }, 100);
-        }, 400);
-    }
-
-    function stopHold(event) {
-        if (event) event.stopPropagation();
-        if (holdTimer) clearTimeout(holdTimer);
-        if (holdInterval) clearInterval(holdInterval);
-        holdTimer = null;
-        holdInterval = null;
-    }
-
-    function getHoldEvents(actionFnStr) {
-        return `
-            onmousedown="startHold(event, () => ${actionFnStr})" 
-            onmouseup="stopHold(event)" 
-            onmouseleave="stopHold(event)"
-            ontouchstart="startHold(event, () => ${actionFnStr})" 
-            ontouchend="stopHold(event)" 
-            ontouchcancel="stopHold(event)"
-        `;
     }
 
     function toggleMenu() {
@@ -1085,8 +1082,8 @@
                         </div>
 
                         <div class="life-controls" onclick="event.stopPropagation()">
-                            <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, -1)`)}>-1</button>
-                            <button class="btn-life btn-life-large" ${getHoldEvents(`changeLife(${index}, 1)`)}>+1</button>
+                            <button class="btn-life btn-life-large btn-minus">-1</button>
+                            <button class="btn-life btn-life-large btn-plus">+1</button>
                         </div>
                     </div>
 
@@ -1095,7 +1092,7 @@
                         <div class="card-back-body">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-weight:bold; color:var(--gold-light); font-size:0.9rem;">${p.name}</span>
-                                <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})" title="翻回正面">
+                                <button class="btn-flip-back" onclick="event.stopPropagation(); flipCardFront(${index})" title="翻回正面" aria-label="翻回正面">
                                     <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
                                 </button>
                             </div>
@@ -1104,8 +1101,8 @@
                             <div class="status-row">
                                 <div class="status-title">🧪 中毒標記</div>
                                 <div style="display:flex; gap:8px;">
-                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', -1)`)}>-1</button>
-                                    <button class="btn-life btn-status-ctrl" ${getHoldEvents(`changeStatus(${index}, 'poison', 1)`)}>+1</button>
+                                    <button class="btn-life btn-status-ctrl btn-poison-minus">-1</button>
+                                    <button class="btn-life btn-status-ctrl btn-poison-plus">+1</button>
                                 </div>
                             </div>
 
@@ -1120,6 +1117,13 @@
                     </div>
                 </div>
             `;
+
+            // 動態綁定 Pointer 事件長按
+            bindHoldEvent(cardWrapper.querySelector('.btn-minus'), () => changeLife(index, -1));
+            bindHoldEvent(cardWrapper.querySelector('.btn-plus'), () => changeLife(index, 1));
+            bindHoldEvent(cardWrapper.querySelector('.btn-poison-minus'), () => changeStatus(index, 'poison', -1));
+            bindHoldEvent(cardWrapper.querySelector('.btn-poison-plus'), () => changeStatus(index, 'poison', 1));
+
             grid.appendChild(cardWrapper);
         });
     }
@@ -1142,7 +1146,6 @@
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
         
-        // 1. 標題不顯示玩家自己的名字，只顯示「受到的指揮官傷害」
         document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
         
         const listContainer = document.getElementById('cmdDamageList');
@@ -1162,7 +1165,6 @@
 
             attackerList.forEach(atk => {
                 const currentDmg = victim.cmdDamages[atk.name] || 0;
-                // 3. 列表的其他玩家名字超過七個字元，就顯示前六個字元 + …
                 const displayName = truncateName(atk.name, 7, 6);
 
                 const row = document.createElement('div');
@@ -1177,11 +1179,15 @@
                             ${currentDmg} / 21
                         </span>
                         <div style="display: flex; gap: 4px;">
-                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name.replace(/'/g, "\\'")}', -1)`)}>-1</button>
-                            <button class="btn-life btn-status-ctrl" style="width:36px;" ${getHoldEvents(`changeCmdDamageDetail(${victimIndex}, '${atk.name.replace(/'/g, "\\'")}', 1)`)}>+1</button>
+                            <button class="btn-life btn-status-ctrl btn-cmd-minus" style="width:36px;">-1</button>
+                            <button class="btn-life btn-status-ctrl btn-cmd-plus" style="width:36px;">+1</button>
                         </div>
                     </div>
                 `;
+
+                bindHoldEvent(row.querySelector('.btn-cmd-minus'), () => changeCmdDamageDetail(victimIndex, atk.name, -1));
+                bindHoldEvent(row.querySelector('.btn-cmd-plus'), () => changeCmdDamageDetail(victimIndex, atk.name, 1));
+
                 listContainer.appendChild(row);
             });
         });
