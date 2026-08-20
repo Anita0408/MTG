@@ -278,19 +278,22 @@
             -webkit-transform: rotateY(180deg); 
         }
 
+        /* 雙線卡牌邊框與滿版質感 */
         .card-front, .card-back {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             backface-visibility: hidden !important;
             -webkit-backface-visibility: hidden !important;
-            border: var(--border-style);
+            border: 1px solid var(--gold-primary) !important;
+            outline: 1px solid rgba(212, 175, 55, 0.25);
+            outline-offset: -4px;
             border-radius: 8px;
             padding: 8px 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: inset 0 0 0 1px rgba(243, 229, 171, 0.3), 0 8px 25px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 -40px 60px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0, 0, 0, 0.9);
             overflow: hidden;
             background-size: cover;
             background-position: center;
@@ -314,7 +317,7 @@
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(15, 12, 25, 0.5) 0%, rgba(10, 8, 15, 0.75) 100%);
+            background: linear-gradient(180deg, rgba(15, 12, 25, 0.4) 0%, rgba(10, 8, 15, 0.85) 100%);
             z-index: 1;
         }
 
@@ -374,11 +377,12 @@
             text-align: center;
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 0.9), 0 0 10px rgba(212, 175, 55, 0.5);
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 1), 0 0 15px rgba(212, 175, 55, 0.6);
             letter-spacing: 1px;
             margin: 0;
             line-height: 1;
             cursor: pointer;
+            transition: transform 0.1s ease, color 0.15s ease;
         }
 
         .life-display.danger {
@@ -399,12 +403,13 @@
             padding: 4px 0;
             font-size: 1rem;
             font-weight: bold;
-            background: rgba(15, 12, 25, 0.7);
-            border: 1px solid var(--gold-dark);
+            background: rgba(10, 8, 15, 0.75) !important;
+            border: 1px solid var(--gold-primary) !important;
             color: var(--gold-light);
             border-radius: 4px;
             cursor: pointer;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
             transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -420,10 +425,10 @@
         }
 
         .btn-life:active {
-            transform: scale(0.92);
+            transform: scale(0.92) !important;
             background: var(--gold-primary) !important;
-            color: #000 !important;
-            box-shadow: 0 0 10px var(--gold-primary);
+            color: #100b18 !important;
+            box-shadow: 0 0 15px var(--gold-primary) !important;
         }
 
         .status-row {
@@ -498,15 +503,19 @@
         .btn-icon-styled {
             width: 52px; height: 52px;
             border-radius: 50%;
-            background: radial-gradient(circle, #251c36 0%, #0d0814 100%);
-            border: 1.5px solid var(--gold-primary);
+            background: radial-gradient(circle at 30% 30%, #3a2b54, #0d0814) !important;
+            border: 1.5px solid var(--gold-primary) !important;
             color: var(--gold-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8), 0 0 10px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.9), 0 0 12px rgba(212, 175, 55, 0.3) !important;
             transition: all 0.2s ease;
+        }
+
+        .btn-icon-styled:active {
+            transform: scale(0.9);
         }
 
         .btn-icon-styled svg { width: 24px; height: 24px; fill: currentColor; }
@@ -573,12 +582,23 @@
             padding: 8px 12px;
             border-radius: 6px;
             border: 1px solid var(--gold-dark);
+            gap: 10px;
         }
 
+        /* 玩家名稱完整顯示 (無長度限制與截斷) */
         .cmd-damage-player {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cmd-damage-player-name {
+            color: var(--gold-light);
+            font-weight: bold;
+            word-break: break-word;
+            white-space: normal;
         }
 
         .cmd-damage-avatar {
@@ -587,6 +607,7 @@
             border-radius: 50%;
             border: 1px solid var(--gold-primary);
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .form-group { margin-bottom: 12px; }
@@ -810,11 +831,7 @@
     let activeSelectingPlayerIndex = null;
 
     /**
-     * 重構後的長按工具：
-     * 1. 支援點擊（點一次加減一次）
-     * 2. 按住 350ms 後開啓連續觸發
-     * 3. 初始頻率 150ms，後續漸進加速，不暴走
-     * 4. 嚴格鎖定 Pointer Capture，避免 DOM 或觸控轉移導致事件遺失
+     * 長按工具：綁定 Pointer Capture
      */
     function bindHoldEvent(element, actionFn) {
         if (!element) return;
@@ -843,15 +860,13 @@
                 try { element.setPointerCapture(e.pointerId); } catch(err){}
             }
 
-            // 立即執行第一次點擊
             actionFn();
 
-            // 延遲 350ms 後開始連刷
             holdTimer = setTimeout(() => {
                 let speed = 150;
                 const runStep = () => {
                     actionFn();
-                    speed = Math.max(60, speed * 0.9); // 逐漸加速，上限 60ms
+                    speed = Math.max(60, speed * 0.9);
                     holdInterval = setTimeout(runStep, speed);
                 };
                 runStep();
@@ -862,15 +877,6 @@
         element.addEventListener('pointerup', stop);
         element.addEventListener('pointercancel', stop);
         element.addEventListener('pointerleave', stop);
-    }
-
-    function truncateName(name, limit = 7, cutLen = 6) {
-        if (!name) return '';
-        const charArray = Array.from(name);
-        if (charArray.length > limit) {
-            return charArray.slice(0, cutLen).join('') + '…';
-        }
-        return name;
     }
 
     window.onload = function() {
@@ -1128,7 +1134,6 @@
                 </div>
             `;
 
-            // 動態綁定長按與點擊事件（綁定一次，永不上拆）
             bindHoldEvent(cardWrapper.querySelector('.btn-minus'), () => changeLife(index, -1));
             bindHoldEvent(cardWrapper.querySelector('.btn-plus'), () => changeLife(index, 1));
             bindHoldEvent(cardWrapper.querySelector('.btn-poison-minus'), () => changeStatus(index, 'poison', -1));
@@ -1140,7 +1145,7 @@
     }
 
     /**
-     * 局部更新 DOM，避免重建全體卡牌
+     * 需求 1：卡片正面僅顯示最高傷害數字，不顯示人名
      */
     function updateCardBadgesUI(index) {
         const p = state.currentGame.players[index];
@@ -1150,13 +1155,11 @@
         if (!badgesContainer) return;
 
         let maxCmdDmg = 0;
-        let maxAttackerName = "";
 
         if (p.cmdDamages) {
-            Object.entries(p.cmdDamages).forEach(([attacker, dmg]) => {
+            Object.values(p.cmdDamages).forEach(dmg => {
                 if (dmg > maxCmdDmg) {
                     maxCmdDmg = dmg;
-                    maxAttackerName = attacker;
                 }
             });
         }
@@ -1165,7 +1168,7 @@
             ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 毒:${p.poison}</span>` : ''}
             ${maxCmdDmg > 0 ? `
                 <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                    ⚔️ 傷:${maxCmdDmg}${maxAttackerName ? ` (${truncateName(maxAttackerName)})` : ''}
+                    ⚔️ 傷:${maxCmdDmg}
                 </span>
             ` : ''}
         `;
@@ -1180,7 +1183,6 @@
         p.life += delta;
         saveCurrentGame();
 
-        // 精準局部更新數字與視覺，不重建 DOM
         const lifeDisplay = document.getElementById(`life-val-${index}`);
         if (lifeDisplay) {
             lifeDisplay.innerText = p.life;
@@ -1199,6 +1201,9 @@
         updateCardBadgesUI(index);
     }
 
+    /**
+     * 需求 2：受到指揮官傷害彈窗，玩家名稱無論長度皆完整顯示
+     */
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
@@ -1222,16 +1227,15 @@
 
             attackerList.forEach(atk => {
                 const currentDmg = victim.cmdDamages[atk.name] || 0;
-                const displayName = truncateName(atk.name, 7, 6);
 
                 const row = document.createElement('div');
                 row.className = 'cmd-damage-item';
                 row.innerHTML = `
                     <div class="cmd-damage-player">
                         <img src="${atk.avatar}" class="cmd-damage-avatar" referrerpolicy="no-referrer">
-                        <span style="color: var(--gold-light); font-weight: bold;" title="${atk.name}">${displayName}</span>
+                        <span class="cmd-damage-player-name">${atk.name}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <span id="cmd-val-${victimIndex}-${atk.name}" style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
                             ${currentDmg} / 21
                         </span>
@@ -1262,7 +1266,6 @@
 
         saveCurrentGame();
         
-        // 局部更新 Modal 中的數值
         const valElem = document.getElementById(`cmd-val-${victimIndex}-${attackerName}`);
         if (valElem) {
             valElem.innerText = `${updated} / 21`;
@@ -1332,12 +1335,12 @@
             let elapsedTime = Date.now() - startTime;
             if (elapsedTime < 1000) {
                 let randomRolls = state.currentGame.players.map(p => 
-                    `<div><strong>${truncateName(p.name)}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
+                    `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
                 ).join('');
                 results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
             } else {
                 clearInterval(animInterval);
-                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${truncateName(finalWinner)}</span>！`;
+                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
                 closeBtn.style.display = 'block';
 
                 let finalHtml = '';
@@ -1346,7 +1349,7 @@
                         finalHtml += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${log.round} 輪同分重擲：</div>`;
                     }
                     log.rolls.forEach(r => {
-                        finalHtml += `<div><strong>${truncateName(r.name)}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
+                        finalHtml += `<div><strong>${r.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
                     });
                 });
                 results.innerHTML = finalHtml;
