@@ -247,7 +247,7 @@
             opacity: 0.5;
         }
 
-        /* 3. 匯出/匯入紀錄按鈕：低調、下方底線、點擊無明顯反饋 */
+        /* 匯出/匯入紀錄按鈕：低調、下方底線、點擊無明顯反饋 */
         .btn-subtle-link {
             background: transparent;
             border: none;
@@ -931,7 +931,7 @@
         .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
         .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
 
-        /* 1. 連勝狀況區塊：更華麗外觀 */
+        /* 連勝狀況區塊：更華麗外觀 */
         .streak-section {
             background: linear-gradient(135deg, rgba(30, 20, 45, 0.9), rgba(15, 10, 25, 0.95));
             border: 1.5px solid var(--gold-primary);
@@ -965,7 +965,7 @@
             100% { border-color: var(--gold-light); box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 12px rgba(255, 215, 0, 0.6); }
         }
 
-        /* 2. 勝負統計區塊：可上下滑動優化 */
+        /* 勝負統計區塊：可上下滑動優化 */
         .stats-summary { 
             margin-top: 15px; 
             background: rgba(20, 15, 30, 0.85); 
@@ -1080,7 +1080,7 @@
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">傳奇編年史</h2>
 
-        <!-- 1. 連勝狀況區塊 -->
+        <!-- 連勝狀況區塊 -->
         <div class="streak-section" style="width: 100%;">
             <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 連勝狀況</h3>
             <div id="streakSummaryContent" class="streak-grid">
@@ -1102,13 +1102,13 @@
             </table>
         </div>
 
-        <!-- 2. 勝負統計區塊 (支援上下滑動) -->
+        <!-- 勝負統計區塊 (支援上下滑動) -->
         <div class="stats-summary" style="width: 100%;">
             <h3 style="color: var(--gold-primary); margin-bottom: 10px;">勝負統計</h3>
             <div id="statsSummaryContent" class="stats-list"></div>
         </div>
 
-        <!-- 3. 匯出/匯入低調按鈕 -->
+        <!-- 匯出/匯入低調按鈕 -->
         <div style="display: flex; gap: 16px; margin-top: 20px; justify-content: center; width: 100%;">
             <button class="btn-subtle-link" onclick="exportRecords()">匯出紀錄</button>
             <button class="btn-subtle-link" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
@@ -1164,14 +1164,14 @@
 
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
-        <div class="modal-title">重置對戰與勝負結算</div>
-        <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝的個人或隊伍：</p>
+        <div class="modal-title">結算與重置</div>
+        <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝玩家：</p>
         
         <div class="winner-checkbox-group" id="winnerSelectorList"></div>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <button class="btn-magic" style="flex:1;" onclick="confirmReset('same')">目前賽制</button>
-            <button class="btn-magic" style="flex:1;" onclick="confirmReset('new')">新賽制</button>
+            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('same')">沿用此賽制</button>
+            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('new')">開啟新賽制</button>
         </div>
         <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="closeModal('resetModal')">取消</button>
     </div>
@@ -1781,7 +1781,7 @@
                 results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
             } else {
                 clearInterval(animInterval);
-                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
+                titleElem.innerHTML = `由 <span style="color:#ffd700">${finalWinner}</span> 開始遊戲`;
                 closeBtn.style.display = 'block';
 
                 let finalHtml = '';
