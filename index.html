@@ -71,7 +71,7 @@
             font-weight: 700;
         }
 
-        /* 🪄 魔法特效漢堡選單按鈕樣式 (改為始終顯示 X) */
+        /* 🪄 魔法特效漢堡選單按鈕樣式 */
         .magic-menu-toggle {
             background: radial-gradient(circle, rgba(50, 20, 30, 0.9) 0%, rgba(20, 8, 15, 0.95) 100%);
             border: 1px solid var(--crimson-glow);
@@ -126,15 +126,18 @@
             50% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* 讓三條線固定呈現 X 形狀 */
-        .magic-menu-toggle .menu-line:nth-child(1) {
+        /* 當選單展開時，將漢堡按鈕變為 X 形狀 */
+        .menu-drawer.active ~ .navbar .magic-menu-toggle .menu-line:nth-child(1),
+        .navbar .magic-menu-toggle.active .menu-line:nth-child(1) {
             transform: translateY(7px) rotate(45deg);
         }
-        .magic-menu-toggle .menu-line:nth-child(2) {
+        .menu-drawer.active ~ .navbar .magic-menu-toggle .menu-line:nth-child(2),
+        .navbar .magic-menu-toggle.active .menu-line:nth-child(2) {
             opacity: 0;
             transform: scale(0);
         }
-        .magic-menu-toggle .menu-line:nth-child(3) {
+        .menu-drawer.active ~ .navbar .magic-menu-toggle .menu-line:nth-child(3),
+        .navbar .magic-menu-toggle.active .menu-line:nth-child(3) {
             transform: translateY(-7px) rotate(-45deg);
         }
 
@@ -210,28 +213,12 @@
             color: var(--gold-light);
         }
 
-        /* 選取頁籤的動態向上光點特效 */
+        /* 選取頁籤樣式（已移除流光特效） */
         .menu-item.active {
             background: rgba(212, 175, 55, 0.15);
             border-left: 3px solid var(--gold-primary);
             color: #fff;
             font-weight: bold;
-        }
-
-        .menu-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-            animation: lightMove 2s infinite linear;
-        }
-
-        @keyframes lightMove {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         .btn-magic {
