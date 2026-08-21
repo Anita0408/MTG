@@ -752,6 +752,7 @@
 
         .modal-mask.active { display: flex; }
 
+        /* 5. 確保人數多時能完整捲動，視窗高度限制並加入卷軸 */
         .modal-content {
             background: rgba(24, 20, 36, 0.95);
             border: 1px solid var(--gold-primary);
@@ -759,7 +760,7 @@
             padding: 20px;
             width: 95%;
             max-width: 600px;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
             position: relative;
             box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
@@ -832,25 +833,18 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; color: var(--gold-light); font-size: 0.9rem; }
 
-        /* 5. 下拉選單自訂箭頭與精緻化 */
+        /* 1. 賽制、人數右側加上黃色的倒三角形（可展開視覺），2. 微光聚焦效果 */
         select {
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
-            background: #0a080f url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 10px center;
-            padding-right: 30px;
-        }
-
-        /* 4. Placeholder 浮水印感設計 */
-        input[type="text"]::placeholder {
-            color: rgba(212, 175, 55, 0.35);
-            font-style: italic;
-            letter-spacing: 0.5px;
+            background: #0a080f url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 12px center;
+            padding-right: 35px;
         }
 
         select, input[type="text"] {
             width: 100%;
-            padding: 8px;
+            padding: 8px 12px;
             background: #0a080f;
             border: 1px solid var(--gold-dark);
             color: #fff;
@@ -862,48 +856,54 @@
             transition: all 0.3s ease;
         }
 
-        /* 6. 打字時 placeholder 消失，外框為金色發小小亮光 */
-        input[type="text"]:focus {
+        /* 2. 賽制、人數、玩家設定欄位點選或 Focus 時亮起微光 */
+        select:focus, input[type="text"]:focus {
             outline: none;
             border-color: var(--gold-light);
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
-        }
-        input[type="text"]:not(:placeholder-shown) {
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 5px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6), inset 0 0 4px rgba(212, 175, 55, 0.3);
+            background-color: rgba(212, 175, 55, 0.05);
         }
 
-        /* 7. 進入較按鈕（設計感與點選時微微發光） */
+        input[type="text"]::placeholder {
+            color: rgba(212, 175, 55, 0.35);
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        /* 3. 進入按鈕設計感與隨便微光、拿掉金邊 */
         .btn-enter-battle {
-            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+            background: linear-gradient(135deg, #c5a059 0%, #705513 100%);
             color: #0f0c19;
-            border: 1px solid var(--gold-light);
+            border: none;
             position: relative;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
         .btn-enter-battle:not(:disabled):hover {
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 8px rgba(243, 229, 171, 0.6);
-            border-color: #fff;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.7), inset 0 0 8px rgba(243, 229, 171, 0.5);
             transform: translateY(-1px);
         }
         .btn-enter-battle:not(:disabled):active {
             transform: scale(0.98);
-            box-shadow: 0 0 25px rgba(212, 175, 55, 1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
         }
 
-        /* 8. 弱化取消按鈕 */
+        /* 4. 弱化取消按鈕：僅取消兩字，下方有底線 */
         .btn-cancel-subtle {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            color: rgba(243, 229, 171, 0.6);
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.5) !important;
+            border-radius: 0 !important;
+            color: rgba(243, 229, 171, 0.7) !important;
+            box-shadow: none !important;
+            padding: 8px 12px;
             transition: all 0.2s ease;
         }
         .btn-cancel-subtle:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--gold-light);
-            border-color: rgba(212, 175, 55, 0.4);
+            color: var(--gold-light) !important;
+            border-bottom-color: var(--gold-primary) !important;
+            background: rgba(212, 175, 55, 0.05) !important;
         }
 
         .player-setup-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -1094,10 +1094,8 @@
 <!-- Modal 區塊 -->
 <div class="modal-mask" id="newGameModal">
     <div class="modal-content">
-        <!-- 1. 標題改為：競技場配置 -->
         <div class="modal-title">競技場配置</div>
         <div class="form-group">
-            <!-- 2. 模式（必填）改為：賽制 -->
             <label for="modeSelect">賽制</label>
             <select id="modeSelect" onchange="updateSetupForm()">
                 <option value="Commander">指揮官</option>
@@ -1106,7 +1104,6 @@
             </select>
         </div>
         <div class="form-group">
-            <!-- 3. 人數（必填）改為：人數 -->
             <label for="playerCountSelect">人數</label>
             <select id="playerCountSelect" onchange="updatePlayerRows()"></select>
         </div>
@@ -1116,10 +1113,8 @@
             <div class="player-setup-list" id="playerSetupList"></div>
         </div>
 
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <!-- 7. 按鈕名字改為：進入較 -->
-            <button class="btn-magic btn-enter-battle" id="btnStartGame" style="flex:1;" disabled onclick="startGame()">進入較</button>
-            <!-- 8. 弱化取消按鈕 -->
+        <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
+            <button class="btn-magic btn-enter-battle" id="btnStartGame" style="flex:1;" disabled onclick="startGame()">進入</button>
             <button class="btn-magic btn-cancel-subtle" onclick="closeModal('newGameModal')">取消</button>
         </div>
     </div>
@@ -1359,7 +1354,6 @@
                 `;
             } else {
                 let name = oldInputs[i] || '';
-                // 4. Placeholder 移除姓名兩字 (改為玩家 1、玩家 2...)
                 row.innerHTML = `
                     <input type="text" placeholder="玩家 ${i+1}" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
