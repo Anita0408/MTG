@@ -848,7 +848,7 @@
             border: 1px solid var(--gold-dark);
             color: #fff;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 16px; /* 修正：強制 16px 以防止 iOS 輸入時畫面自動放大 */
             font-family: 'Noto Serif TC', serif;
             -webkit-user-select: text;
             user-select: text;
@@ -1118,7 +1118,7 @@
 
 <div class="modal-mask" id="avatarModal">
     <div class="modal-content">
-        <div class="modal-title">選擇鵬洛客頭像</div>
+        <div class="modal-title">選擇頭像</div>
         <div class="avatar-grid" id="avatarGrid"></div>
         <button class="btn-magic" style="margin-top: 15px; width: 100%;" onclick="closeModal('avatarModal')">關閉</button>
     </div>
