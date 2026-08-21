@@ -832,6 +832,22 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; color: var(--gold-light); font-size: 0.9rem; }
 
+        /* 5. 下拉選單自訂箭頭與精緻化 */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: #0a080f url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        /* 4. Placeholder 浮水印感設計 */
+        input[type="text"]::placeholder {
+            color: rgba(212, 175, 55, 0.35);
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
         select, input[type="text"] {
             width: 100%;
             padding: 8px;
@@ -843,6 +859,51 @@
             font-family: 'Noto Serif TC', serif;
             -webkit-user-select: text;
             user-select: text;
+            transition: all 0.3s ease;
+        }
+
+        /* 6. 打字時 placeholder 消失，外框為金色發小小亮光 */
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--gold-light);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+        }
+        input[type="text"]:not(:placeholder-shown) {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.4);
+        }
+
+        /* 7. 進入較按鈕（設計感與點選時微微發光） */
+        .btn-enter-battle {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+            color: #0f0c19;
+            border: 1px solid var(--gold-light);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+        }
+        .btn-enter-battle:not(:disabled):hover {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 8px rgba(243, 229, 171, 0.6);
+            border-color: #fff;
+            transform: translateY(-1px);
+        }
+        .btn-enter-battle:not(:disabled):active {
+            transform: scale(0.98);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 1);
+        }
+
+        /* 8. 弱化取消按鈕 */
+        .btn-cancel-subtle {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: rgba(243, 229, 171, 0.6);
+            transition: all 0.2s ease;
+        }
+        .btn-cancel-subtle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--gold-light);
+            border-color: rgba(212, 175, 55, 0.4);
         }
 
         .player-setup-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -1009,7 +1070,7 @@
                     <tr>
                         <th>日期</th>
                         <th>局數</th>
-                        <th>模式</th>
+                        <th>賽制</th>
                         <th>冠軍</th>
                     </tr>
                 </thead>
@@ -1033,9 +1094,11 @@
 <!-- Modal 區塊 -->
 <div class="modal-mask" id="newGameModal">
     <div class="modal-content">
-        <div class="modal-title">開新局設定</div>
+        <!-- 1. 標題改為：競技場配置 -->
+        <div class="modal-title">競技場配置</div>
         <div class="form-group">
-            <label for="modeSelect">模式 (必填)</label>
+            <!-- 2. 模式（必填）改為：賽制 -->
+            <label for="modeSelect">賽制</label>
             <select id="modeSelect" onchange="updateSetupForm()">
                 <option value="Commander">指揮官</option>
                 <option value="TwoHeadedGiant">雙頭巨人</option>
@@ -1043,7 +1106,8 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="playerCountSelect">人數 (必填)</label>
+            <!-- 3. 人數（必填）改為：人數 -->
+            <label for="playerCountSelect">人數</label>
             <select id="playerCountSelect" onchange="updatePlayerRows()"></select>
         </div>
 
@@ -1053,8 +1117,10 @@
         </div>
 
         <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button class="btn-magic" id="btnStartGame" style="flex:1;" disabled onclick="startGame()">準備好了！開始對戰</button>
-            <button class="btn-magic" style="background: #444;" onclick="closeModal('newGameModal')">取消</button>
+            <!-- 7. 按鈕名字改為：進入較 -->
+            <button class="btn-magic btn-enter-battle" id="btnStartGame" style="flex:1;" disabled onclick="startGame()">進入較</button>
+            <!-- 8. 弱化取消按鈕 -->
+            <button class="btn-magic btn-cancel-subtle" onclick="closeModal('newGameModal')">取消</button>
         </div>
     </div>
 </div>
@@ -1083,10 +1149,10 @@
         <div class="winner-checkbox-group" id="winnerSelectorList"></div>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <button class="btn-magic" style="flex:1;" onclick="confirmReset('same')">目前模式</button>
-            <button class="btn-magic" style="flex:1;" onclick="confirmReset('new')">新模式</button>
+            <button class="btn-magic" style="flex:1;" onclick="confirmReset('same')">目前賽制</button>
+            <button class="btn-magic" style="flex:1;" onclick="confirmReset('new')">新賽制</button>
         </div>
-        <button class="btn-magic" style="width: 100%; background: #444;" onclick="closeModal('resetModal')">取消</button>
+        <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="closeModal('resetModal')">取消</button>
     </div>
 </div>
 
@@ -1293,8 +1359,9 @@
                 `;
             } else {
                 let name = oldInputs[i] || '';
+                // 4. Placeholder 移除姓名兩字 (改為玩家 1、玩家 2...)
                 row.innerHTML = `
-                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
+                    <input type="text" placeholder="玩家 ${i+1}" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
                 `;
             }
