@@ -153,7 +153,6 @@
 
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
-        /* 🪄 側邊選單：金屬雕花石壁紋理與微光浮雕邊條 */
         .menu-drawer {
             position: fixed;
             top: 0; right: -75%; width: 75%; max-width: 320px; height: 100%;
@@ -199,7 +198,6 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
 
-        /* 🌟 首頁按鈕美化設定 */
         .btn-round-home {
             width: 130px; height: 130px; border-radius: 50%;
             background: radial-gradient(circle, #382852 0%, #150c24 100%);
@@ -371,7 +369,7 @@
         }
         .modal-mask.active { display: flex; }
 
-        /* ✨ 設置競技場：微圓角、雙層金屬漸層框線、微弱塵埃粒子背景 */
+        /* ✨ 設置競技場：微圓角、雙層金屬漸層框線、微弱塵埃粒子背景、支援內部捲動 */
         .arena-modal-content {
             background: 
                 radial-gradient(circle at 20% 20%, rgba(138, 43, 226, 0.08) 0%, transparent 40%),
@@ -382,8 +380,10 @@
             border: 2px solid var(--gold-primary);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(212, 175, 55, 0.25);
             border-radius: 16px;
-            padding: 24px; width: 92%; max-width: 520px; max-height: 90vh;
-            overflow-y: auto; position: relative;
+            padding: 24px; width: 92%; max-width: 520px; 
+            max-height: 85vh; /* 嚴格限制最大高度，避免手機被上下卡住 */
+            overflow-y: auto;  /* 內容過多時可內部滑動 */
+            position: relative;
             font-family: 'Noto Serif TC', serif;
         }
 
@@ -413,13 +413,28 @@
             padding: 0 8px;
         }
 
-        .modal-close-x { position: absolute; top: 12px; right: 18px; font-size: 1.4rem; color: var(--gold-primary); cursor: pointer; background: none; border: none; }
+        /* 🪄 低調的頭像視窗關閉按鈕 */
+        .modal-close-subtle {
+            position: absolute; top: 12px; right: 14px;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            color: rgba(243, 229, 171, 0.5);
+            font-size: 0.85rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .modal-close-subtle:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-light);
+            border-color: var(--gold-primary);
+        }
+
         .modal-title { color: var(--gold-primary); font-size: 1.3rem; margin-bottom: 15px; text-align: center; border-bottom: 1px solid var(--gold-dark); padding-bottom: 8px; }
 
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 6px; color: var(--gold-light); font-size: 0.95rem; font-family: 'Cinzel', serif; letter-spacing: 0.5px; }
 
-        /* ✨ 質感下拉選單：加上微漸層與魔法晶石小圖示箭頭 */
         select {
             width: 100%; padding: 10px 14px;
             background: linear-gradient(180deg, #161122 0%, #0c0914 100%);
@@ -439,7 +454,6 @@
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
-        /* ✨ 輸入框：浮水印提示與打字時發出微弱琥珀光 */
         input[type="text"] {
             width: 100%; padding: 10px 14px;
             background: rgba(8, 6, 13, 0.8);
@@ -471,7 +485,6 @@
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .avatar-option { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; object-fit: cover; cursor: pointer; }
 
-        /* ✨ 進入競技場：主按鈕（具備可點擊時的微弱呼吸燈動畫與高質感金黃漸層） */
         .btn-arena-primary {
             background: linear-gradient(180deg, #e6c55c 0%, #b89726 50%, #8a6d1b 100%);
             color: #0f0c19;
@@ -509,7 +522,6 @@
             animation: none;
         }
 
-        /* ✨ 取消按鈕：大幅弱化為精緻低調的純文字風格 */
         .btn-arena-subtle {
             background: transparent;
             border: none;
@@ -544,15 +556,8 @@
 
         .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 0.9rem; }
         .stats-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-        .stats-item { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; background: rgba(10, 8, 15, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 4px; }
-        .stats-info-row { display: flex; justify-content: space-between; align-items: center; }
-        .progress-bar-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary)); }
-
         .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
         .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
-        .dice-rolling { font-size: 3rem; color: var(--gold-primary); animation: pulse-dice 0.15s infinite alternate; }
-        @keyframes pulse-dice { from { transform: scale(0.95); } to { transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -682,23 +687,23 @@
 </div>
 
 <div class="modal-mask" id="avatarModal">
-    <div class="modal-content">
-        <div class="modal-title">選擇鵬洛客頭像</div>
+    <div class="arena-modal-content" style="max-width: 420px;">
+        <button class="modal-close-subtle" onclick="closeModal('avatarModal')" aria-label="關閉">✕</button>
+        <div class="modal-title" style="margin-top: 5px;">選擇鵬洛客頭像</div>
         <div class="avatar-grid" id="avatarGrid"></div>
-        <button class="btn-arena-primary" style="margin-top: 15px; width: 100%;" onclick="closeModal('avatarModal')">關閉</button>
     </div>
 </div>
 
 <div class="modal-mask" id="cmdDamageModal">
-    <div class="modal-content">
-        <button class="modal-close-x" onclick="closeModal('cmdDamageModal')" aria-label="關閉">✕</button>
-        <div class="modal-title" id="cmdModalTitle">⚔️ 受到的指揮官傷害</div>
+    <div class="arena-modal-content" style="max-width: 420px;">
+        <button class="modal-close-subtle" onclick="closeModal('cmdDamageModal')" aria-label="關閉">✕</button>
+        <div class="modal-title" id="cmdModalTitle" style="margin-top: 5px;">⚔️ 受到的指揮官傷害</div>
         <div class="cmd-damage-list" id="cmdDamageList"></div>
     </div>
 </div>
 
 <div class="modal-mask" id="resetModal">
-    <div class="modal-content" style="text-align: center;">
+    <div class="arena-modal-content" style="text-align: center; max-width: 420px;">
         <div class="modal-title">重置對戰與勝負結算</div>
         <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝的個人或隊伍：</p>
         
@@ -713,9 +718,9 @@
 </div>
 
 <div class="modal-mask" id="diceModal">
-    <div class="modal-content" style="text-align: center;">
-        <button class="modal-close-x" id="btnDiceClose" onclick="closeModal('diceModal')" aria-label="關閉">✕</button>
-        <div class="modal-title" id="diceWinnerTitle">🎲 擲骰進行中...</div>
+    <div class="arena-modal-content" style="text-align: center; max-width: 420px;">
+        <button class="modal-close-subtle" id="btnDiceClose" style="display:none;" onclick="closeModal('diceModal')" aria-label="關閉">✕</button>
+        <div class="modal-title" id="diceWinnerTitle" style="margin-top: 5px;">🎲 擲骰進行中...</div>
         <div id="diceResults" style="font-size: 1.05rem; line-height: 1.8; text-align: left; margin-top: 10px; min-height: 120px;"></div>
     </div>
 </div>
@@ -869,12 +874,13 @@
 
         if (mode === 'TwoHeadedGiant') {
             [4, 6, 8].forEach(n => countSelect.add(new Option(`${n} 人 (${n/2} 隊)`, n)));
+            countSelect.value = currentCount && [4, 6, 8].includes(parseInt(currentCount)) ? currentCount : "4";
+        } else if (mode === 'Kingdoms') {
+            for(let i=5; i<=8; i++) countSelect.add(new Option(`${i} 人`, i));
+            countSelect.value = currentCount && parseInt(currentCount) >= 5 && parseInt(currentCount) <= 8 ? currentCount : "5";
         } else {
             for(let i=2; i<=8; i++) countSelect.add(new Option(`${i} 人`, i));
-        }
-
-        if (Array.from(countSelect.options).some(opt => opt.value === currentCount)) {
-            countSelect.value = currentCount;
+            countSelect.value = currentCount && parseInt(currentCount) >= 2 && parseInt(currentCount) <= 8 ? currentCount : "4";
         }
 
         updatePlayerRows();
@@ -900,15 +906,15 @@
                 let name1 = oldInputs[i * 2] || '';
                 let name2 = oldInputs[i * 2 + 1] || '';
                 row.innerHTML = `
-                    <span class="team-label">隊 ${i+1}:</span>
-                    <input type="text" placeholder="隊友 1 姓名" class="p-name" value="${name1}" oninput="validateSetupForm()">
-                    <input type="text" placeholder="隊友 2 姓名" class="p-name" value="${name2}" oninput="validateSetupForm()">
+                    <span class="team-label">${i+1}</span>
+                    <input type="text" placeholder="玩家 1" class="p-name" value="${name1}" oninput="validateSetupForm()">
+                    <input type="text" placeholder="玩家 2" class="p-name" value="${name2}" oninput="validateSetupForm()">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
                 `;
             } else {
                 let name = oldInputs[i] || '';
                 row.innerHTML = `
-                    <input type="text" placeholder="玩家 ${i+1} 姓名" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
+                    <input type="text" placeholder="玩家 ${i+1}" class="p-name" value="${name}" oninput="validateSetupForm()" onchange="autoFillAvatar(this, ${i})">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
                 `;
             }
