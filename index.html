@@ -974,8 +974,47 @@
             transition: width 0.4s ease;
         }
 
+        /* 結算重置頁面優化樣式 */
         .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
-        .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        .winner-checkbox-item { 
+            display: flex; align-items: center; gap: 12px; 
+            background: rgba(255,255,255,0.04); padding: 10px 14px; 
+            border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.2); 
+            cursor: pointer; transition: all 0.2s ease; 
+        }
+        .winner-checkbox-item:has(input:checked) {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+        }
+        .winner-avatar { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gold-primary); object-fit: cover; flex-shrink: 0; }
+        
+        /* 自定義高質感 Checkbox */
+        .winner-checkbox-item input[type="checkbox"] {
+            display: none;
+        }
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--gold-primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: #0a080f;
+        }
+        .winner-checkbox-item input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: var(--gold-primary);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+        }
+        .winner-checkbox-item input[type="checkbox"]:checked + .custom-checkbox::after {
+            content: '✔';
+            color: #0f0c19;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
         .dice-rolling { font-size: 3rem; color: var(--gold-primary); text-shadow: 0 0 15px rgba(212, 175, 55, 0.8); animation: pulse-dice 0.15s infinite alternate; }
         @keyframes pulse-dice { from { transform: scale(0.95); } to { transform: scale(1.1); } }
@@ -1111,18 +1150,32 @@
     </div>
 </div>
 
+<!-- 結算與重置 Modal -->
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
+        <button class="modal-close-x" onclick="closeModal('resetModal')" aria-label="關閉">✕</button>
         <div class="modal-title">結算與重置</div>
         <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝玩家：</p>
         
         <div class="winner-checkbox-group" id="winnerSelectorList"></div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('same')">沿用此賽制</button>
-            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('new')">開啟新賽制</button>
+        <div style="margin-top: 20px;">
+            <button class="btn-magic btn-enter-battle" id="btnConfirmNextGame" style="width: 100%;" disabled onclick="handleConfirmNextGame()">確認並開始下一局</button>
         </div>
-        <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="closeModal('resetModal')">取消</button>
+    </div>
+</div>
+
+<!-- 第二階段設定 Modal -->
+<div class="modal-mask" id="postResetModal">
+    <div class="modal-content" style="text-align: center;">
+        <div class="modal-title">賽制選擇</div>
+        <p style="color: #ccc; font-size:0.9rem; margin-bottom: 20px;">請選擇下一局的賽制設定：</p>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="executePostReset('same')">沿用此賽制</button>
+            <button class="btn-magic" style="flex:1; background: transparent; border: 1.5px solid var(--gold-primary); color: var(--gold-light); opacity: 0.85;" onclick="executePostReset('new')">開啟新賽制</button>
+        </div>
+        <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="closeModal('postResetModal')">離開</button>
     </div>
 </div>
 
@@ -1186,6 +1239,7 @@
     };
 
     let activeSelectingPlayerIndex = null;
+    let pendingWinnersIndices = [];
 
     function bindHoldEvent(element, actionFn) {
         if (!element) return;
@@ -1755,24 +1809,40 @@
         state.currentGame.players.forEach((p, idx) => {
             list.innerHTML += `
                 <label class="winner-checkbox-item">
-                    <input type="checkbox" class="winner-checkbox" value="${idx}">
-                    <span>👑 ${p.name} (剩餘血量: ${p.life})</span>
+                    <input type="checkbox" class="winner-checkbox" value="${idx}" onchange="validateWinnerSelection()">
+                    <div class="custom-checkbox"></div>
+                    <img src="${p.avatar}" class="winner-avatar" referrerpolicy="no-referrer">
+                    <span style="font-weight:bold; color:var(--gold-light); flex:1;">${p.name}</span>
+                    <span style="font-size:0.85rem; color:#aaa;">(血量: ${p.life})</span>
                 </label>
             `;
         });
 
+        validateWinnerSelection();
         document.getElementById('resetModal').classList.add('active');
     }
 
-    function confirmReset(type) {
+    function validateWinnerSelection() {
         const checkboxes = document.querySelectorAll('.winner-checkbox');
-        let winnersIndices = [];
+        const anyChecked = Array.from(checkboxes.some(cb => cb.checked) ? checkboxes : checkboxes).some(cb => cb.checked);
+        document.getElementById('btnConfirmNextGame').disabled = !anyChecked;
+    }
+
+    function handleConfirmNextGame() {
+        const checkboxes = document.querySelectorAll('.winner-checkbox');
+        pendingWinnersIndices = [];
         checkboxes.forEach(cb => {
-            if (cb.checked) winnersIndices.push(parseInt(cb.value));
+            if (cb.checked) pendingWinnersIndices.push(parseInt(cb.value));
         });
 
-        recordGameResult(winnersIndices);
+        // 關閉第一階段結算 modal，開啟第二階段賽制選擇 modal
         closeModal('resetModal');
+        document.getElementById('postResetModal').classList.add('active');
+    }
+
+    function executePostReset(type) {
+        recordGameResult(pendingWinnersIndices);
+        closeModal('postResetModal');
 
         if (type === 'same') {
             let defaultLife = state.currentGame.mode === 'TwoHeadedGiant' ? 50 : 40;
@@ -1844,15 +1914,14 @@
             };
         });
 
-        // 修正排序：日期較早的在最下方，日期較近的在最上方
         formattedRecords.sort((a, b) => {
             let dateA = new Date(a.date).getTime();
             let dateB = new Date(b.date).getTime();
             
             if (dateA === dateB) {
-                return (b.gameIndex || 1) - (a.gameIndex || 1); // 同一天內，局數大的在上，小的在下
+                return (b.gameIndex || 1) - (a.gameIndex || 1);
             }
-            return dateB - dateA; // 日期大的（較新）排在前面
+            return dateB - dateA;
         });
 
         formattedRecords.forEach((r, idx) => {
