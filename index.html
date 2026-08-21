@@ -1165,11 +1165,9 @@
 <!-- 2. 下一個步驟 Modal -->
 <div class="modal-mask" id="nextStepModal">
     <div class="modal-content" style="text-align: center;">
-        <button class="modal-close-x" onclick="closeModal('nextStepModal')" aria-label="關閉">✕</button>
         <div class="modal-title">下一步選擇</div>
-        <p style="color: #ccc; font-size:0.9rem; margin-bottom: 20px;">本局結算成功！請選擇接下來的操作：</p>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 12px; margin-top: 20px;">
             <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="handleNextStep('same')">沿用此賽制</button>
             <button class="btn-magic btn-outline-subtle" style="flex:1;" onclick="handleNextStep('new')">開啟新賽制</button>
         </div>
@@ -1871,6 +1869,9 @@
         } else if (action === 'new') {
             openNewGameModal();
         } else if (action === 'leave') {
+            state.currentGame = null;
+            localStorage.removeItem('mtg_currentGame');
+            document.getElementById('btn-continue').style.display = 'none';
             navTo('home-view');
         }
     }
