@@ -928,47 +928,13 @@
 
         .history-main-row { cursor: pointer; transition: background 0.2s; }
         .history-main-row:hover { background: rgba(212, 175, 55, 0.08); }
-        .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
+        .history-detail-row { background: rgba(15, 12, 25, 0.98); display: none; }
         .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
 
-        /* 連勝狀況區塊：更華麗外觀 */
-        .streak-section {
-            background: linear-gradient(135deg, rgba(30, 20, 45, 0.9), rgba(15, 10, 25, 0.95));
-            border: 1.5px solid var(--gold-primary);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), inset 0 0 10px rgba(255, 77, 77, 0.15);
-        }
-        .streak-grid {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 6px 2px;
-            margin-top: 8px;
-        }
-        .streak-badge {
-            background: linear-gradient(145deg, rgba(169, 27, 27, 0.5), rgba(42, 31, 61, 0.9));
-            border: 1px solid var(--gold-primary);
-            border-radius: 8px;
-            padding: 8px 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 120px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 8px rgba(255, 77, 77, 0.4);
-            animation: streakGlow 3s ease-in-out infinite alternate;
-        }
-        @keyframes streakGlow {
-            0% { border-color: var(--gold-dark); }
-            100% { border-color: var(--gold-light); box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 12px rgba(255, 215, 0, 0.6); }
-        }
-
-        /* 勝負統計區塊：可上下滑動優化 */
+        /* 勝負統計區塊：可上下滑動優化，並與背景完美融合 */
         .stats-summary { 
             margin-top: 15px; 
-            background: rgba(20, 15, 30, 0.85); 
+            background: rgba(16, 13, 24, 0.96); 
             border: 1px solid rgba(212, 175, 55, 0.4); 
             padding: 14px; 
             border-radius: 8px; 
@@ -990,7 +956,7 @@
             flex-direction: column; 
             gap: 4px;
             padding: 8px 10px; 
-            background: rgba(10, 8, 15, 0.6); 
+            background: rgba(10, 8, 15, 0.8); 
             border: 1px solid rgba(212, 175, 55, 0.2); 
             border-radius: 4px; 
         }
@@ -1077,16 +1043,8 @@
     </div>
 
     <!-- 傳奇編年史視圖 -->
-    <div id="records-view" class="view">
+    <div id="records-view" class="view" style="background: rgba(10, 8, 15, 0.92); padding: 15px; border-radius: 8px;">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">傳奇編年史</h2>
-
-        <!-- 連勝狀況區塊 -->
-        <div class="streak-section" style="width: 100%;">
-            <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 連勝狀況</h3>
-            <div id="streakSummaryContent" class="streak-grid">
-                <div style="color: #aaa; font-size: 0.85rem;">尚無連勝紀錄</div>
-            </div>
-        </div>
 
         <div class="records-table-container" style="width: 100%;">
             <table class="records-table">
@@ -1373,7 +1331,7 @@
                 let name1 = oldInputs[i * 2] || '';
                 let name2 = oldInputs[i * 2 + 1] || '';
                 row.innerHTML = `
-                    <span class="team-label">${i+1}:</span>
+                    <span class="team-label">${i+1}</span>
                     <input type="text" placeholder="隊友 1" class="p-name" value="${name1}" oninput="validateSetupForm()">
                     <input type="text" placeholder="隊友 2" class="p-name" value="${name2}" oninput="validateSetupForm()">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
@@ -1918,11 +1876,8 @@
         });
 
         const statsMap = {};
-        const streakMap = {};
 
         formattedRecords.forEach((r, recordIndex) => {
-            let activeMatchPlayers = r.players.map(p => p.name);
-
             r.players.forEach(p => {
                 if (!statsMap[p.name]) {
                     statsMap[p.name] = { name: p.name, win: 0, lose: 0, firstIndex: recordIndex };
@@ -1930,40 +1885,7 @@
                 if (p.isWinner) statsMap[p.name].win++;
                 else statsMap[p.name].lose++;
             });
-
-            activeMatchPlayers.forEach(name => {
-                if (!streakMap[name]) streakMap[name] = { currentStreak: 0, lastWinner: null };
-                
-                let isWinnerInThisGame = r.winners.includes(name);
-                if (isWinnerInThisGame) {
-                    if (streakMap[name].lastWinner === true) {
-                        streakMap[name].currentStreak++;
-                    } else {
-                        streakMap[name].currentStreak = 1;
-                    }
-                    streakMap[name].lastWinner = true;
-                } else {
-                    streakMap[name].currentStreak = 0;
-                    streakMap[name].lastWinner = false;
-                }
-            });
         });
-
-        const streakContainer = document.getElementById('streakSummaryContent');
-        const activeStreaks = Object.entries(streakMap)
-            .filter(([name, data]) => data.currentStreak > 0)
-            .sort((a, b) => b[1].currentStreak - a[1].currentStreak);
-
-        if (activeStreaks.length === 0) {
-            streakContainer.innerHTML = `<div style="color:#aaa; font-size: 0.85rem; padding: 4px;">目前沒有進行中的連勝紀錄</div>`;
-        } else {
-            streakContainer.innerHTML = activeStreaks.map(([name, data]) => `
-                <div class="streak-badge">
-                    <span style="font-size:0.8rem; color:var(--gold-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${name}</span>
-                    <span style="font-size:1.1rem; font-weight:bold; color:#ff4d4d; margin-top:2px;">🔥 ${data.currentStreak} 連勝</span>
-                </div>
-            `).join('');
-        }
 
         const statsArray = Object.values(statsMap).map(s => {
             const total = s.win + s.lose;
