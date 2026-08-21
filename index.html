@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 優化 1：調降背景遮罩透明度，使背景圖更清楚 */
             --bg-overlay: rgba(15, 12, 25, 0.4);
             --gold-primary: #d4af37;
             --gold-light: #f3e5ab;
@@ -247,29 +246,29 @@
             opacity: 0.5;
         }
 
-        /* 優化 4：調整匯出/匯入按鈕，確保互動時文字色彩正常變色與過渡 */
+        /* 需求 2 修改：匯出紀錄、匯入紀錄，無論如何文字顏色都固定不變[span_2](start_span)[span_2](end_span) */
         .btn-subtle-link {
             background: transparent;
             border: none;
             border-bottom: 1px solid var(--gold-primary);
-            color: var(--gold-light);
+            color: var(--gold-light) !important;
             padding: 4px 2px;
             font-size: 0.9rem;
             cursor: pointer;
             font-family: 'Noto Serif TC', serif;
-            transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
+            transition: border-color 0.2s ease, text-shadow 0.2s ease;
             box-shadow: none;
             border-radius: 0;
         }
         .btn-subtle-link:hover {
-            color: #ffffff;
-            border-bottom-color: #ffffff;
-            text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+            color: var(--gold-light) !important;
+            border-bottom-color: var(--gold-light);
+            text-shadow: none;
         }
         .btn-subtle-link:active {
             transform: none;
             background: transparent;
-            color: var(--gold-primary);
+            color: var(--gold-light) !important;
         }
 
         .btn-round-home {
@@ -1039,7 +1038,6 @@
         </div>
     </div>
 
-    <!-- 優化 2：移除背景圓角 (border-radius 改為 0) -->
     <div id="records-view" class="view" style="background: rgba(10, 8, 15, 0.92); padding: 15px; border-radius: 0;">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">傳奇編年史</h2>
 
@@ -1847,18 +1845,15 @@
             };
         });
 
-        /* 優化 3：按日期排序（日期小在越下面），再依局數排序（局數小在越下面） */
+        /* 需求 1 修改：日期排序規則顛倒（日期較小的在越下方，即由遠到近排序）[span_3](start_span)[span_3](end_span) */
         formattedRecords.sort((a, b) => {
-            // 將日期字串轉為時間戳進行比較（確保日期的先後判斷準確）
             let dateA = new Date(a.date).getTime();
             let dateB = new Date(b.date).getTime();
             
-            // 若日期相同，則依局數由小到大排序
             if (dateA === dateB) {
                 return (a.gameIndex || 1) - (b.gameIndex || 1);
             }
-            // 否則依日期由遠到近（日期小的在越下面）
-            return dateA - dateB;
+            return dateA - dateB; // 顛倒原本的排序方向
         });
 
         formattedRecords.forEach((r, idx) => {
