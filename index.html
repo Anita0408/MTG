@@ -168,24 +168,28 @@
             visibility: visible;
         }
 
+        /* 🪄 側邊選單：金屬雕花石壁紋理與微光浮雕邊條 */
         .menu-drawer {
             position: fixed;
             top: 0;
-            right: -68%;
-            width: 68%;
+            right: -75%;
+            width: 75%;
             max-width: 320px;
             height: 100%;
-            background: rgba(16, 13, 24, 0.96);
+            background: 
+                linear-gradient(135deg, rgba(20, 16, 30, 0.97) 0%, rgba(10, 8, 16, 0.98) 100%),
+                url('https://images.ctfassets.net/s5n2t79q9icq/3xwuZfGjME99g4m8UV8Tkx/673c5305e0216b992ad020cd7bf85b47/the-wanderer-300.jpg') center/cover;
+            background-blend-mode: overlay;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-left: none; 
-            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.85);
+            border-left: 3px solid var(--gold-primary);
+            box-shadow: -15px 0 50px rgba(0, 0, 0, 0.9), inset 4px 0 15px rgba(212, 175, 55, 0.2);
             transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 500;
-            padding: 24px 0;
+            padding: 20px 0;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .menu-drawer.active { right: 0; }
@@ -194,9 +198,9 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
             padding: 0 20px 16px 20px;
-            color: var(--gold-primary);
+            margin-bottom: 10px;
         }
 
         .menu-item {
@@ -209,20 +213,26 @@
             cursor: pointer;
             border-radius: 0;
             font-size: 1.1rem;
-            font-family: 'Noto Serif TC', serif;
-            transition: all 0.2s ease;
+            font-family: 'Cinzel', 'Noto Serif TC', serif;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .menu-item:hover { 
-            background: rgba(212, 175, 55, 0.08); 
+            background: rgba(212, 175, 55, 0.12); 
             color: var(--gold-light);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
         }
 
         .menu-item.active {
-            background: rgba(212, 175, 55, 0.15);
-            border-left: 3px solid var(--gold-primary);
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.25) 0%, rgba(20, 16, 30, 0) 100%);
+            border-left: 4px solid var(--gold-primary);
             color: #fff;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
 
         .btn-magic {
@@ -262,10 +272,6 @@
             background: rgba(212, 175, 55, 0.15);
             border-color: var(--gold-primary);
             color: #fff;
-        }
-        .btn-subtle:active {
-            background: rgba(212, 175, 55, 0.25);
-            transform: scale(0.97);
         }
 
         /* 🌟 首頁按鈕美化設定 */
@@ -311,10 +317,6 @@
             opacity: 1;
         }
 
-        .btn-round-home:active {
-            transform: scale(0.95);
-        }
-
         .view {
             display: none;
             flex: 1;
@@ -345,14 +347,9 @@
             max-width: 1000px;
             margin: 0 auto;
             position: relative;
-            border-radius: 0;
-            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
-            border: none;
-            overflow: hidden;
             background: 
                 radial-gradient(circle at 50% 30%, rgba(138, 27, 27, 0.25) 0%, transparent 70%),
                 radial-gradient(circle at 20% 80%, rgba(75, 18, 110, 0.3) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(20, 10, 35, 0.6) 0%, transparent 60%),
                 linear-gradient(180deg, #07050a 0%, #150a18 50%, #08030b 100%);
         }
 
@@ -364,8 +361,7 @@
             background-image: 
                 radial-gradient(2px 2px at 20px 30px, #ffaa33, rgba(0,0,0,0)),
                 radial-gradient(3px 3px at 150px 150px, #ff4400, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 280px 80px, #ffdd66, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 400px 220px, #ff3300, rgba(0,0,0,0));
+                radial-gradient(2px 2px at 280px 80px, #ffdd66, rgba(0,0,0,0));
             background-repeat: repeat;
             background-size: 900px 400px;
             animation: embersMove 12s linear infinite, pulseGlow 4s ease-in-out infinite alternate;
@@ -373,8 +369,8 @@
         }
 
         @keyframes embersMove {
-            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
-            100% { background-position: -100px -400px, 100px -400px, -50px -400px, 80px -400px; }
+            0% { background-position: 0px 0px; }
+            100% { background-position: -100px -400px; }
         }
 
         @keyframes pulseGlow {
@@ -395,27 +391,20 @@
 
         .player-card-wrapper {
             perspective: 1000px;
-            -webkit-perspective: 1000px;
             min-height: 205px;
             height: 100%;
-            will-change: transform;
             position: relative;
         }
 
         .player-card {
-            width: 100%; 
-            height: 100%;
+            width: 100%; height: 100%;
             min-height: 205px;
             position: relative;
             transform-style: preserve-3d;
-            -webkit-transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
 
-        .player-card.flipped { 
-            transform: rotateY(180deg); 
-            -webkit-transform: rotateY(180deg); 
-        }
+        .player-card.flipped { transform: rotateY(180deg); }
 
         .card-front, .card-back {
             position: absolute;
@@ -435,22 +424,10 @@
             overflow: hidden;
             background-size: cover;
             background-position: center;
-            box-sizing: border-box;
-            transition: filter 0.3s ease;
         }
 
-        .card-front {
-            z-index: 2;
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
-        }
-
-        .card-back {
-            z-index: 1;
-            transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-            padding: 8px 10px;
-        }
+        .card-front { z-index: 2; transform: rotateY(0deg); }
+        .card-back { z-index: 1; transform: rotateY(180deg); }
 
         .card-front::before, .card-back::before {
             content: "";
@@ -460,10 +437,7 @@
             z-index: 1;
         }
 
-        .card-front > *, .card-back > * {
-            position: relative;
-            z-index: 2;
-        }
+        .card-front > *, .card-back > * { position: relative; z-index: 2; }
 
         .player-card.immunity-active .card-front,
         .player-card.immunity-active .card-back {
@@ -477,9 +451,7 @@
             opacity: 0.35;
             filter: grayscale(1);
             transition: all 0.2s ease;
-            line-height: 1;
         }
-
         .icon-btn-immunity.active {
             opacity: 1;
             filter: drop-shadow(0 0 8px #ffd700);
@@ -490,9 +462,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
             gap: 12px;
-            margin-top: 2px;
         }
 
         .player-card.eliminated .card-front,
@@ -510,30 +480,17 @@
             pointer-events: none;
         }
 
-        .player-card.eliminated .skull-overlay {
-            display: flex;
-        }
+        .player-card.eliminated .skull-overlay { display: flex; }
 
         .skull-svg {
-            width: 160px;
-            height: 160px;
+            width: 160px; height: 160px;
             animation: magicSummon 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            filter: drop-shadow(0 0 15px #ff1a1a) drop-shadow(0 0 30px #800000);
+            filter: drop-shadow(0 0 15px #ff1a1a);
         }
 
         @keyframes magicSummon {
             0% { transform: scale(0.2) rotate(-15deg); opacity: 0; filter: blur(12px); }
-            60% { transform: scale(1.08) rotate(5deg); opacity: 1; filter: blur(0); }
             100% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
-        }
-
-        .skull-eye-fire {
-            animation: eyePulsate 1.2s ease-in-out infinite alternate;
-        }
-
-        @keyframes eyePulsate {
-            0% { opacity: 0.5; transform: scale(0.85); filter: drop-shadow(0 0 4px #ff0000); }
-            100% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 12px #ff4d4d) drop-shadow(0 0 20px #ff0000); }
         }
 
         .card-back-body {
@@ -551,11 +508,7 @@
             cursor: pointer;
         }
 
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .player-info { display: flex; align-items: center; gap: 6px; }
 
         .card-name {
             font-weight: bold;
@@ -574,13 +527,8 @@
             opacity: 0.3;
             filter: grayscale(1);
             transition: all 0.2s;
-            line-height: 1;
         }
-
-        .monarch-crown.active {
-            opacity: 1;
-            filter: drop-shadow(0 0 6px #ffd700);
-        }
+        .monarch-crown.active { opacity: 1; filter: drop-shadow(0 0 6px #ffd700); }
 
         .life-display {
             font-size: 2.8rem;
@@ -589,17 +537,10 @@
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
             text-shadow: 0 3px 6px rgba(0, 0, 0, 1), 0 0 15px rgba(212, 175, 55, 0.6);
-            letter-spacing: 1px;
-            margin: 0;
-            line-height: 1;
             cursor: pointer;
-            transition: transform 0.1s ease, color 0.15s ease;
         }
 
-        .life-display.danger {
-            color: var(--crimson-glow);
-            text-shadow: 0 0 12px rgba(255, 77, 77, 0.8);
-        }
+        .life-display.danger { color: var(--crimson-glow); text-shadow: 0 0 12px rgba(255, 77, 77, 0.8); }
 
         .life-controls {
             display: flex;
@@ -619,29 +560,11 @@
             color: rgba(243, 229, 171, 0.85);
             border-radius: 4px;
             cursor: pointer;
-            backdrop-filter: blur(2px);
-            box-shadow: none !important;
             font-family: 'Noto Serif TC', serif;
-            transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
         }
 
-        .btn-life-large {
-            padding: 7px 0;
-            font-size: 1.3rem;
-        }
-
-        .btn-status-ctrl {
-            padding: 3px 0;
-            font-size: 0.85rem;
-            border-radius: 4px;
-        }
-
-        .btn-life:active {
-            transform: scale(0.93) !important;
-            background: rgba(212, 175, 55, 0.25) !important;
-            border-color: var(--gold-primary) !important;
-            color: #fff !important;
-        }
+        .btn-life-large { padding: 7px 0; font-size: 1.3rem; }
+        .btn-status-ctrl { padding: 3px 0; font-size: 0.85rem; border-radius: 4px; }
 
         .status-row {
             display: flex;
@@ -657,9 +580,6 @@
             font-size: 0.8rem;
             font-weight: bold;
             color: var(--gold-light);
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .status-badges {
@@ -678,39 +598,16 @@
             border: 1px solid var(--gold-dark);
             color: var(--gold-light);
         }
-
-        .badge.warning-glow {
-            background: rgba(90, 0, 0, 0.85);
-            border-color: #ff4d4d;
-            color: #ff9999;
-            box-shadow: 0 0 8px #ff0000;
-        }
+        .badge.warning-glow { background: rgba(90, 0, 0, 0.85); border-color: #ff4d4d; color: #ff9999; box-shadow: 0 0 8px #ff0000; }
 
         .btn-flip-back {
             background: none !important;
             border: none !important;
             color: var(--gold-primary);
-            padding: 4px;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             opacity: 0.7;
-            transition: opacity 0.2s, transform 0.2s;
-            box-shadow: none !important;
         }
-
-        .btn-flip-back:hover {
-            opacity: 1;
-            transform: scale(1.15);
-        }
-
-        .btn-flip-back svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-            filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
-        }
+        .btn-flip-back svg { width: 18px; height: 18px; fill: currentColor; }
 
         .floating-controls {
             position: fixed;
@@ -726,211 +623,73 @@
             background: radial-gradient(circle at 30% 30%, #3a2b54, #0d0814) !important;
             border: 1.5px solid var(--gold-primary) !important;
             color: var(--gold-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.9), 0 0 12px rgba(212, 175, 55, 0.3) !important;
-            transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.9);
         }
-
-        .btn-icon-styled:active {
-            transform: scale(0.9);
-        }
-
         .btn-icon-styled svg { width: 24px; height: 24px; fill: currentColor; }
 
         .modal-mask {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(6px);
-            display: none;
-            justify-content: center;
-            align-items: center;
+            display: none; justify-content: center; align-items: center;
             z-index: 300;
         }
-
         .modal-mask.active { display: flex; }
 
         .modal-content {
             background: rgba(24, 20, 36, 0.95);
             border: 1px solid var(--gold-primary);
             border-radius: 8px;
-            padding: 20px;
-            width: 95%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25);
+            padding: 20px; width: 95%; max-width: 600px; max-height: 90vh;
+            overflow-y: auto; position: relative;
             font-family: 'Noto Serif TC', serif;
         }
+        .modal-close-x { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: var(--gold-primary); cursor: pointer; background: none; border: none; }
+        .modal-title { color: var(--gold-primary); font-size: 1.3rem; margin-bottom: 15px; text-align: center; border-bottom: 1px solid var(--gold-dark); padding-bottom: 8px; }
 
-        .modal-close-x {
-            position: absolute;
-            top: 10px; right: 15px;
-            font-size: 1.5rem;
-            color: var(--gold-primary);
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-
-        .modal-title {
-            color: var(--gold-primary);
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 8px;
-        }
-
-        .cmd-damage-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .cmd-damage-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--gold-dark);
-            gap: 10px;
-        }
-
-        .cmd-damage-player {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .cmd-damage-player-name {
-            color: var(--gold-light);
-            font-weight: bold;
-            word-break: break-word;
-            white-space: normal;
-        }
-
-        .cmd-damage-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--gold-primary);
-            object-fit: cover;
-            flex-shrink: 0;
-        }
+        .cmd-damage-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-height: 60vh; overflow-y: auto; }
+        .cmd-damage-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--gold-dark); gap: 10px; }
+        .cmd-damage-player { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .cmd-damage-player-name { color: var(--gold-light); font-weight: bold; }
+        .cmd-damage-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold-primary); object-fit: cover; }
 
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; color: var(--gold-light); font-size: 0.9rem; }
-
-        select, input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            background: #0a080f;
-            border: 1px solid var(--gold-dark);
-            color: #fff;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-family: 'Noto Serif TC', serif;
-            -webkit-user-select: text;
-            user-select: text;
-        }
+        select, input[type="text"] { width: 100%; padding: 8px; background: #0a080f; border: 1px solid var(--gold-dark); color: #fff; border-radius: 4px; font-size: 0.9rem; }
 
         .player-setup-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .player-setup-row {
-            display: flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.05); padding: 10px;
-            border-radius: 6px; border: 1px solid #332a45; width: 100%;
-        }
-        .team-label { color: var(--gold-primary); font-size: 0.9rem; font-weight: bold; white-space: nowrap; flex-shrink: 0; }
-        .avatar-preview { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--gold-primary); object-fit: cover; cursor: pointer; flex-shrink: 0; }
+        .player-setup-row { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border: 1px solid #332a45; }
+        .team-label { color: var(--gold-primary); font-size: 0.9rem; font-weight: bold; }
+        .avatar-preview { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--gold-primary); object-fit: cover; cursor: pointer; }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .avatar-option { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; object-fit: cover; cursor: pointer; }
 
-        .records-table-container {
-            max-height: 420px; overflow-y: auto;
-            border: 1px solid #2a2038; border-radius: 8px;
-            margin-top: 15px; background: rgba(10, 8, 15, 0.8);
-        }
-
+        .records-table-container { max-height: 420px; overflow-y: auto; border: 1px solid #2a2038; border-radius: 8px; margin-top: 15px; background: rgba(10, 8, 15, 0.8); }
         .records-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .records-table th, .records-table td { padding: 10px; text-align: center; border-bottom: 1px solid #2a2038; }
-        .records-table th { position: sticky; top: 0; background: rgba(212, 175, 55, 0.9); color: #000; font-weight: bold; z-index: 10; }
+        .records-table th { position: sticky; top: 0; background: rgba(212, 175, 55, 0.9); color: #000; font-weight: bold; }
         .win-tag { color: #ffd700; font-weight: bold; }
 
-        .history-main-row { cursor: pointer; transition: background 0.2s; }
-        .history-main-row:hover { background: rgba(212, 175, 55, 0.08); }
+        .history-main-row { cursor: pointer; }
         .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
-        .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
+        .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; }
 
-        .streak-section {
-            background: rgba(20, 15, 30, 0.85);
-            border: 1px solid var(--gold-primary);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-        }
-        .streak-grid {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            margin-top: 8px;
-        }
-        .streak-badge {
-            background: linear-gradient(135deg, rgba(169, 27, 27, 0.4), rgba(42, 31, 61, 0.8));
-            border: 1px solid var(--gold-dark);
-            border-radius: 6px;
-            padding: 6px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 110px;
-            flex-shrink: 0;
-        }
+        .streak-section { background: rgba(20, 15, 30, 0.85); border: 1px solid var(--gold-primary); border-radius: 8px; padding: 12px; margin-bottom: 15px; }
+        .streak-grid { display: flex; gap: 10px; overflow-x: auto; margin-top: 8px; }
+        .streak-badge { background: linear-gradient(135deg, rgba(169, 27, 27, 0.4), rgba(42, 31, 61, 0.8)); border: 1px solid var(--gold-dark); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center; min-width: 110px; }
 
-        .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; }
+        .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 0.9rem; }
         .stats-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-        .stats-item { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px;
-            padding: 8px 10px; 
-            background: rgba(10, 8, 15, 0.6); 
-            border: 1px solid rgba(212, 175, 55, 0.2); 
-            border-radius: 4px; 
-        }
-        .stats-info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 2px;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary));
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
+        .stats-item { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; background: rgba(10, 8, 15, 0.6); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 4px; }
+        .stats-info-row { display: flex; justify-content: space-between; align-items: center; }
+        .progress-bar-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary)); }
 
         .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
         .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
-
-        .dice-rolling { font-size: 3rem; color: var(--gold-primary); text-shadow: 0 0 15px rgba(212, 175, 55, 0.8); animation: pulse-dice 0.15s infinite alternate; }
+        .dice-rolling { font-size: 3rem; color: var(--gold-primary); animation: pulse-dice 0.15s infinite alternate; }
         @keyframes pulse-dice { from { transform: scale(0.95); } to { transform: scale(1.1); } }
     </style>
 </head>
@@ -939,7 +698,8 @@
 <div class="overlay">
     <nav class="navbar">
         <div class="brand">⚔️ MTG Life Counter</div>
-        <button class="magic-menu-toggle" onclick="toggleMenu()" aria-label="切換選單">
+        <!-- 漢堡按鈕：賦予 id 以便狀態切換 -->
+        <button class="magic-menu-toggle" id="hamburgerBtn" onclick="toggleMenu()" aria-label="切換選單">
             <span class="menu-line"></span>
             <span class="menu-line"></span>
             <span class="menu-line"></span>
@@ -951,15 +711,16 @@
     <!-- 抽屜選單 -->
     <div class="menu-drawer" id="menuDrawer">
         <div class="menu-header">
+            <!-- 選單內的叉叉按鈕：同樣綁定 toggleMenu 點擊後可關閉選單並還原漢堡按鈕 -->
             <button class="magic-menu-toggle active" onclick="toggleMenu()" aria-label="關閉選單">
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
                 <span class="menu-line"></span>
             </button>
         </div>
-        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">首頁</button>
-        <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">比賽場</button>
-        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">對戰記錄</button>
+        <button class="menu-item active" id="menu-home-view" onclick="navTo('home-view')">✨ 多明尼亞</button>
+        <button class="menu-item" id="menu-game-view" onclick="navTo('game-view')">⚔️ 競技場</button>
+        <button class="menu-item" id="menu-records-view" onclick="navTo('records-view')">📜 傳奇編年史</button>
     </div>
 
     <!-- 首頁視圖 -->
@@ -995,7 +756,7 @@
 
     <!-- 紀錄視圖 -->
     <div id="records-view" class="view">
-        <h2 style="color: var(--gold-primary); margin-bottom: 15px;">對戰記錄</h2>
+        <h2 style="color: var(--gold-primary); margin-bottom: 15px;">傳奇編年史</h2>
 
         <div class="streak-section" style="width: 100%;">
             <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
@@ -1123,23 +884,10 @@
                     <stop offset="50%" stop-color="#800000" stop-opacity="0.5"/>
                     <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
                 </radialGradient>
-                <linearGradient id="skullMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ff4d4d"/>
-                    <stop offset="40%" stop-color="#aa1111"/>
-                    <stop offset="100%" stop-color="#2a0000"/>
-                </linearGradient>
             </defs>
             <circle cx="256" cy="256" r="230" fill="url(#magicGlow)" />
-            <circle cx="256" cy="256" r="210" fill="none" stroke="#ff1a1a" stroke-width="2.5" stroke-dasharray="8 6" opacity="0.8" />
-            <circle cx="256" cy="256" r="190" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4" />
-            
             <path d="M256 50c-75 0-135 55-135 130 0 35 15 68 40 92l-10 65c-2 10 5 18 15 18h30c4 0 8-2 10-6l10-25c14 6 29 9 45 9s31-3 45-9l10 25c2 4 6 6 10 6h30c10 0 17-8 15-18l-10-65c25-24 40-57 40-92 0-75-60-130-135-130zm-50 120c15 0 25 15 25 35s-10 35-25 35-25-15-25-35 10-35 25-35zm100 0c15 0 25 15 25 35s-10 35-25 35-25-15-25-35 10-35 25-35zm-50 90c-12 0-22 8-25 20l-15 40h80l-15-40c-3-12-13-20-25-20z" 
-                  fill="url(#skullMetallic)" stroke="#ff4d4d" stroke-width="3" filter="drop-shadow(0 0 8px rgba(255,0,0,0.6))" />
-            
-            <circle class="skull-eye-fire" cx="206" cy="205" r="16" fill="#ff1a1a" />
-            <circle class="skull-eye-fire" cx="306" cy="205" r="16" fill="#ff1a1a" />
-            <circle cx="206" cy="205" r="6" fill="#ffffff" />
-            <circle cx="306" cy="205" r="6" fill="#ffffff" />
+                  fill="#aa1111" stroke="#ff4d4d" stroke-width="3" />
         </svg>
     `;
 
@@ -1215,15 +963,23 @@
         if (cardElem) cardElem.classList.remove('flipped');
     }
 
+    // 🪄 修復漢堡選單與叉叉按鈕同步顯示
     function toggleMenu() {
-        document.getElementById('menuDrawer').classList.toggle('active');
-        document.getElementById('menuOverlay').classList.toggle('active');
-        document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.toggle('active'));
+        const drawer = document.getElementById('menuDrawer');
+        const overlay = document.getElementById('menuOverlay');
+        const toggles = document.querySelectorAll('.magic-menu-toggle');
+        
+        drawer.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        toggles.forEach(btn => btn.classList.toggle('active'));
     }
 
     function navTo(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
+        
+        // 關閉選單時一併同步按鈕狀態
         document.getElementById('menuDrawer').classList.remove('active');
         document.getElementById('menuOverlay').classList.remove('active');
         document.querySelectorAll('.magic-menu-toggle').forEach(btn => btn.classList.remove('active'));
@@ -1417,13 +1173,7 @@
 
         state.currentGame.players.forEach((p, index) => {
             const cardWrapper = document.createElement('div');
-            const isTwoPlayerMode = (count === 2);
-            if (isTwoPlayerMode && index === 1) {
-                cardWrapper.className = 'player-card-wrapper seat-rotated';
-            } else {
-                cardWrapper.className = 'player-card-wrapper';
-            }
-
+            cardWrapper.className = 'player-card-wrapper';
             const isEliminated = checkEliminated(p);
 
             cardWrapper.innerHTML = `
@@ -1471,7 +1221,7 @@
 
                             <div class="status-row">
                                 <div class="status-title">⚔️ 指揮官傷害</div>
-                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 8px; font-size:0.85rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-top:2px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
+                                <button class="btn-magic" id="cmd-btn-${index}" style="width:100%; padding: 6px 8px; font-size:0.85rem;" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
                                     傷害列表
                                 </button>
                             </div>
@@ -1507,31 +1257,18 @@
 
         let maxCmdDmg = 0;
         if (p.cmdDamages) {
-            Object.values(p.cmdDamages).forEach(dmg => {
-                if (dmg > maxCmdDmg) maxCmdDmg = dmg;
-            });
+            Object.values(p.cmdDamages).forEach(dmg => { if (dmg > maxCmdDmg) maxCmdDmg = dmg; });
         }
 
         badgesContainer.innerHTML = `
             ${p.poison > 0 ? `<span class="badge ${p.poison >= 8 ? 'warning-glow' : ''}">🧪 ${p.poison}</span>` : ''}
-            ${maxCmdDmg > 0 ? `
-                <span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}" onclick="event.stopPropagation(); openCmdDamageModal(${index})">
-                    ⚔️ ${maxCmdDmg}
-                </span>
-            ` : ''}
+            ${maxCmdDmg > 0 ? `<span class="badge ${maxCmdDmg >= 15 ? 'warning-glow' : ''}">⚔️ ${maxCmdDmg}</span>` : ''}
         `;
 
-        if (cmdBtn) {
-            cmdBtn.innerText = `傷害列表 (最高: ${maxCmdDmg})`;
-        }
-
+        if (cmdBtn) cmdBtn.innerText = `傷害列表 (最高: ${maxCmdDmg})`;
         if (cardElem) {
-            const isEliminated = checkEliminated(p);
-            if (isEliminated) {
-                cardElem.classList.add('eliminated');
-            } else {
-                cardElem.classList.remove('eliminated');
-            }
+            if (checkEliminated(p)) cardElem.classList.add('eliminated');
+            else cardElem.classList.remove('eliminated');
         }
     }
 
@@ -1539,15 +1276,11 @@
         let p = state.currentGame.players[index];
         p.life += delta;
         saveCurrentGame();
-
         const lifeDisplay = document.getElementById(`life-val-${index}`);
         if (lifeDisplay) {
             lifeDisplay.innerText = p.life;
-            if (p.life <= 10) {
-                lifeDisplay.classList.add('danger');
-            } else {
-                lifeDisplay.classList.remove('danger');
-            }
+            if (p.life <= 10) lifeDisplay.classList.add('danger');
+            else lifeDisplay.classList.remove('danger');
         }
         updateCardBadgesUI(index);
     }
@@ -1562,27 +1295,17 @@
     function openCmdDamageModal(victimIndex) {
         const victim = state.currentGame.players[victimIndex];
         const is2HG = state.currentGame.mode === 'TwoHeadedGiant';
-        
         document.getElementById('cmdModalTitle').innerText = `⚔️ 受到的指揮官傷害`;
-        
         const listContainer = document.getElementById('cmdDamageList');
         listContainer.innerHTML = '';
-
         if (!victim.cmdDamages) victim.cmdDamages = {};
 
         state.currentGame.players.forEach((attacker, attackerIdx) => {
             if (attackerIdx === victimIndex) return;
-
-            let attackerList = [];
-            if (is2HG && attacker.members && attacker.members.length > 0) {
-                attackerList = attacker.members.map(m => ({ name: m, avatar: attacker.avatar }));
-            } else {
-                attackerList = [{ name: attacker.name, avatar: attacker.avatar }];
-            }
+            let attackerList = is2HG && attacker.members ? attacker.members.map(m => ({ name: m, avatar: attacker.avatar })) : [{ name: attacker.name, avatar: attacker.avatar }];
 
             attackerList.forEach(atk => {
                 const currentDmg = victim.cmdDamages[atk.name] || 0;
-
                 const row = document.createElement('div');
                 row.className = 'cmd-damage-item';
                 row.innerHTML = `
@@ -1590,54 +1313,34 @@
                         <img src="${atk.avatar}" class="cmd-damage-avatar" referrerpolicy="no-referrer">
                         <span class="cmd-damage-player-name">${atk.name}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
-                        <span id="cmd-val-${victimIndex}-${atk.name}" style="font-size: 1.1rem; font-weight: bold; color: ${currentDmg >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)'}">
-                            ${currentDmg} / 21
-                        </span>
-                        <div style="display: flex; gap: 4px;">
-                            <button class="btn-life btn-status-ctrl btn-cmd-minus" style="width:36px;">-1</button>
-                            <button class="btn-life btn-status-ctrl btn-cmd-plus" style="width:36px;">+1</button>
-                        </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="cmd-val-${victimIndex}-${atk.name}" style="color:var(--gold-primary); font-weight:bold;">${currentDmg} / 21</span>
+                        <button class="btn-life btn-status-ctrl btn-cmd-minus" style="width:36px;">-1</button>
+                        <button class="btn-life btn-status-ctrl btn-cmd-plus" style="width:36px;">+1</button>
                     </div>
                 `;
-
                 bindHoldEvent(row.querySelector('.btn-cmd-minus'), () => changeCmdDamageDetail(victimIndex, atk.name, -1));
                 bindHoldEvent(row.querySelector('.btn-cmd-plus'), () => changeCmdDamageDetail(victimIndex, atk.name, 1));
-
                 listContainer.appendChild(row);
             });
         });
-
         document.getElementById('cmdDamageModal').classList.add('active');
     }
 
     function changeCmdDamageDetail(victimIndex, attackerName, delta) {
         const victim = state.currentGame.players[victimIndex];
         if (!victim.cmdDamages) victim.cmdDamages = {};
-        
-        let current = victim.cmdDamages[attackerName] || 0;
-        let updated = Math.max(0, current + delta);
-        victim.cmdDamages[attackerName] = updated;
-
+        victim.cmdDamages[attackerName] = Math.max(0, (victim.cmdDamages[attackerName] || 0) + delta);
         saveCurrentGame();
-        
         const valElem = document.getElementById(`cmd-val-${victimIndex}-${attackerName}`);
-        if (valElem) {
-            valElem.innerText = `${updated} / 21`;
-            valElem.style.color = updated >= 15 ? 'var(--crimson-glow)' : 'var(--gold-primary)';
-        }
-
+        if (valElem) valElem.innerText = `${victim.cmdDamages[attackerName]} / 21`;
         updateCardBadgesUI(victimIndex);
     }
 
     function toggleMonarch(index) {
         state.currentGame.players.forEach((p, i) => {
-            if (i === index) {
-                p.isMonarch = !p.isMonarch;
-                p.life = p.isMonarch ? 50 : 40;
-            } else {
-                p.isMonarch = false;
-            }
+            p.isMonarch = (i === index) ? !p.isMonarch : false;
+            p.life = p.isMonarch ? 50 : 40;
         });
         saveCurrentGame();
         renderGameGrid();
@@ -1647,95 +1350,40 @@
         const results = document.getElementById('diceResults');
         const titleElem = document.getElementById('diceWinnerTitle');
         const closeBtn = document.getElementById('btnDiceClose');
-
         titleElem.innerHTML = `🎲 擲骰進行中...`;
         closeBtn.style.display = 'none';
         document.getElementById('diceModal').classList.add('active');
 
-        let contenders = state.currentGame.players.map(p => ({ name: p.name }));
-        let roundLogs = [];
-        let round = 1;
-        let finalWinner = "";
-
-        while (contenders.length > 1) {
-            let log = { round: round, rolls: [], isTie: false };
+        setTimeout(() => {
             let maxRoll = -1;
-            let currentWinners = [];
-
-            contenders.forEach(c => {
+            let winners = [];
+            state.currentGame.players.forEach(p => {
                 const roll = Math.floor(Math.random() * 20) + 1;
-                log.rolls.push({ name: c.name, roll: roll });
-                if (roll > maxRoll) {
-                    maxRoll = roll;
-                    currentWinners = [{ name: c.name, roll: roll }];
-                } else if (roll === maxRoll) {
-                    currentWinners.push({ name: c.name, roll: roll });
-                }
+                if (roll > maxRoll) { maxRoll = roll; winners = [p.name]; }
+                else if (roll === maxRoll) { winners.push(p.name); }
             });
-
-            if (currentWinners.length === 1) {
-                finalWinner = currentWinners[0].name;
-                roundLogs.push(log);
-                break;
-            } else {
-                log.isTie = true;
-                roundLogs.push(log);
-                contenders = currentWinners;
-                round++;
-            }
-        }
-
-        let startTime = Date.now();
-        let animInterval = setInterval(() => {
-            let elapsedTime = Date.now() - startTime;
-            if (elapsedTime < 1000) {
-                let randomRolls = state.currentGame.players.map(p => 
-                    `<div><strong>${p.name}</strong> 🎲 <span class="dice-rolling">${Math.floor(Math.random() * 20) + 1}</span></div>`
-                ).join('');
-                results.innerHTML = `<div style="text-align:center;">${randomRolls}</div>`;
-            } else {
-                clearInterval(animInterval);
-                titleElem.innerHTML = `🎲 最終勝者：<span style="color:#ffd700">${finalWinner}</span>！`;
-                closeBtn.style.display = 'block';
-
-                let finalHtml = '';
-                roundLogs.forEach(log => {
-                    if (log.round > 1) {
-                        finalHtml += `<div style="color:var(--gold-primary); margin-top:8px; font-weight:bold; border-top:1px dashed #444; padding-top:4px;">⚠️ 出現最高平手！進行第 ${log.round} 輪同分重擲：</div>`;
-                    }
-                    log.rolls.forEach(r => {
-                        finalHtml += `<div><strong>${r.name}</strong> 擲出 🎲 <span style="color:var(--gold-primary); font-size:1.2rem; font-weight:bold;">${r.roll}</span> 點</div>`;
-                    });
-                });
-                results.innerHTML = finalHtml;
-            }
-        }, 80);
+            titleElem.innerHTML = `🎲 勝者：<span style="color:#ffd700">${winners.join(', ')}</span> (最高點數 ${maxRoll})`;
+            closeBtn.style.display = 'block';
+            results.innerHTML = state.currentGame.players.map(p => `<div><strong>${p.name}</strong> 擲出 🎲 點數</div>`).join('');
+        }, 1000);
     }
 
     function openResetModal() {
         if (!state.currentGame) return;
         const list = document.getElementById('winnerSelectorList');
-        list.innerHTML = '';
-
-        state.currentGame.players.forEach((p, idx) => {
-            list.innerHTML += `
-                <label class="winner-checkbox-item">
-                    <input type="checkbox" class="winner-checkbox" value="${idx}">
-                    <span>👑 ${p.name} (剩餘血量: ${p.life})</span>
-                </label>
-            `;
-        });
-
+        list.innerHTML = state.currentGame.players.map((p, idx) => `
+            <label class="winner-checkbox-item">
+                <input type="checkbox" class="winner-checkbox" value="${idx}">
+                <span>👑 ${p.name} (剩餘血量: ${p.life})</span>
+            </label>
+        `).join('');
         document.getElementById('resetModal').classList.add('active');
     }
 
     function confirmReset(type) {
         const checkboxes = document.querySelectorAll('.winner-checkbox');
         let winnersIndices = [];
-        checkboxes.forEach(cb => {
-            if (cb.checked) winnersIndices.push(parseInt(cb.value));
-        });
-
+        checkboxes.forEach(cb => { if (cb.checked) winnersIndices.push(parseInt(cb.value)); });
         recordGameResult(winnersIndices);
         closeModal('resetModal');
 
@@ -1743,9 +1391,7 @@
             let defaultLife = state.currentGame.mode === 'TwoHeadedGiant' ? 50 : 40;
             state.currentGame.players.forEach(p => {
                 p.life = p.isMonarch ? 50 : defaultLife;
-                p.poison = 0;
-                p.cmdDamages = {};
-                p.isImmune = false;
+                p.poison = 0; p.cmdDamages = {}; p.isImmune = false;
             });
             saveCurrentGame();
             renderGameGrid();
@@ -1756,32 +1402,12 @@
 
     function recordGameResult(winnersIndices) {
         if (!state.currentGame) return;
-
         let dateStr = new Date().toLocaleDateString();
         let modeName = state.currentGame.mode === 'TwoHeadedGiant' ? '雙頭巨人' : (state.currentGame.mode === 'Kingdoms' ? '三國殺' : '指揮官');
-
-        let lastRecordGroup = state.records.length > 0 ? state.records[state.records.length - 1] : null;
-        if (!lastRecordGroup || lastRecordGroup.date !== dateStr) {
-            state.gameCount = 1;
-        }
-
-        let playersSnapshot = state.currentGame.players.map(p => ({
-            name: p.name,
-            life: p.life,
-            isWinner: winnersIndices.includes(p.id)
-        }));
-
+        let playersSnapshot = state.currentGame.players.map(p => ({ name: p.name, life: p.life, isWinner: winnersIndices.includes(p.id) }));
         let winnersNames = playersSnapshot.filter(p => p.isWinner).map(p => p.name);
 
-        state.records.push({
-            date: dateStr,
-            gameIndex: state.gameCount,
-            mode: modeName,
-            winners: winnersNames,
-            players: playersSnapshot
-        });
-
-        state.gameCount++;
+        state.records.push({ date: dateStr, gameIndex: state.gameCount++, mode: modeName, winners: winnersNames, players: playersSnapshot });
         localStorage.setItem('mtg_records', JSON.stringify(state.records));
         localStorage.setItem('mtg_gameCount', state.gameCount);
         updateRecordsTable();
@@ -1789,168 +1415,40 @@
 
     function toggleRowDetail(rowId) {
         const detailRow = document.getElementById(rowId);
-        if (detailRow) {
-            detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
-        }
+        if (detailRow) detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
     }
 
     function updateRecordsTable() {
         const tbody = document.getElementById('recordsTableBody');
         tbody.innerHTML = '';
-
-        let formattedRecords = state.records.map(r => {
-            if (r.players && Array.isArray(r.players)) return r;
-            return {
-                date: r.date,
-                gameIndex: r.gameIndex || 1,
-                mode: '指揮官',
-                winners: r.result === 'WIN' ? [r.name] : [],
-                players: [{ name: r.name, isWinner: r.result === 'WIN', life: '-' }]
-            };
-        });
-
-        formattedRecords.slice().reverse().forEach((r, idx) => {
+        state.records.slice().reverse().forEach((r, idx) => {
             const detailRowId = `history-detail-${idx}`;
-            const winnersText = r.winners.length > 0 ? `<span class="win-tag">${r.winners.join(', ')}</span>` : '<span style="color:#aaa;">無贏家記錄</span>';
-
             tbody.innerHTML += `
                 <tr class="history-main-row" onclick="toggleRowDetail('${detailRowId}')">
-                    <td>${r.date}</td>
-                    <td>第 ${r.gameIndex} 局</td>
-                    <td>${r.mode || '指揮官'}</td>
-                    <td>${winnersText}</td>
+                    <td>${r.date}</td><td>第 ${r.gameIndex} 局</td><td>${r.mode}</td>
+                    <td>${r.winners.length > 0 ? `<span class="win-tag">${r.winners.join(', ')}</span>` : '無'}</td>
                 </tr>
-                <tr id="${detailRowId}" class="history-detail-row">
-                    <td colspan="4">
-                        <div class="history-detail-content">
-                            <strong>📊 本局參與玩家與血量結算：</strong><br>
-                            ${r.players.map(p => `• ${p.name}：${p.isWinner ? '<strong style="color:#ffd700;">[獲勝]</strong>' : '落敗'} (最終血量: ${p.life})`).join('<br>')}
-                        </div>
-                    </td>
-                </tr>
+                <tr id="${detailRowId}" class="history-detail-row"><td colspan="4"><div class="history-detail-content">${r.players.map(p => `• ${p.name}：${p.isWinner ? '<strong style="color:#ffd700;">[獲勝]</strong>' : '落敗'} (血量: ${p.life})`).join('<br>')}</div></td></tr>
             `;
         });
-
-        const statsMap = {};
-        const streakMap = {};
-
-        formattedRecords.forEach((r, recordIndex) => {
-            let activeMatchPlayers = r.players.map(p => p.name);
-
-            r.players.forEach(p => {
-                if (!statsMap[p.name]) {
-                    statsMap[p.name] = { name: p.name, win: 0, lose: 0, firstIndex: recordIndex };
-                }
-                if (p.isWinner) statsMap[p.name].win++;
-                else statsMap[p.name].lose++;
-            });
-
-            activeMatchPlayers.forEach(name => {
-                if (!streakMap[name]) streakMap[name] = { currentStreak: 0, lastWinner: null };
-                
-                let isWinnerInThisGame = r.winners.includes(name);
-                if (isWinnerInThisGame) {
-                    if (streakMap[name].lastWinner === true) {
-                        streakMap[name].currentStreak++;
-                    } else {
-                        streakMap[name].currentStreak = 1;
-                    }
-                    streakMap[name].lastWinner = true;
-                } else {
-                    streakMap[name].currentStreak = 0;
-                    streakMap[name].lastWinner = false;
-                }
-            });
-        });
-
-        const streakContainer = document.getElementById('streakSummaryContent');
-        const activeStreaks = Object.entries(streakMap)
-            .filter(([name, data]) => data.currentStreak > 0)
-            .sort((a, b) => b[1].currentStreak - a[1].currentStreak);
-
-        if (activeStreaks.length === 0) {
-            streakContainer.innerHTML = `<div style="color:#aaa; font-size: 0.85rem; padding: 4px;">目前沒有進行中的連勝紀錄</div>`;
-        } else {
-            streakContainer.innerHTML = activeStreaks.map(([name, data]) => `
-                <div class="streak-badge">
-                    <span style="font-size:0.8rem; color:var(--gold-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${name}</span>
-                    <span style="font-size:1.1rem; font-weight:bold; color:#ff4d4d; margin-top:2px;">🔥 ${data.currentStreak} 連勝</span>
-                </div>
-            `).join('');
-        }
-
-        const statsArray = Object.values(statsMap).map(s => {
-            const total = s.win + s.lose;
-            const rate = total > 0 ? Math.round((s.win / total) * 100) : 0;
-            return { ...s, total, rate };
-        });
-
-        statsArray.sort((a, b) => b.rate - a.rate || b.win - a.win);
-
-        const summaryElem = document.getElementById('statsSummaryContent');
-        if (statsArray.length === 0) {
-            summaryElem.innerHTML = `<div style="color:#aaa;">尚無統計數據</div>`;
-        } else {
-            summaryElem.innerHTML = statsArray.map(s => `
-                <div class="stats-item">
-                    <div class="stats-info-row">
-                        <span><strong>${s.name}</strong></span>
-                        <span style="font-size: 0.85rem; color: var(--gold-light);">${s.win}勝 / ${s.lose}敗 (勝率: ${s.rate}%)</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${s.rate}%;"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
     }
 
     function exportRecords() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.records, null, 2));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", `mtg_records_${new Date().toISOString().slice(0,10)}.json`);
-        dlAnchorElem.click();
+        const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "mtg_records.json"); dl.click();
     }
 
-    function importRecords(event) {
-        const fileReader = new FileReader();
-        fileReader.onload = function(e) {
+    function importRecords(e) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
             try {
-                const importedData = JSON.parse(e.target.result);
-                if (Array.isArray(importedData)) {
-                    let addedCount = 0;
-                    importedData.forEach(importedRec => {
-                        const isDuplicate = state.records.some(existingRec => 
-                            existingRec.date === importedRec.date &&
-                            existingRec.gameIndex === importedRec.gameIndex &&
-                            JSON.stringify(existingRec.winners) === JSON.stringify(importedRec.winners)
-                        );
-
-                        if (!isDuplicate) {
-                            state.records.push(importedRec);
-                            addedCount++;
-                        }
-                    });
-
-                    state.records.sort((a, b) => a.gameIndex - b.gameIndex);
-
-                    const maxGameIdx = state.records.reduce((max, r) => Math.max(max, r.gameIndex || 0), 0);
-                    if (maxGameIdx >= state.gameCount) {
-                        state.gameCount = maxGameIdx + 1;
-                        localStorage.setItem('mtg_gameCount', state.gameCount);
-                    }
-
-                    localStorage.setItem('mtg_records', JSON.stringify(state.records));
-                    updateRecordsTable();
-                    alert(`對戰紀錄匯入成功！共新增 ${addedCount} 筆對戰歷史。`);
-                }
-            } catch (err) {
-                alert("檔案格式錯誤，匯入失敗。");
-            }
-            event.target.value = '';
+                state.records = JSON.parse(evt.target.result);
+                localStorage.setItem('mtg_records', JSON.stringify(state.records));
+                updateRecordsTable();
+                alert("匯入成功！");
+            } catch(err) { alert("格式錯誤"); }
         };
-        fileReader.readAsText(event.target.files[0]);
+        reader.readAsText(e.target.files[0]);
     }
 </script>
 </body>
