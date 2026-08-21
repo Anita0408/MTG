@@ -752,7 +752,6 @@
 
         .modal-mask.active { display: flex; }
 
-        /* 5. 確保人數多時能完整捲動，視窗高度限制並加入卷軸 */
         .modal-content {
             background: rgba(24, 20, 36, 0.95);
             border: 1px solid var(--gold-primary);
@@ -833,7 +832,7 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; color: var(--gold-light); font-size: 0.9rem; }
 
-        /* 1. 賽制、人數右側加上黃色的倒三角形（可展開視覺），2. 微光聚焦效果 */
+        /* 1. 賽制、人數欄位右側加上下拉倒三角形 */
         select {
             appearance: none;
             -webkit-appearance: none;
@@ -856,7 +855,6 @@
             transition: all 0.3s ease;
         }
 
-        /* 2. 賽制、人數、玩家設定欄位點選或 Focus 時亮起微光 */
         select:focus, input[type="text"]:focus {
             outline: none;
             border-color: var(--gold-light);
@@ -870,7 +868,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* 3. 進入按鈕設計感與隨便微光、拿掉金邊 */
         .btn-enter-battle {
             background: linear-gradient(135deg, #c5a059 0%, #705513 100%);
             color: #0f0c19;
@@ -889,21 +886,21 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
         }
 
-        /* 4. 弱化取消按鈕：僅取消兩字，下方有底線 */
+        /* 3. 取消按鈕字體顏色改為灰色，且不要陰影 */
         .btn-cancel-subtle {
             background: transparent !important;
             border: none !important;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.5) !important;
+            border-bottom: 1px solid rgba(150, 150, 150, 0.4) !important;
             border-radius: 0 !important;
-            color: rgba(243, 229, 171, 0.7) !important;
+            color: #aaaaaa !important;
             box-shadow: none !important;
             padding: 8px 12px;
             transition: all 0.2s ease;
         }
         .btn-cancel-subtle:hover {
-            color: var(--gold-light) !important;
-            border-bottom-color: var(--gold-primary) !important;
-            background: rgba(212, 175, 55, 0.05) !important;
+            color: #dddddd !important;
+            border-bottom-color: #888888 !important;
+            background: rgba(255, 255, 255, 0.03) !important;
         }
 
         .player-setup-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -1347,7 +1344,7 @@
                 let name1 = oldInputs[i * 2] || '';
                 let name2 = oldInputs[i * 2 + 1] || '';
                 row.innerHTML = `
-                    <span class="team-label">隊 ${i+1}:</span>
+                    <span class="team-label">${i+1}:</span>
                     <input type="text" placeholder="隊友 1" class="p-name" value="${name1}" oninput="validateSetupForm()">
                     <input type="text" placeholder="隊友 2" class="p-name" value="${name2}" oninput="validateSetupForm()">
                     <img src="${defaultAvatar}" class="avatar-preview" id="avatar-prev-${i}" referrerpolicy="no-referrer" onclick="openAvatarModal(${i})">
