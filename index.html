@@ -246,7 +246,6 @@
             opacity: 0.5;
         }
 
-        /* 需求 2 修改：匯出紀錄、匯入紀錄，無論如何文字顏色都固定不變[span_2](start_span)[span_2](end_span) */
         .btn-subtle-link {
             background: transparent;
             border: none;
@@ -1845,15 +1844,15 @@
             };
         });
 
-        /* 需求 1 修改：日期排序規則顛倒（日期較小的在越下方，即由遠到近排序）[span_3](start_span)[span_3](end_span) */
+        // 修正排序：日期較早的在最下方，日期較近的在最上方
         formattedRecords.sort((a, b) => {
             let dateA = new Date(a.date).getTime();
             let dateB = new Date(b.date).getTime();
             
             if (dateA === dateB) {
-                return (a.gameIndex || 1) - (b.gameIndex || 1);
+                return (b.gameIndex || 1) - (a.gameIndex || 1); // 同一天內，局數大的在上，小的在下
             }
-            return dateA - dateB; // 顛倒原本的排序方向
+            return dateB - dateA; // 日期大的（較新）排在前面
         });
 
         formattedRecords.forEach((r, idx) => {
