@@ -887,6 +887,19 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
         }
 
+        .btn-outline-subtle {
+            background: rgba(212, 175, 55, 0.08) !important;
+            border: 1px solid var(--gold-primary) !important;
+            color: var(--gold-light) !important;
+            opacity: 0.85;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-subtle:hover {
+            background: rgba(212, 175, 55, 0.2) !important;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
         .btn-cancel-subtle {
             background: transparent !important;
             border: none !important;
@@ -975,7 +988,30 @@
         }
 
         .winner-checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
-        .winner-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        .winner-checkbox-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.05); 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .winner-checkbox-item.selected {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        .winner-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-primary);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
 
         .dice-rolling { font-size: 3rem; color: var(--gold-primary); text-shadow: 0 0 15px rgba(212, 175, 55, 0.8); animation: pulse-dice 0.15s infinite alternate; }
         @keyframes pulse-dice { from { transform: scale(0.95); } to { transform: scale(1.1); } }
@@ -1111,18 +1147,33 @@
     </div>
 </div>
 
+<!-- 1. 結算與重置 Modal -->
 <div class="modal-mask" id="resetModal">
     <div class="modal-content" style="text-align: center;">
+        <button class="modal-close-x" onclick="closeModal('resetModal')" aria-label="關閉">✕</button>
         <div class="modal-title">結算與重置</div>
         <p style="color: #ccc; font-size:0.9rem;">請勾選本局獲勝玩家：</p>
         
         <div class="winner-checkbox-group" id="winnerSelectorList"></div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 20px;">
-            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('same')">沿用此賽制</button>
-            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="confirmReset('new')">開啟新賽制</button>
+        <div style="margin-top: 20px;">
+            <button class="btn-magic btn-enter-battle" id="btnConfirmWinner" style="width:100%;" disabled onclick="submitWinnerAndNext()">確認並開始下一局</button>
         </div>
-        <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="closeModal('resetModal')">取消</button>
+    </div>
+</div>
+
+<!-- 2. 下一個步驟 Modal -->
+<div class="modal-mask" id="nextStepModal">
+    <div class="modal-content" style="text-align: center;">
+        <button class="modal-close-x" onclick="closeModal('nextStepModal')" aria-label="關閉">✕</button>
+        <div class="modal-title">下一步選擇</div>
+        <p style="color: #ccc; font-size:0.9rem; margin-bottom: 20px;">本局結算成功！請選擇接下來的操作：</p>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <button class="btn-magic btn-enter-battle" style="flex:1;" onclick="handleNextStep('same')">沿用此賽制</button>
+            <button class="btn-magic btn-outline-subtle" style="flex:1;" onclick="handleNextStep('new')">開啟新賽制</button>
+        </div>
+        <button class="btn-magic btn-cancel-subtle" style="width: 100%;" onclick="handleNextStep('leave')">離開</button>
     </div>
 </div>
 
@@ -1756,9 +1807,10 @@
         if (state.currentGame && state.currentGame.players && state.currentGame.players.length > 0) {
             state.currentGame.players.forEach((p, idx) => {
                 list.innerHTML += `
-                    <label class="winner-checkbox-item">
-                        <input type="checkbox" class="winner-checkbox" value="${idx}">
-                        <span>👑 ${p.name} (剩餘血量: ${p.life})</span>
+                    <label class="winner-checkbox-item" id="winner-row-${idx}">
+                        <input type="checkbox" class="winner-checkbox" value="${idx}" onchange="onWinnerCheckChange(this, ${idx})">
+                        <img src="${p.avatar}" class="winner-avatar" referrerpolicy="no-referrer">
+                        <span>${p.name} (剩餘血量: ${p.life})</span>
                     </label>
                 `;
             });
@@ -1766,10 +1818,29 @@
             list.innerHTML = `<div style="color: #aaa; padding: 10px 0;">目前無進行中的對局玩家。</div>`;
         }
 
+        validateWinnerSelection();
         document.getElementById('resetModal').classList.add('active');
     }
 
-    function confirmReset(type) {
+    function onWinnerCheckChange(cb, idx) {
+        const row = document.getElementById(`winner-row-${idx}`);
+        if (cb.checked) {
+            row.classList.add('selected');
+        } else {
+            row.classList.remove('selected');
+        }
+        validateWinnerSelection();
+    }
+
+    function validateWinnerSelection() {
+        const checkedCount = document.querySelectorAll('.winner-checkbox:checked').length;
+        const btn = document.getElementById('btnConfirmWinner');
+        if (btn) {
+            btn.disabled = (checkedCount === 0);
+        }
+    }
+
+    function submitWinnerAndNext() {
         const checkboxes = document.querySelectorAll('.winner-checkbox');
         let winnersIndices = [];
         checkboxes.forEach(cb => {
@@ -1779,10 +1850,15 @@
         if (state.currentGame && state.currentGame.players) {
             recordGameResult(winnersIndices);
         }
-        
-        closeModal('resetModal');
 
-        if (type === 'same' && state.currentGame && state.currentGame.players) {
+        closeModal('resetModal');
+        document.getElementById('nextStepModal').classList.add('active');
+    }
+
+    function handleNextStep(action) {
+        closeModal('nextStepModal');
+
+        if (action === 'same' && state.currentGame && state.currentGame.players) {
             let defaultLife = state.currentGame.mode === 'TwoHeadedGiant' ? 50 : 40;
             state.currentGame.players.forEach(p => {
                 p.life = p.isMonarch ? 50 : defaultLife;
@@ -1792,8 +1868,10 @@
             });
             saveCurrentGame();
             renderGameGrid();
-        } else {
+        } else if (action === 'new') {
             openNewGameModal();
+        } else if (action === 'leave') {
+            navTo('home-view');
         }
     }
 
