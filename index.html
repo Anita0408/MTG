@@ -247,25 +247,27 @@
             opacity: 0.5;
         }
 
-        .btn-subtle {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        /* 3. 匯出/匯入紀錄按鈕：低調、下方底線、點擊無明顯反饋 */
+        .btn-subtle-link {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--gold-primary);
             color: var(--gold-light);
-            padding: 8px 16px;
+            padding: 4px 2px;
             font-size: 0.9rem;
-            border-radius: 6px;
             cursor: pointer;
             font-family: 'Noto Serif TC', serif;
-            transition: all 0.2s;
+            transition: color 0.2s;
+            box-shadow: none;
+            border-radius: 0;
         }
-        .btn-subtle:hover {
-            background: rgba(212, 175, 55, 0.15);
-            border-color: var(--gold-primary);
-            color: #fff;
+        .btn-subtle-link:hover {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
         }
-        .btn-subtle:active {
-            background: rgba(212, 175, 55, 0.25);
-            transform: scale(0.97);
+        .btn-subtle-link:active {
+            transform: none;
+            background: transparent;
         }
 
         .btn-round-home {
@@ -929,35 +931,60 @@
         .history-detail-row { background: rgba(15, 12, 25, 0.95); display: none; }
         .history-detail-content { padding: 12px 15px; text-align: left; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #2a2038; }
 
+        /* 1. 連勝狀況區塊：更華麗外觀 */
         .streak-section {
-            background: rgba(20, 15, 30, 0.85);
-            border: 1px solid var(--gold-primary);
-            border-radius: 8px;
-            padding: 12px;
+            background: linear-gradient(135deg, rgba(30, 20, 45, 0.9), rgba(15, 10, 25, 0.95));
+            border: 1.5px solid var(--gold-primary);
+            border-radius: 10px;
+            padding: 14px;
             margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), inset 0 0 10px rgba(255, 77, 77, 0.15);
         }
         .streak-grid {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding: 6px 2px;
             margin-top: 8px;
         }
         .streak-badge {
-            background: linear-gradient(135deg, rgba(169, 27, 27, 0.4), rgba(42, 31, 61, 0.8));
-            border: 1px solid var(--gold-dark);
-            border-radius: 6px;
-            padding: 6px 12px;
+            background: linear-gradient(145deg, rgba(169, 27, 27, 0.5), rgba(42, 31, 61, 0.9));
+            border: 1px solid var(--gold-primary);
+            border-radius: 8px;
+            padding: 8px 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 110px;
+            min-width: 120px;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 8px rgba(255, 77, 77, 0.4);
+            animation: streakGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes streakGlow {
+            0% { border-color: var(--gold-dark); }
+            100% { border-color: var(--gold-light); box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 12px rgba(255, 215, 0, 0.6); }
         }
 
-        .stats-summary { margin-top: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; width: 100%; font-size: 0.9rem; }
-        .stats-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        /* 2. 勝負統計區塊：可上下滑動優化 */
+        .stats-summary { 
+            margin-top: 15px; 
+            background: rgba(20, 15, 30, 0.85); 
+            border: 1px solid rgba(212, 175, 55, 0.4); 
+            padding: 14px; 
+            border-radius: 8px; 
+            width: 100%; 
+            font-size: 0.9rem; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .stats-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            margin-top: 8px; 
+            max-height: 220px; 
+            overflow-y: auto; 
+            padding-right: 4px;
+        }
         .stats-item { 
             display: flex; 
             flex-direction: column; 
@@ -1053,8 +1080,9 @@
     <div id="records-view" class="view">
         <h2 style="color: var(--gold-primary); margin-bottom: 15px;">傳奇編年史</h2>
 
+        <!-- 1. 連勝狀況區塊 -->
         <div class="streak-section" style="width: 100%;">
-            <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 當前連勝排行</h3>
+            <h3 style="color: var(--gold-primary); font-size: 1rem;">🔥 連勝狀況</h3>
             <div id="streakSummaryContent" class="streak-grid">
                 <div style="color: #aaa; font-size: 0.85rem;">尚無連勝紀錄</div>
             </div>
@@ -1074,14 +1102,16 @@
             </table>
         </div>
 
+        <!-- 2. 勝負統計區塊 (支援上下滑動) -->
         <div class="stats-summary" style="width: 100%;">
-            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">個人總勝負統計</h3>
+            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">勝負統計</h3>
             <div id="statsSummaryContent" class="stats-list"></div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center; width: 100%;">
-            <button class="btn-subtle" onclick="exportRecords()">匯出紀錄</button>
-            <button class="btn-subtle" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
+        <!-- 3. 匯出/匯入低調按鈕 -->
+        <div style="display: flex; gap: 16px; margin-top: 20px; justify-content: center; width: 100%;">
+            <button class="btn-subtle-link" onclick="exportRecords()">匯出紀錄</button>
+            <button class="btn-subtle-link" onclick="document.getElementById('importFile').click()">匯入紀錄</button>
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="importRecords(event)">
         </div>
     </div>
