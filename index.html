@@ -1126,7 +1126,7 @@
 
         <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
             <button class="btn-magic btn-enter-battle" id="btnStartGame" style="flex:1;" disabled onclick="startGame()">進入</button>
-            <button class="btn-magic btn-cancel-subtle" onclick="closeModal('newGameModal')">取消</button>
+            <button class="btn-magic btn-cancel-subtle" onclick="cancelNewGameModal()">取消</button>
         </div>
     </div>
 </div>
@@ -1235,6 +1235,7 @@
     };
 
     let activeSelectingPlayerIndex = null;
+    let openedFromNextStepModal = false;
 
     function bindHoldEvent(element, actionFn) {
         if (!element) return;
@@ -1332,6 +1333,17 @@
         updateSetupForm();
     }
 
+    function cancelNewGameModal() {
+        closeModal('newGameModal');
+        if (openedFromNextStepModal) {
+            openedFromNextStepModal = false;
+            state.currentGame = null;
+            localStorage.removeItem('mtg_currentGame');
+            document.getElementById('btn-continue').style.display = 'none';
+            navTo('home-view');
+        }
+    }
+
     function updateSetupForm() {
         const mode = document.getElementById('modeSelect').value;
         const countSelect = document.getElementById('playerCountSelect');
@@ -1418,6 +1430,7 @@
     }
 
     function startGame() {
+        openedFromNextStepModal = false;
         const mode = document.getElementById('modeSelect').value;
         const rows = document.querySelectorAll('.player-setup-row');
         let players = [];
@@ -1804,11 +1817,12 @@
 
         if (state.currentGame && state.currentGame.players && state.currentGame.players.length > 0) {
             state.currentGame.players.forEach((p, idx) => {
+                const lifeColorStyle = p.life <= 0 ? 'color: var(--crimson-glow); font-weight: bold;' : '';
                 list.innerHTML += `
                     <label class="winner-checkbox-item" id="winner-row-${idx}">
                         <input type="checkbox" class="winner-checkbox" value="${idx}" onchange="onWinnerCheckChange(this, ${idx})">
                         <img src="${p.avatar}" class="winner-avatar" referrerpolicy="no-referrer">
-                        <span>${p.name} (剩餘血量: ${p.life})</span>
+                        <span>${p.name} (剩餘血量: <span style="${lifeColorStyle}">${p.life}</span>)</span>
                     </label>
                 `;
             });
@@ -1867,6 +1881,7 @@
             saveCurrentGame();
             renderGameGrid();
         } else if (action === 'new') {
+            openedFromNextStepModal = true;
             openNewGameModal();
         } else if (action === 'leave') {
             state.currentGame = null;
