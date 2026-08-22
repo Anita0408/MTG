@@ -1186,18 +1186,20 @@
 
 <script>
     const PLANESWALKERS = [
-        { name: "Rowan Kenrith", url: "https://images.ctfassets.net/s5n2t79q9icq/1sqcHwy3RJKGZ2BT5B8xsi/27e26027ca67551f68860f89051c7cdc/rowan-kenrith-300.jpg" },
-        { name: "The Wanderer", url: "https://images.ctfassets.net/s5n2t79q9icq/3xwuZfGjME99g4m8UV8Tkx/673c5305e0216b992ad020cd7bf85b47/the-wanderer-300.jpg" },
-        { name: "Basri Khet", url: "https://images.ctfassets.net/s5n2t79q9icq/1q2WnoQyMIPY5JeS47evum/a107915c16efa6ebf586047cc1c409c8/basri-khet-300.jpg" },
-        { name: "Elspeth Tirel", url: "https://images.ctfassets.net/s5n2t79q9icq/c0HWQ5xD293WdkqUd3vUN/abe4d649a0ca25a7a260c32377df7094/elspeth-tirel-300.jpg" },
-        { name: "Nissa Revane", url: "https://images.ctfassets.net/s5n2t79q9icq/4QQyvTFy433ucZsAukFCy/74498ba02a7ed94bce4a290506253552/nissa-revane-300.jpg" },
-        { name: "Ajani", url: "https://images.ctfassets.net/s5n2t79q9icq/6aF1l2DFY0oRxa4Zsmm7PR/87b8393aae247b2d2d9c4274b370a9b4/ajani-300.jpg" },
-        { name: "Oko", url: "https://images.ctfassets.net/s5n2t79q9icq/OuYONzWUywVZy13ScRKXO/5a5b83df87b60b4f8d13988db5ed5788/oko-300.jpg" },
-        { name: "Serra", url: "https://images.ctfassets.net/s5n2t79q9icq/78Bo4S43kxvjlaGYbcK8JU/070181e909364fe85c9b5d58e8778bfd/serra-300.jpg" },
-        { name: "Elspeth Resplendent", url: "https://cdn.cardsrealm.com/images/cartas/asnc-new-capenna-art-series/en/med/elspeth-resplendent-card-3s.png?4261" },
-        { name: "Mu Yanling", url: "https://images.ctfassets.net/s5n2t79q9icq/6H7suxzk8ecyTTjvN7TCsO/e117e3b5c38137a45c840f5105d49a1b/mu-yanling-300.jpg" },
-        { name: "Liliana Vess", url: "https://images.ctfassets.net/s5n2t79q9icq/7np4TX3O6p4VnJb0RLK65k/2e0509c14819abf6f7a4e14eb0da1db7/liliana-vess-300.jpg" },
-        { name: "Lord Windgrace", url: "https://images.ctfassets.net/s5n2t79q9icq/1WGIgsOaexpwNs0BwF8dFI/f11920a282bc60edc5c6415d42b9a1fa/windgrace-300.jpg" }
+        { name: "Avatar 1", url: "https://c4.wallpaperflare.com/wallpaper/765/306/472/artwork-fantasy-art-magic-the-gathering-liliana-vess-wallpaper-preview.jpg" },
+        { name: "Avatar 2", url: "https://media.wizards.com/2018/images/daily/cardart_DAR_Oath-of-Teferi.jpg" },
+        { name: "Avatar 3", url: "https://media.wizards.com/2018/images/daily/cardart_DAR_In-Bolass-Clutches.jpg" },
+        { name: "Avatar 4", url: "https://images.ctfassets.net/s5n2t79q9icq/1sqcHwy3RJKGZ2BT5B8xsi/27e26027ca67551f68860f89051c7cdc/rowan-kenrith-300.jpg" },
+        { name: "Avatar 5", url: "https://images.ctfassets.net/s5n2t79q9icq/1q2WnoQyMIPY5JeS47evum/a107915c16efa6ebf586047cc1c409c8/basri-khet-300.jpg" },
+        { name: "Avatar 6", url: "https://images.ctfassets.net/s5n2t79q9icq/6aF1l2DFY0oRxa4Zsmm7PR/87b8393aae247b2d2d9c4274b370a9b4/ajani-300.jpg" },
+        { name: "Avatar 7", url: "https://images.ctfassets.net/s5n2t79q9icq/OuYONzWUywVZy13ScRKXO/5a5b83df87b60b4f8d13988db5ed5788/oko-300.jpg" },
+        { name: "Avatar 8", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqxevkmljxgNj-i0HSSCn16-NATCmIlXvPIi9y_JPjDuxRqXZ_cJbhvPrB&s=10" },
+        { name: "Avatar 9", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsDRq6Mf_s-OgBPh_GsdD8Nlzool9LNvyAU6h4VcaV0rA0OADKMub-D3c&s=10" },
+        { name: "Avatar 10", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGXKZ59UXRhk2HUGVgXnFNTk0bSeuye3j63fk7l_JSbtaRayjOi-76dQA&s=10" },
+        { name: "Avatar 11", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYs6iaj4AFiUQnESzrotJ9zofbQGxczcGbI9K6G9e0yJwXAnfvrOtC4IA&s=10" },
+        { name: "Avatar 12", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSzANzc9wvTGGE7CcvKudpoBkekAzVwWeBurcLGD5YusEjfhdGcqF1vxjA&s=10" },
+        { name: "Avatar 13", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBL0o0RmxRnLLj9ZYcGcMthNdwkCzVrInobCbftzzMlw&s=10" },
+        { name: "Avatar 14", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5W4yHuZUiKXLBh0dst8UdxflidQsxAVibGBig4zKAdQ&s=10" }
     ];
 
     const SKULL_SVG_MARKUP = `
