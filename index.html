@@ -261,13 +261,14 @@
         }
         .btn-subtle-link:hover {
             color: var(--gold-light) !important;
-            border-bottom-color: var(--gold-light);
+            border-bottom-color: var(--gold-primary);
             text-shadow: none;
         }
         .btn-subtle-link:active {
             transform: none;
             background: transparent;
             color: var(--gold-light) !important;
+            border-bottom-color: var(--gold-primary);
         }
 
         .btn-round-home {
@@ -1964,7 +1965,7 @@
             tbody.innerHTML += `
                 <tr class="history-main-row" onclick="toggleRowDetail('${detailRowId}')">
                     <td>${r.date}</td>
-                    <td>第 ${r.gameIndex} 局</td>
+                    <td>${r.gameIndex}</td>
                     <td>${r.mode || '指揮官'}</td>
                     <td>${winnersText}</td>
                 </tr>
