@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>魔法風雲會 - 決戰計血器</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -1904,6 +1904,7 @@
 
         let playersSnapshot = state.currentGame.players.map(p => ({
             name: p.name,
+            members: p.members || null,
             life: p.life,
             isWinner: winnersIndices.includes(p.id)
         }));
@@ -1982,11 +1983,26 @@
 
         formattedRecords.forEach((r, recordIndex) => {
             r.players.forEach(p => {
-                if (!statsMap[p.name]) {
-                    statsMap[p.name] = { name: p.name, win: 0, lose: 0, firstIndex: recordIndex };
+                let individuals = [];
+                if (r.mode === '雙頭巨人' || (p.members && p.members.length > 0)) {
+                    if (p.members && p.members.length > 0) {
+                        individuals = p.members;
+                    } else if (p.name.includes(' & ')) {
+                        individuals = p.name.split(' & ').map(m => m.trim());
+                    } else {
+                        individuals = [p.name];
+                    }
+                } else {
+                    individuals = [p.name];
                 }
-                if (p.isWinner) statsMap[p.name].win++;
-                else statsMap[p.name].lose++;
+
+                individuals.forEach(indName => {
+                    if (!statsMap[indName]) {
+                        statsMap[indName] = { name: indName, win: 0, lose: 0, firstIndex: recordIndex };
+                    }
+                    if (p.isWinner) statsMap[indName].win++;
+                    else statsMap[indName].lose++;
+                });
             });
         });
 
